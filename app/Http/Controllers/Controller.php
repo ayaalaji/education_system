@@ -16,13 +16,13 @@ class Controller extends BaseController
      * @param int $status
      * @return /Illuminate\Http\JsonResponse
      */
-    protected function success($data = null,$message = 'Operation Successfull' , $satus = 200)
+    protected function success($data = null, $message = 'Operation Successfull', $status = 200)
     {
         return response()->json([
-            'status' =>'success',
+            'status' => 'success',
             'message' => $message,
-            'data' =>$data
-        ] , $satus);
+            'data' => $data
+        ], $status);
     }
     /**
      * @param string $message
@@ -30,12 +30,12 @@ class Controller extends BaseController
      * @param mixed $data
      * @return /Illuminate\Http\JsonResponse
      */
-    protected function error($message = 'Operation Failed' , $status =400 , $data =  null) 
+    protected function error($message = 'Operation Failed', $status = 400, $data =  null)
     {
         return response()->json([
-            'status' =>'error' ,
-            'message' =>$message,
-            'data' =>$data
+            'status' => 'error',
+            'message' => $message,
+            'data' => $data
         ], $status);
     }
 }
