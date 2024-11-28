@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\TeacherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,3 +41,12 @@ Route::controller(UserController::class)->group(function () {
     Route::put('users/{user}', 'update');
     Route::delete('users/{user}', 'destroy');
 });
+
+Route::controller(TeacherController::class)->group(function () {
+    Route::get('/teachers', 'index');
+    Route::post('/teachers', 'store');
+    Route::get('/teachers/{teacher}', 'show');
+    Route::put('/teachers/{teacher}', 'update');
+    Route::delete('/teachers/{teacher}', 'destroy');
+});
+
