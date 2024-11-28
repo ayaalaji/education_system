@@ -15,7 +15,7 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    protected $guard = 'api'; 
+    protected $guard = 'api';
     /**
      * The attributes that are mass assignable.
      *
@@ -25,7 +25,6 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'role'
     ];
 
     /**
@@ -52,7 +51,7 @@ class User extends Authenticatable implements JWTSubject
      * @param  string  $value
      * @return void
      */
-    public function setNameAttribute($value) 
+    public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucwords($value);
     }
@@ -66,7 +65,7 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->attributes['password'] = Hash::make($value);
     }
-     /**
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed

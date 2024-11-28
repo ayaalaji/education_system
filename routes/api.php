@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,9 +26,17 @@ Route::controller(AuthController::class)->group(function () {
 
 //////// Role ////////
 Route::controller(RoleController::class)->group(function () {
-    Route::get('roles','index');
+    Route::get('roles', 'index');
     Route::post('role', 'store');
     Route::get('role/{role}', 'show');
     Route::put('role/{role}', 'update');
     Route::delete('role/{role}', 'destroy');
+});
+///////User/////////
+Route::controller(UserController::class)->group(function () {
+    Route::get('users', 'index');
+    Route::post('user', 'store');
+    Route::get('users/{user}', 'show');
+    Route::put('users/{user}', 'update');
+    Route::delete('users/{user}', 'destroy');
 });
