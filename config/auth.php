@@ -44,9 +44,9 @@ return [
             'driver' => 'jwt',
             'provider' => 'users',
         ],
-        'teacher' => [
+        'teacher-api' => [ // Guard for teachers
             'driver' => 'jwt',
-            'provider' => 'teachers',
+            'provider' => 'teachers', // This provider needs to be defined below
         ],
     ],
 

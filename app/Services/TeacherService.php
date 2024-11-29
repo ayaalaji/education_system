@@ -54,7 +54,7 @@ class TeacherService
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'specialization' => $data['specialization']
-            ]);
+            ])->assignRole($data['role']);
             return [
                 'message' => 'Teacher created successfully.',
                 'data' => $teacher,
@@ -99,6 +99,11 @@ class TeacherService
     {
         try {
             $teacher->update(array_filter($data)); //array_filter removes null values
+
+            if(isset($data['role']))
+                {
+                    $teacher->syncRoles([$data['role']]);
+                }
             return [
                 'message' => 'Teacher updated successfully.',
                 'data' => $teacher,

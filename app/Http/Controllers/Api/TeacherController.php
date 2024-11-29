@@ -43,7 +43,7 @@ class TeacherController extends Controller
     public function store(StoreTeacherRequest $request)
     {
         $validatedData = $request->validated();
-        $teacher = $this->teacherService->createTeacher($validatedData); //Note: Method name should be createTeacher.
+        $teacher = $this->teacherService->createTeacher($validatedData); 
         return $this->success($teacher['data'], $teacher['message'], $teacher['status']);
     }
 

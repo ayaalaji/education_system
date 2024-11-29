@@ -25,7 +25,8 @@ class UpdateTeacherRequest extends FormRequest
             'name' => 'nullable|string|min:3|max:100',
             'email' => 'nullable|string|email|max:255|unique:users',
             'password' => 'nullable|string|min:8',
-            'specialization' =>'nullable|string|max:255'
+            'specialization' =>'nullable|string|max:255',
+            'role' =>'nullable|in:manager,admin,teacher'
         ];
     }
 }

@@ -25,7 +25,8 @@ class StoreTeacherRequest extends FormRequest
             'name' => 'required|string|min:3|max:100',
             'email' => 'required|string|email|max:255|unique:teachers',
             'password' => 'required|string|min:8',
-            'specialization' =>'required|string|max:255'
+            'specialization' =>'required|string|max:255',
+            'role'=>'required|in:manager,admin,teacher'
         ];
     }
 }
