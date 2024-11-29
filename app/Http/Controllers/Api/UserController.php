@@ -18,6 +18,8 @@ class UserController extends Controller
      */
     public function __construct(UserService $userService)
     {
+        $this->middleware('auth:api');
+        $this->middleware('security');
         $this->userService = $userService;
     }
 
@@ -32,7 +34,13 @@ class UserController extends Controller
     public function index()
     {
         $user = $this->userService->listUser();
-        return $this->success($user['data'], $user['message'], $user['status']);
+        if (!$user) {
+            return $this->error('Getting users failed');
+        }
+        if (empty($user['data'])) {
+            return $this->success(null, 'there is no users yet', 200);
+        }
+        return $this->success($user, 'Get users list successfully', 200);
     }
 
     /**
@@ -46,7 +54,10 @@ class UserController extends Controller
     {
         $validatedData = $request->validated();
         $user = $this->userService->createUser($validatedData);
-        return $this->success($user['data'], $user['message'], $user['status']);
+        if (!$user) {
+            return $this->error('Creating User faild');
+        }
+        return $this->success($user, 'User Created Successfully', 201);
     }
 
 
@@ -60,7 +71,10 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user = $this->userService->getUser($user);
-        return $this->success($user['data'], $user['message'], $user['status']);
+        if (!$user) {
+            return $this->error('Get user data faild');
+        }
+        return $this->success($user, 'Get user successfully', 200);
     }
 
 
@@ -76,7 +90,10 @@ class UserController extends Controller
     {
         $validatedData = $request->validated();
         $user = $this->userService->updateUser($user, $validatedData);
-        return $this->success($user['data'], $user['message'], $user['status']);
+        if (!$user) {
+            return $this->error('Update User faild');
+        }
+        return $this->success($user, 'User Updated Successfully', 201);
     }
 
 
@@ -91,6 +108,9 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user = $this->userService->deleteUser($user);
-        return $this->success($user['message'], $user['status']);
+        if (!$user) {
+            return $this->error('Delete User faild');
+        }
+        return $this->success(null, 'User Updated Successfully', 201);
     }
 }
