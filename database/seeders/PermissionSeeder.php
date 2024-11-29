@@ -45,18 +45,18 @@ class PermissionSeeder extends Seeder
 
         // Create permissions in the database
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission,'guard_name'=>'teacher-api']);
         }
 
         // Define roles
         $roles = [
             'manager',  // Manager
             'teacher', // Teacher 
-            'student', // Student 
+            'admin', // Admin 
         ];
 
         foreach ($roles as $roleName) {
-            $role = Role::firstOrCreate(['name' => $roleName]);
+            $role = Role::firstOrCreate(['name' => $roleName,'guard_name'=>'teacher-api']);
 
             // Assign permissions to each role
             switch ($roleName) {
@@ -86,12 +86,21 @@ class PermissionSeeder extends Seeder
                         'delete_course',
                     ]);
                     break;
-
-                case 'student':
+                case 'admin':
                     $role->syncPermissions([
-                        'register_course',
-                        'access_materials',
-                        'submit_homework',
+                        'add_user',
+                        'update_user',
+                        'delete_user',
+                        'add_role',
+                        'update_role',
+                        'delete_role',
+                        'add_course',
+                        'update_course',
+                        'delete_course',
+                        'add_category',
+                        'update_category',
+                        'delete_category',
+                        'access_materials'
                     ]);
                     break;
             }

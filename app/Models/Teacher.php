@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User; // Import the User model
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
+
 class Teacher extends User implements JWTSubject
 {
     /*
@@ -12,7 +13,7 @@ class Teacher extends User implements JWTSubject
      *
      * @var array<int, string>
      */
-    protected $guard = 'teacher';
+    protected $guard = 'teacher-api';
 
     protected $fillable = [
         'name',
