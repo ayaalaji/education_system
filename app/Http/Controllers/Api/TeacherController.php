@@ -29,9 +29,17 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function index()
-    {
-        $teachers = $this->teacherService->listTeachers(); 
-        return $this->success($teachers['data'], $teachers['message'], $teachers['status']);
+    {   try{
+        $teachers = $this->teacherService->listTeachers();
+        if ($teachers->isEmpty()) { //Check if the collection is empty instead of null
+            return $this->success([],'There are no teachers yet.',200);
+            }
+        else 
+            return $this->success($teachers,'Teachers list retrieved successfully.',200);
+       }catch (Exception $e) {
+            Log::error('Error getting all teachers: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve teachers.'], 500));
+        }
     }
 
     /*
@@ -41,10 +49,14 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreTeacherRequest $request)
-    {
-        $validatedData = $request->validated();
-        $teacher = $this->teacherService->createTeacher($validatedData); 
-        return $this->success($teacher['data'], $teacher['message'], $teacher['status']);
+    {  try{
+            $validatedData = $request->validated();
+            $teacher = $this->teacherService->createTeacher($validatedData); 
+            return $this->success($teacher,'Teacher created successfully.',201);
+        }catch (Exception $e) {
+            Log::error('Error creating teacher: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to create teacher.'], 500));
+        }
     }
 
     /*
@@ -54,9 +66,13 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Teacher $teacher)
-    {
-        $teacherData = $this->teacherService->getTeacher($teacher);
-        return $this->success($teacherData['data'], $teacherData['message'], $teacherData['status']);
+    {   try{
+            $teacherData = $this->teacherService->getTeacher($teacher);
+            return $this->success($teacherData, 'Teacher retrieved successfully.', 200);
+       } catch (Exception $e) {
+            Log::error('Error getting teacher: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve teacher.'], 500));
+       }
     }
 
     /*
@@ -67,10 +83,14 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateTeacherRequest $request, Teacher $teacher)
-    {
-        $validatedData = $request->validated();
-        $teacher = $this->teacherService->updateTeacher($teacher, $validatedData);
-        return $this->success($teacher['data'], $teacher['message'], $teacher['status']);
+    {  try{
+            $validatedData = $request->validated();
+            $teacher = $this->teacherService->updateTeacher($teacher, $validatedData);
+            return $this->success($teacher, 'Teacher updated successfully.', 200);
+       }catch (Exception $e) {
+            Log::error('Error updating teacher: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to update teacher.'], 500));
+       }
     }
 
     /*
@@ -80,8 +100,12 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Teacher $teacher)
-    {
-        $result = $this->teacherService->deleteTeacher($teacher);
-        return $this->success($result['message'], $result['status']);
+    {   try{
+            $result = $this->teacherService->deleteTeacher($teacher);
+            return $this->success('Teacher deleted successfully.',200);
+        } catch (Exception $e) {
+            Log::error('Error deleting teacher: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to delete teacher.'], 500));
+        }
     }
 }

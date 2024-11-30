@@ -20,19 +20,7 @@ class TeacherService
     {
         try {
             $teachers = Teacher::all();
-            if ($teachers->isEmpty()) { //Check if the collection is empty instead of null
-                return [
-                    'message' => 'There are no teachers yet.',
-                    'data' => [], //Return an empty array instead of null
-                    'status' => 200
-                ];
-            }
-
-            return [
-                'message' => 'Teachers list retrieved successfully.',
-                'data' => $teachers,
-                'status' => 200
-            ];
+            return $teachers;
         } catch (Exception $e) {
             Log::error('Error getting all teachers: ' . $e->getMessage());
             throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve teachers.'], 500));
@@ -55,11 +43,7 @@ class TeacherService
                 'password' => Hash::make($data['password']),
                 'specialization' => $data['specialization']
             ])->assignRole($data['role']);
-            return [
-                'message' => 'Teacher created successfully.',
-                'data' => $teacher,
-                'status' => 201 // Use 201 (Created) status code
-            ];
+            return $teacher;
         } catch (Exception $e) {
             Log::error('Error creating teacher: ' . $e->getMessage());
             throw new HttpResponseException(response()->json(['message' => 'Failed to create teacher.'], 500));
@@ -76,11 +60,8 @@ class TeacherService
     public function getTeacher(Teacher $teacher)
     {
         try {
-            return [
-                'message' => 'Teacher retrieved successfully.',
-                'data' => $teacher,
-                'status' => 200
-            ];
+            return $teacher;
+          
         } catch (Exception $e) {
             Log::error('Error getting teacher: ' . $e->getMessage());
             throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve teacher.'], 500));
@@ -104,11 +85,7 @@ class TeacherService
                 {
                     $teacher->syncRoles([$data['role']]);
                 }
-            return [
-                'message' => 'Teacher updated successfully.',
-                'data' => $teacher,
-                'status' => 200
-            ];
+            return $teacher;
         } catch (Exception $e) {
             Log::error('Error updating teacher: ' . $e->getMessage());
             throw new HttpResponseException(response()->json(['message' => 'Failed to update teacher.'], 500));
@@ -126,10 +103,6 @@ class TeacherService
     {
         try {
             $teacher->delete();
-            return [
-                'message' => 'Teacher deleted successfully.',
-                'status' => 200
-            ];
         } catch (Exception $e) {
             Log::error('Error deleting teacher: ' . $e->getMessage());
             throw new HttpResponseException(response()->json(['message' => 'Failed to delete teacher.'], 500));
