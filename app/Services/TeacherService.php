@@ -19,7 +19,7 @@ class TeacherService
     public function listTeachers()
     {
         try {
-            $teachers = Teacher::all();
+            $teachers = Teacher::select('name', 'email')->get();
             return $teachers;
         } catch (Exception $e) {
             Log::error('Error getting all teachers: ' . $e->getMessage());

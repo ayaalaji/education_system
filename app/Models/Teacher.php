@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
-use App\Models\User; // Import the User model
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 
 
-class Teacher extends User implements JWTSubject
+
+class Teacher extends Authenticatable implements JWTSubject
 {
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
     /*
      * The attributes that are mass assignable.
      *
