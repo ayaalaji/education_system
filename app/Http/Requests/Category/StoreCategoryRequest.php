@@ -39,3 +39,4 @@ class StoreCategoryRequest extends FormRequest
             'teacher_id.exists' => 'The selected teacher does not exist.',
         ];
 }
+}
