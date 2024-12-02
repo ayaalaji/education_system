@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -50,3 +51,11 @@ Route::controller(TeacherController::class)->group(function () {
     Route::delete('/teachers/{teacher}', 'destroy');
 });
 
+////////////Category///////////
+Route::controller(CategoryController::class)->group(function () {
+    Route::get('/categories', 'index'); 
+    Route::post('/categories', 'store'); 
+    Route::get('/categories/{category}', 'show'); 
+    Route::put('/categories/{category}', 'update'); 
+    Route::delete('/categories/{category}', 'destroy'); 
+});

@@ -6,9 +6,7 @@ use App\Models\Category;
 
 class CategoryService
 {
-
-
-/**
+    /**
      * Get all categories with optional filtering by name.
      *
      * @param string|null $name
@@ -16,24 +14,32 @@ class CategoryService
      */
     public function getCategories(?string $name = null)
     {
-        $query = Category::with('courses'); 
-        
-        if ($name) {
-            $query->where('name', 'LIKE', '%' . $name . '%');
+        try {
+            $query = Category::with('courses');
+
+            if ($name) {
+                $query->where('name', 'LIKE', '%' . $name . '%');
+            }
+
+            return $query->get();
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to fetch categories: ' . $e->getMessage());
         }
-        
-        return $query->get();
     }
 
     /**
      * Get a specific category by ID along with its courses.
+     *
      * @param Category $category
-    
-     * @return \App\Models\Category|null
+     * @return \App\Models\Category
      */
     public function getCategory(Category $category)
     {
-        return $category->with('courses');
+        try {
+            return $category->load('courses');
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to fetch category details: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -44,7 +50,11 @@ class CategoryService
      */
     public function createCategory(array $data): Category
     {
-        return Category::create($data);
+        try {
+            return Category::create($data);
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to create category: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -56,8 +66,12 @@ class CategoryService
      */
     public function updateCategory(Category $category, array $data): Category
     {
-        $category->update($data);
-        return $category;
+        try {
+            $category->update($data);
+            return $category;
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to update category: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -68,6 +82,10 @@ class CategoryService
      */
     public function deleteCategory(Category $category): void
     {
-        $category->delete();
+        try {
+            $category->delete();
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to delete category: ' . $e->getMessage());
+        }
     }
 }
