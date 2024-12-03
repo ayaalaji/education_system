@@ -30,18 +30,19 @@ class AuthService {
         ];
     }
     /**
-     * login method
+     * Login method for a specific guard
      * @param array $credentials
+     * @param string $guard
+     * @return array|bool
      */
-
-    public function login(array $credentials)
+    public function login(array $credentials, string $guard)
     {
+        Auth::shouldUse($guard);
         $token = JWTAuth::attempt($credentials);
-       
         if (!$token) {
             return false;
         }
-        
+
         $user = Auth::user();
         return [
             'user' => $user,
@@ -50,18 +51,24 @@ class AuthService {
     }
 
     /**
-     * logout method
+     * Logout method for a specific guard
+     * @param string $guard
+     * @return void
      */
-    public function logout()
+    public function logout(string $guard)
     {
+        Auth::shouldUse($guard);
         Auth::logout();
     }
 
     /**
-     * refresh token method
+     * Refresh token method for a specific guard
+     * @param string $guard
+     * @return array
      */
-    public function refresh()
+    public function refresh(string $guard)
     {
+        Auth::shouldUse($guard);
         $token = Auth::refresh();
         $user = Auth::user();
         return [
