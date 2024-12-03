@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\TeacherController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,12 +20,23 @@ use App\Http\Controllers\Api\TeacherController;
 |
 */
 
-Route::controller(AuthController::class)->group(function () {
-    Route::post('register', 'register');
-    Route::post('login', 'login');
-    Route::post('logout', 'logout');
-    Route::post('refresh', 'refresh');
+
+//Auth for(students)
+Route::post('/login/user', [AuthController::class, 'login'])->defaults('guard', 'api');
+Route::post('register/user',[AuthController::class, 'register']);
+Route::middleware(['auth:api'])->group(function () {
+    Route::post('/logout/user', [AuthController::class, 'logout'])->defaults('guard', 'api');
+    Route::post('/refresh/user', [AuthController::class, 'refresh'])->defaults('guard', 'api');
 });
+
+//Auth for (teachers)
+Route::post('/login/teacher', [AuthController::class, 'login'])->defaults('guard', 'teacher-api');
+Route::middleware(['auth:teacher-api'])->group(function () {
+    Route::post('/logout/teacher', [AuthController::class, 'logout'])->defaults('guard', 'teacher-api');
+    Route::post('/refresh/teacher', [AuthController::class, 'refresh'])->defaults('guard', 'teacher-api');
+});
+
+
 
 //////// Role ////////
 Route::controller(RoleController::class)->group(function () {

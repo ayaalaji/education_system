@@ -13,7 +13,6 @@ class AuthController extends Controller
     protected $authService;
     public function __construct(AuthService $authService)
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
         $this->middleware('security');
         $this->authService = $authService;
     }
@@ -37,18 +36,19 @@ class AuthController extends Controller
     }
 
     /**
-     * login method
+     * Login method for different guards
      * @param LoginRequest $request
-     * @return /Illuminate\Http\JsonResponse
+     * @param string $guard
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, string $guard)
     {
         $request->validated();
         $credentials = $request->only('email', 'password');
 
-        $result = $this->authService->login($credentials);
+        $result = $this->authService->login($credentials, $guard);
         if (!$result) {
-            return $this->error('Invalid login');
+            return $this->error('Invalid login', 401);
         }
 
         return $this->success([
@@ -57,26 +57,28 @@ class AuthController extends Controller
                 'token' => $result['token'],
                 'type' => 'bearer',
             ]
-        ]);
-    }
-    /**
-     * logout method
-     * @return /Illuminate\Http\JsonResponse
-     */
-    public function logout()
-    {
-        $this->authService->logout();
-        return $this->success('Successfully logged out');
+        ], 'Login successful');
     }
 
     /**
-     * refresh token method
-     * @return /Illuminate\Http\JsonResponse
+     * Logout method for different guards
+     * @param string $guard
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh()
+    public function logout(string $guard)
     {
-         $result = $this->authService->refresh();
+        $this->authService->logout($guard);
+        return $this->success(null, 'Successfully logged out');
+    }
 
+    /**
+     * Refresh token method for different guards
+     * @param string $guard
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh(string $guard)
+    {
+        $result = $this->authService->refresh($guard);
         return $this->success([
             'user' => $result['user'],
             'authorisation' => [
