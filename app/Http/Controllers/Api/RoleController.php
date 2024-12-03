@@ -27,13 +27,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        try {
-            $roles = Role::all();
-            return $this->success($roles);
-        } catch (\Throwable $th) {
-            Log::error($th);
-            return $this->error('Unable to retrieve roles at this time. Please try again later.' , 500);
-        }
+        $roles = Role::all();
+        return $this->success($roles);
     }
 
     /**
@@ -43,14 +38,9 @@ class RoleController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        try {
-            $roleData = $request->validated();
-            $role = $this->roleService->createRole($roleData);
-            return $this->success($role,'Role created successfully',201);
-        } catch (\Throwable $th) {
-            Log::error($th);
-            return $this->error($th->getMessage(), 500); 
-        }
+        $roleData = $request->validated();
+        $role = $this->roleService->createRole($roleData);
+        return $this->success($role,'Role created successfully',201);
     }
 
     /**
@@ -60,13 +50,8 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        try {
-            $role = $this->roleService->showRole($id);
-            return $this->success($role);
-        } catch (\Throwable $th) {
-            Log::error($th);
-            return $this->error('Unable to retrieve role details at this time. Please try again later.', 500);
-        }
+        $role = $this->roleService->showRole($id);
+        return $this->success($role);
     }
 
     /**
@@ -77,14 +62,9 @@ class RoleController extends Controller
      */
     public function update(UpdateRequest $request, string $id)
     {
-        try {
-            $roleData = $request->validated();
-            $role =$this->roleService->updateRole($roleData, $id);
-            return $this->success($role,'Role updated successfully');
-        } catch (\Throwable $th) {
-            Log::error($th);
-            return $this->error('Unable to update role at this time. Please try again later.', 500);
-        }
+        $roleData = $request->validated();
+        $role =$this->roleService->updateRole($roleData, $id);
+        return $this->success($role,'Role updated successfully');
     }
 
     /**
@@ -94,12 +74,7 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-       try {
-            $this->roleService->deleteRole($id);
-            return $this->success(null,'Role deleted successfully');
-        } catch (\Throwable $th) {
-            Log::error($th);
-            return $this->error($th->getMessage(), 500);
-        }
+        $this->roleService->deleteRole($id);
+        return $this->success(null,'Role deleted successfully');
     }
 }
