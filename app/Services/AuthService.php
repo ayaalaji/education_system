@@ -20,7 +20,7 @@ class AuthService {
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
-            'role' =>'student'
+          
         ]);
 
         $token = JWTAuth::fromUser($user);
