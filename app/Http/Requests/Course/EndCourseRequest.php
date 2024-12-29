@@ -2,12 +2,9 @@
 
 namespace App\Http\Requests\Course;
 
-use Carbon\Carbon;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StartCourseRequest extends FormRequest
+class EndCourseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,19 +22,15 @@ class StartCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-           'start_date'          => 'required|date|date_format:Y-m-d|after_or_equal:end_register_date',
-        
+               'end_date'     => 'required|date|date_format:Y-m-d|after_or_equal:start_date',
         ];
     }
 
-    //....................................
-    //....................................
-
-  
+    
     public function attributes()
     {
         return [
-            'start_date' => 'course start date',
+            'end_date' => 'course end date',
         ];
     }
 
@@ -47,9 +40,9 @@ class StartCourseRequest extends FormRequest
             'required' => 'The :attribute is required.',
             'date_format' => 'The :attribute must be in format Year - month - day.',
             'date' => 'The :Attribute must be date type',    
-            'start_date.after_or_equal' => 'The :attribute must be after or equal to the registration end date.',
+            'end_date.after_or_equal' => 'The :attribute must be after or equal to the course start date.',
+
         ];
     }
-
 
 }

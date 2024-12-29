@@ -237,25 +237,12 @@ public function updateStatus($data, $course)
  * @throws \Illuminate\Http\Exceptions\HttpResponseException
  * @return mixed
  */
-public function updateCourseStartAndEndDate($course,$data)
+public function updateCourseStartDate($course,$data)
 {
     try {
         DB::beginTransaction();
 
-        $start = Carbon::parse($data['start_date']);
-        $end   = Carbon::parse($data['end_date']);
-        $week = $start->diffInWeeks($end);
-        $atLeast_end_date = $start->addWeeks($course->course_duration);
-
-        if($week >= $course->course_duration)
-        {
-            $course->start_date = $data['start_date'];
-            $course->end_date = $data['end_date'];
-            
-        }else{
-            throw new Exception('The end Date should be at least at :'.$atLeast_end_date->toDateString());
-        }   
-       
+        $course->start_date = $data['start_date'];
 
        Cache::forget('courses_filter');
 
@@ -265,13 +252,58 @@ public function updateCourseStartAndEndDate($course,$data)
        return $course;
     } catch (Exception $e) {
         DB::rollBack();
-        Log::error('Error while updating the course  Start and end Date ' . $e->getMessage());
+        Log::error('Error while updating the course  Start Date ' . $e->getMessage());
         throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
     }
 }
 
 //............................................
 //............................................
+
+public function updateCourseEndDate($course,$data)
+{
+    try {
+        DB::beginTransaction();
+        if($course->start_date)
+        {
+            $start = Carbon::parse($course->start_date);
+            $end   = Carbon::parse($data['end_date']);
+
+            if(!$end->isAfter($start))
+            {
+                throw new Exception("END Date shoulde Be After Start Date: ".$start->toDateString()); 
+            }
+
+            $week = $start->diffInWeeks($end);
+            $atLeast_end_date = $start->addWeeks($course->course_duration);
+
+            if($week >= $course->course_duration)
+            {
+                $course->end_date = $data['end_date'];
+                
+            }else{
+                throw new Exception('The end Date should be at least at :'.$atLeast_end_date->toDateString());
+            } 
+        }else{
+            throw new Exception('The start Date should not be null .');
+        }
+        
+        Cache::forget('courses_filter');
+
+        DB::commit();
+ 
+        $course->save();
+        return $course;
+
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::error('Error while updating the course end Date ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server: '.$e->getMessage()], 500));
+    }
+}
+
+//...........................................
+//...........................................
 /**
  * update start and end rigister date
  * @param mixed $data
@@ -279,13 +311,13 @@ public function updateCourseStartAndEndDate($course,$data)
  * @throws \Illuminate\Http\Exceptions\HttpResponseException
  * @return mixed
  */
-public function updateStartAndEndRegisterDate($data,$course)
+public function updateStartRegisterDate($data,$course)
 {
     try {
         DB::beginTransaction();
 
        $course->start_register_date = $data['start_register_date'];
-       $course->end_register_date = $data['end_register_date'];
+
        Cache::forget('courses_filter');
        $course->save();
 
@@ -303,6 +335,42 @@ public function updateStartAndEndRegisterDate($data,$course)
 
 //.......................................................
 //.......................................................
+
+
+
+public function updateEnRegisterdDate($data,$course)
+{
+    try {
+        DB::beginTransaction();
+        if(is_null($course->start_register_date))
+        {
+            throw new Exception("Start Register Date shoulde Not Be Null.");
+        }
+       
+        $start = Carbon::parse($course->start_register_date);
+        $end   = Carbon::parse( $data['end_register_date']);
+        // dd($start->toDateString(),$end->toDateString(),$end->isAfter($start));
+        if(!$end->isAfter($start))
+        {
+            throw new Exception("END Register Date shoulde Be After Start Date: ".$start->toDateString()); 
+        }
+
+        $course->end_register_date = $data['end_register_date'];
+
+        Cache::forget('courses_filter');
+    
+        DB::commit();
+
+        $course->save();
+        return $course;
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::error('Error while updating the course end Register Date ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server: '.$e->getMessage()], 500));
+    }
+}
+//................................................
+//................................................
 
 /**
  * Add array of users  to the pivot table

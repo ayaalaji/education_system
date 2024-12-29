@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StartRegisterCourseRequest extends FormRequest
+class EndRegisterCourseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class StartRegisterCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'start_register_date' => 'required|date|date_format:Y-m-d|before_or_equal:end_register_date',
+              'end_register_date'   => 'required|date|date_format:Y-m-d|after_or_equal:start_register_date',
         ];
     }
 
@@ -33,7 +33,7 @@ class StartRegisterCourseRequest extends FormRequest
         public function attributes()
         {
             return [
-                'start_register_date' => 'registration start date',
+                'end_register_date' => 'registration end date',
 
             ];
         }
@@ -46,7 +46,8 @@ class StartRegisterCourseRequest extends FormRequest
                 'required' => 'The :attribute is required.',
                 'date_format' => 'The :attribute must be in format Year - month - day.',
                 'date' => 'The :Attribute must be date type',  
-                'start_register_date.before_or_equal' => 'The :attribute must be before or equal to the end registration date.',
+                'end_register_date.after_or_equal' => 'The :attribute must be after or equal to the start registration date.',
+
         
             ];
         }

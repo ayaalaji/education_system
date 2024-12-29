@@ -96,12 +96,29 @@ Route::controller(CourseController::class)->group(function () {
     Route::put('/courses/{course}/updatestatus', 'updateStatus');
     // ->middleware('permission:');
 
-    Route::put('/courses/{course}/updateStartAndEndDate','updateStartAndEndDate');
+    /**
+     * start and end date  of the course
+     */
+
+    Route::put('/courses/{course}/updateStartDate','updateStartDate');
     // ->middleware('permission:');
 
-    Route::put('/courses/{course}/updateStartAndEndRegisterDate','updateStartAndEndRegisterDate');
+    Route::put('/courses/{course}/updateEndDate','updateEndDate');
+    // ->middleware('permission:');
+
+    //................
+    /**
+     * start and end registaer date of the course
+     */
+    Route::put('/courses/{course}/updateStartRegisterDate','updateStartRegisterDate');
     // ->middleware('permission:');
     
+    //..................
+
+    Route::put('/courses/{course}/updateEndRegisterDate','updateEndRegisterDate');
+    // ->middleware('permission:');
+
+
     Route::post('/courses/{course}/addUser','addUser');
     // ->middleware('permission:');
     

@@ -7,14 +7,19 @@ use Illuminate\Http\Request;
 
 use App\Services\CourseService;
 use App\Http\Controllers\Controller;
+
 use App\Http\Resources\CourseResource;
+use App\Http\Requests\Course\EndCourseRequest;
 
 use App\Http\Requests\Course\StartCourseRequest;
+
 use App\Http\Requests\Course\StoreCourseRequest;
 use App\Http\Requests\Course\StatusCourseRequest;
 use App\Http\Requests\Course\UpdateCourseRequest;
 use App\Http\Requests\Course\AddUserToCourseRequest;
+use App\Http\Requests\Course\EndRegisterCourseRequest;
 use App\Http\Requests\Course\StartRegisterCourseRequest;
+
 
 
 class CourseController extends Controller
@@ -118,10 +123,20 @@ class CourseController extends Controller
      * update Start And End Date of the course 
      * 
      */
-    public function updateStartAndEndDate(StartCourseRequest $request, Course $course)
+    public function updateStartDate(StartCourseRequest $request, Course $course)
     {
-        $data = $request->only(['start_date','end_date']);
-        $coursenew = $this->courseService->updateCourseStartAndEndDate($course,$data);
+        $data = $request->only(['start_date']);
+        $coursenew = $this->courseService->updateCourseStartDate($course,$data);
+        return $this->success(CourseResource::make($coursenew),'Update Start Date Successfully',200);
+
+    }
+    //..........................................
+    //...........................................
+    
+    public function updateEndDate(EndCourseRequest $request, Course $course)
+    {
+        $data = $request->only(['end_date']);
+        $coursenew = $this->courseService->updateCourseEndDate($course,$data);
         return $this->success(CourseResource::make($coursenew),'Update Start and End Date Successfully',200);
 
     }
@@ -133,13 +148,23 @@ class CourseController extends Controller
      * update start and register date
      
      */
-    public function updateStartAndEndRegisterDate(StartRegisterCourseRequest $request, Course $course)
+    public function updateStartRegisterDate(StartRegisterCourseRequest $request, Course $course)
     {
-        $data = $request->validated();
-        $courseNew = $this->courseService->updateStartAndEndRegisterDate($data,$course);
-        return $this->success(CourseResource::make($courseNew),'Update Start and End Register Date Successfully',200);
+        $data = $request->only(['start_register_date']);
+        $courseNew = $this->courseService->updateStartRegisterDate($data,$course);
+        return $this->success(CourseResource::make($courseNew),'Update Start Register Date Successfully',200);
     }
-       
+    
+    //.......................................
+    //.......................................
+
+    public function updateEndRegisterDate(EndRegisterCourseRequest $request, Course $course)
+    {
+        $data = $request->only(['end_register_date']);
+        $courseNew = $this->courseService->updateEnRegisterdDate($data,$course);
+        return $this->success(CourseResource::make($courseNew),'Update Start Register Date Successfully',200);
+        
+    }
 
     //.......................................................................
     //.......................................................................
