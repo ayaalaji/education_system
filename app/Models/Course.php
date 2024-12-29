@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -13,12 +14,15 @@ class Course extends Model
     protected $fillable = ['title', 'description', 'start_register_date', 'end_register_date', 'start_date', 
     'end_date', 'status','course_duration','category_id', 'teacher_id'];
 
+
     //---------------------------Relation---------------------------------------------------
 
     public function users()
     {
+
         return $this->belongsToMany(User::class)
                     ->withTimestamps();
+
     }
 
     //.....................
@@ -27,6 +31,7 @@ class Course extends Model
     {
         return $this->belongsTo(Teacher::class);
     }
+
     //....................
 
     public function category()
@@ -62,4 +67,5 @@ class Course extends Model
    
     }
     
+
 }
