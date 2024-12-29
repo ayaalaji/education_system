@@ -20,9 +20,12 @@ class CourseSeeder extends Seeder
             'end_register_date' => '2024-01-15',
             'start_date' => '2024-02-01',
             'end_date' => '2024-05-01',
+
+            'course_duration' => 16,
             'status' => 'Open',
             'teacher_id' => 1,
-            //'category_id' => 2,
+            'category_id' => 2,
+
         ]);
 
         Course::create([
@@ -32,9 +35,12 @@ class CourseSeeder extends Seeder
             'end_register_date' => '2024-03-15',
             'start_date' => '2024-04-01',
             'end_date' => '2024-07-01',
+
+            'course_duration' => 10,
             'status' => 'Closed',
             'teacher_id' => 1,
-           // 'category_id' => 3,
+            'category_id' => 3,
+
         ]);
 
         Course::create([
@@ -42,12 +48,28 @@ class CourseSeeder extends Seeder
             'description' => 'This is the description for Course 3',
             'start_register_date' => '2024-05-01',
             'end_register_date' => '2024-05-20',
-            'start_date' => '2024-06-01',
-            'end_date' => '2024-09-01',
+
+            'start_date' => '2024-10-01',
+            'end_date' => '2024-12-01',
+            'course_duration' => 12,
             'status' => 'Open',
-            'teacher_id' => 1,
-            //'category_id' => 1,
+            'teacher_id' => 2,
+            'category_id' => 1,
+        ]); 
+        Course::create([
+            'title' => 'Course 3',
+            'description' => 'This is the description for Course 3',
+            'start_register_date' => '2024-05-01',
+            'end_register_date' => '2024-05-20',
+            'start_date' => '2024-01-01',
+            'end_date' => '2024-04-01',
+            'course_duration' => 5,
+            'status' => 'Open',
+            'teacher_id' => 3,
+            'category_id' => 1,
         ]);  
+ 
+
 
     }
 }

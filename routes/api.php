@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,7 @@ Route::controller(UserController::class)->group(function () {
     Route::delete('users/{user}', 'destroy');
 });
 
+///////Teacher////////
 Route::controller(TeacherController::class)->group(function () {
     Route::get('/teachers', 'index');
     Route::post('/teachers', 'store');
@@ -70,4 +72,54 @@ Route::controller(CategoryController::class)->group(function () {
     Route::get('/categories/{category}', 'show'); 
     Route::put('/categories/{category}', 'update'); 
     Route::delete('/categories/{category}', 'destroy'); 
+});
+
+/////////Courses/////////////
+Route::controller(CourseController::class)->group(function () {
+    Route::get('/courses', 'index');
+   
+
+    Route::post('/courses', 'store');
+//    ->middleware('permission:');
+
+    Route::get('/courses/{course}', 'show');
+//    ->middleware('permission:');
+
+    Route::put('/courses/{course}', 'update');
+//    ->middleware('permission:');
+
+    Route::delete('/courses/{course}', 'destroy');
+//    ->middleware('permission:');
+
+   //---------------------------------------
+
+    Route::put('/courses/{course}/updatestatus', 'updateStatus');
+    // ->middleware('permission:');
+
+    /**
+     * start and end date  of the course
+     */
+
+    Route::put('/courses/{course}/updateStartDate','updateStartDate');
+    // ->middleware('permission:');
+
+    Route::put('/courses/{course}/updateEndDate','updateEndDate');
+    // ->middleware('permission:');
+
+    //................
+    /**
+     * start and end registaer date of the course
+     */
+    Route::put('/courses/{course}/updateStartRegisterDate','updateStartRegisterDate');
+    // ->middleware('permission:');
+    
+    //..................
+
+    Route::put('/courses/{course}/updateEndRegisterDate','updateEndRegisterDate');
+    // ->middleware('permission:');
+
+
+    Route::post('/courses/{course}/addUser','addUser');
+    // ->middleware('permission:');
+    
 });
