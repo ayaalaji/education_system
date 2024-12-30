@@ -2,9 +2,33 @@
 
 namespace App\Exceptions;
 
+use Exception;
+use Throwable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
+
+
+//........................................
+/* 
+   Define Custom Exceptions ( courses model index function ) , when cant find
+   teacher name or category name that user send in request
+   the exception throw in courses service class , listCourse function .
+*/
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Throwable;
+
+class CategoryIdsNotFoundException extends Exception
+{
+    //
+}
+
+class TeacherIdsNotFoundException extends Exception
+{
+    //
+}
+//.....................................
+
 
 class Handler extends ExceptionHandler
 {
@@ -49,9 +73,19 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ModelNotFoundException) {
-            return response()->json(['message' => 'not found.'], 404);
+            return response()->json(['message' => "This iD Dose't Exist."], 404);
+        }
+        if ($exception instanceof ValidationException) {
+            return response()->json(['message' => 'Validation Error', 'errors' => $exception->errors()], 422);
         }
 
-        return response()->json(['message' => 'something went wronge'], 404);
+        if ($exception instanceof QueryException) {
+            return response()->json(['message' => 'Database Error'], 500);
+        }
+
+       
+
+        //........................................................
+        return response()->json(['message' => 'something went wronge : '.$exception->getMessage()], 404);
     }
 }

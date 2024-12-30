@@ -29,6 +29,7 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function index()
+
     {   
         $teachers = $this->teacherService->listTeachers();
         if (!$teachers) {
@@ -55,6 +56,7 @@ class TeacherController extends Controller
             return $this->error('Creating Teacher faild');
         } 
         return $this->success($teacher,'Teacher created successfully.',201);  
+
     }
 
     /*
@@ -87,6 +89,7 @@ class TeacherController extends Controller
             return $this->error('Updating Teacher faild');
         } 
         return $this->success($teacher, 'Teacher updated successfully.', 200);
+
     }
 
     /*
@@ -99,5 +102,6 @@ class TeacherController extends Controller
     {   
         $result = $this->teacherService->deleteTeacher($teacher);
         return $this->success('Teacher deleted successfully.',200);
+
     }
 }
