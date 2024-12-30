@@ -92,4 +92,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Course::class)
                     ->withTimestamps();
     }
+
+    public function tasks()
+    {
+        return $this->belongsToMany(Task::class,'task_user', 'task_id', 'student_id')
+                ->withPivot('file_path', 'summation_date')
+                ->withTimestamps();
+    }
 }
