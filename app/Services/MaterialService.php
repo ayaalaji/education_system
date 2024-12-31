@@ -22,13 +22,14 @@ class MaterialService{
         }  
 
         }
+        //.....................................
+        
         /**
          * create new material 
-         * 
-         * @param array $data of the material to create
-        * @return array An array containing data (created material)
-        * @throws HttpResponseException If an error occurs during database interaction.
-        */
+         * @param array $data
+         * @throws \Illuminate\Http\Exceptions\HttpResponseException
+         * @return Material|\Illuminate\Database\Eloquent\Model
+         */
         public function createMaterial(array $data)
         {
             try {
@@ -43,7 +44,9 @@ class MaterialService{
                 Log::error('Error creating material: ' . $e->getMessage());
                 throw new HttpResponseException(response()->json(['message' => 'Failed to create material.'], 500));
             }
-        }  
+        }
+        //...............................
+
         /**
          * return spacific material
          * 
@@ -60,15 +63,15 @@ class MaterialService{
         }
     }
 
+   //..............................
+ 
     /**
      * update material's data if exists
-     * 
-     * @param Material $material,the material model instance .
-      * @param array $data The data to update the material 
-     * @return array An array containing  data of updated material 
-     * @throws HttpResponseException If an error occurs during database interaction.
+     * @param \App\Models\Material $material
+     * @param array $data
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return Material
      */
-   
     public function updateMaterial(Material $material,array $data){
         try{
             $material->update(array_filter($data));//remove the feild which null value 
@@ -101,4 +104,3 @@ public function deleteMaterial(Material $material){
 
 
 
-?>
