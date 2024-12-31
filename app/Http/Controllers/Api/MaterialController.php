@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Material;
 use Illuminate\Http\Request;
 use App\Services\MaterialService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Material\StoreMaterialRequest;
 use App\Http\Requests\Material\UpdateMaterialRequest;
 
