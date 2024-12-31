@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\MaterialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,3 +134,5 @@ Route::apiResource('task',TaskController::class);
  * assign task to user
  */
 Route::post('task/{task}/assigne',[TaskController::class,'AssigneTask']);
+
+Route::post('test',[MaterialController::class,'store']);

@@ -1,5 +1,7 @@
 <?php
 namespace App\Services;
+
+use App\Events\CourseSessionUploadedEvent;
 use App\Models\Material;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -32,17 +34,18 @@ class MaterialService{
          */
         public function createMaterial(array $data)
         {
-            try {
+            try {     
                 $material = material::create([
                     'title' => $data['title'],
                     'file_path' => $data['file_path'],
-                    'video_path' => $data['video_path'],
-                    'cours_id' => $data['cours_id']
+                    'vedio_path' => $data['vedio_path'],
+                    'course_id' => $data['course_id']
                 ]);
+               event(new CourseSessionUploadedEvent($material));
                 return $material ;
             } catch (Exception $e) {
                 Log::error('Error creating material: ' . $e->getMessage());
-                throw new HttpResponseException(response()->json(['message' => 'Failed to create material.'], 500));
+                throw new HttpResponseException(response()->json(['message' => 'Failed to create material.',$e->getMessage()], 500));
             }
         }
         //...............................
