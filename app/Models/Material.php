@@ -11,8 +11,8 @@ class Material extends Model
     protected $fillable=[
         'title',
         'file_path',
-        'video_path',
-        'cource_id'
+        'vedio_path',
+        'course_id'
     ];
     public function cource(){
         return $this->belongsTo(Course::class);

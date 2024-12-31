@@ -24,7 +24,7 @@ class StoreMaterialRequest extends FormRequest
         return [
             'title' => 'required|string|max:255', // العنوان مطلوب ونصي بطول أقصى 255 حرفًا
             'file_path' => 'required|string|max:255', // مسار الملف مطلوب ونصي
-            'video_path' => 'nullable|string|max:255', // مسار الفيديو اختياري ونصي
+            'vedio_path' => 'nullable|string|max:255', // مسار الفيديو اختياري ونصي
             'course_id' => 'required|exists:courses,id', // معرف الدورة مطلوب ويجب أن يكون موجودًا في جدول courses
         ];
     }
