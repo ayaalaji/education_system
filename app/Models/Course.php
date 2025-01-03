@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
-    use HasFactory;
+    use HasFactory , SoftDeletes;
     protected $fillable = ['title', 'description', 'start_register_date', 'end_register_date', 'start_date', 
     'end_date', 'status','course_duration','category_id', 'teacher_id'];
 
