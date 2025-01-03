@@ -16,18 +16,23 @@ class AuthService {
      */
     public function register(array $data)
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-          
-        ]);
+        try {
 
-        $token = JWTAuth::fromUser($user);
-        return [
-            'user' => $user,
-            'token' => $token
-        ];
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => $data['password'],
+              
+            ]);
+    
+            $token = JWTAuth::fromUser($user);
+            return [
+                'user' => $user,
+                'token' => $token
+            ];
+        }catch(Exception $e){
+            throw new \Exception('Failed to registering ' . $e->getMessage());
+        }
     }
     /**
      * Login method for a specific guard
@@ -37,17 +42,22 @@ class AuthService {
      */
     public function login(array $credentials, string $guard)
     {
-        Auth::shouldUse($guard);
-        $token = JWTAuth::attempt($credentials);
-        if (!$token) {
-            return false;
-        }
+        try {
 
-        $user = Auth::user();
-        return [
-            'user' => $user,
-            'token' => $token
-        ];
+            Auth::shouldUse($guard);
+            $token = JWTAuth::attempt($credentials);
+            if (!$token) {
+                return false;
+            }
+    
+            $user = Auth::user();
+            return [
+                'user' => $user,
+                'token' => $token
+            ];
+        }catch(Exception $e){
+            throw new \Exception('Failed to login ' . $e->getMessage());
+        }
     }
 
     /**
@@ -57,8 +67,12 @@ class AuthService {
      */
     public function logout(string $guard)
     {
-        Auth::shouldUse($guard);
-        Auth::logout();
+        try {
+            Auth::shouldUse($guard);
+            Auth::logout();
+        } catch(Exception $e){
+        throw new \Exception('Failed to logout ' . $e->getMessage());
+    }
     }
 
     /**
@@ -68,12 +82,17 @@ class AuthService {
      */
     public function refresh(string $guard)
     {
-        Auth::shouldUse($guard);
-        $token = Auth::refresh();
-        $user = Auth::user();
-        return [
-            'user' => $user,
-            'token' => $token
-        ];
+        try {
+
+            Auth::shouldUse($guard);
+            $token = Auth::refresh();
+            $user = Auth::user();
+            return [
+                'user' => $user,
+                'token' => $token
+            ];
+        }catch(Exception $e){
+            throw new \Exception('Failed to refresh ' . $e->getMessage());
+        }
     }
 }
