@@ -68,7 +68,9 @@ class CourseSeeder extends Seeder
             'teacher_id' => 3,
             'category_id' => 1,
         ]);  
- 
+
+
+
 
 
     }

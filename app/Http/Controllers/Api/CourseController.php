@@ -104,7 +104,44 @@ class CourseController extends Controller
     }
 
     //----------------------------------------End CRUD Function-----------------------------------------
+    //--------------------------------------------------------------------------------------------------
 
+    //........................................SoftDeletes..............................................
+
+    /**
+     * Force Delete the course
+     */
+    public function forceDeleteCourse(string $id)
+    {
+        $this->courseService->forceDeleteCourse( $id);
+
+        return $this->success(null,'Force Delete Course Successfully',200);
+    }
+
+    //...................................................................
+    //...................................................................
+    /**
+     * Rstore a deleted course
+     */
+    public function restoreCourse(string $id)
+    {
+        $course = $this->courseService->restoreCorse( $id);
+
+        return $this->success(CourseResource::make($course),'Restore Course Successfully',200); 
+    }
+
+
+    /**
+     * get All Trashed courses
+     */
+    public function getAllTrashed()
+    {
+        $courses = $this->courseService->getAllTrashedCourses();
+
+        return $this->success(CourseResource::collection($courses),'Get All Trashed Couses Successfully');
+     }
+
+    //.........................................End Of SoftDelte........................................
     /**
      * update the status of the course (open or closed)
      

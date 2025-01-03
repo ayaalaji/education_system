@@ -95,6 +95,25 @@ Route::controller(CourseController::class)->group(function () {
 
    //---------------------------------------
 
+   /**
+    * Force delete and Restore
+    */
+
+    Route::delete('/courses/{course}/forcedelete','forceDeleteCourse');
+//    ->middleware('permission:');
+
+
+    Route::get('courses/{course}/restore','restoreCourse');
+    //    ->middleware('permission:');
+
+
+    Route::get('/courses-trashed','getAllTrashed');
+    //    ->middleware('permission:');
+
+
+    //-----------------------------------------
+
+
     Route::put('/courses/{course}/updatestatus', 'updateStatus');
     // ->middleware('permission:');
 
@@ -135,4 +154,3 @@ Route::apiResource('task',TaskController::class);
  */
 Route::post('task/{task}/assigne',[TaskController::class,'AssigneTask']);
 
-Route::post('test',[MaterialController::class,'store']);
