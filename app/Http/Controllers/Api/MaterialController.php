@@ -5,109 +5,110 @@ namespace App\Http\Controllers\Api;
 use App\Models\Material;
 use Illuminate\Http\Request;
 use App\Services\MaterialService;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Material\StoreMaterialRequest;
 use App\Http\Requests\Material\UpdateMaterialRequest;
 
 class MaterialController extends Controller
 {
+    protected $materialService;
 
-    protected $materialService
-    ;
-
-    /*
-     * Constructor to inject the materialService
-     * @param materialService
-     *  $materialService
-     * 
+    /**
+     * Constructor to inject the MaterialService
+     * @param MaterialService $materialService
      */
-    public function __construct(MaterialService $materialService
-    )
+    public function __construct(MaterialService $materialService)
     {
-        $this->materialService= $materialService;
+        $this->materialService = $materialService;
     }
-
-    /*
+     /**
      * Display a listing of materials.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function index()
-
     {   
-        $materials = $this->materialService
-        ->getAllMaterial();
-        if (!$materials) {
-            return $this->error('Getting materials failed');
+        $materials = $this->materialService->getAllMaterial();
+
+        if ($materials === null) {
+            return $this->error('Failed to retrieve materials.');
         }
-        if (empty($materials)) {
-            return $this->success(null, 'there is no material in database', 200);
+
+        if ($materials->isEmpty()) {
+            return $this->success(null, 'No materials found in the database.', 200);
         }
-        else 
-            return $this->success($materials,'all materials retrieved successfully.',200);
+
+        return $this->success($materials, 'All materials retrieved successfully.', 200);
     }
 
-    /*
+    /**
      * Store a newly created material in storage.
      *
-     * @param StorematerialRequest $request
+     * @param StoreMaterialRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreMaterialRequest $request)
-    {  
-        $validatedData = $request->validated();
-        $material = $this->materialService->creatematerial($validatedData);
-        if (!$material) {
-            return $this->error('Creating material faild');
-        } 
-        return $this->success($material,'material created successfully.',201);  
+{ try {
+    $validatedData = $request->validated();
+    $material = $this->materialService->createMaterial($validatedData);
+    return $this->success($material, 'Material created successfully.', 201);
+} catch (\Exception $e) {
+    Log::error('Error in storing material: ' . $e->getMessage());
+    return $this->error('Failed to create material.');
+}
+}
 
-    }
-
-    /*
+    /**
      * Display the specified material.
      *
-     * @param material $material
+     * @param Material $material
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Material $material)
     {   
-            $material = $this->materialService
-            ->getmaterial($material);
-            if (!$material) {
-                return $this->error('Return material faild');
-            } 
-            return $this->success($material, 'Return material successfully.', 200);
+        $materialData = $this->materialService->getMaterial($material);
+
+        if (!$materialData) {
+            return $this->error('Failed to retrieve material.');
+        }
+
+        return $this->success($materialData, 'Material retrieved successfully.', 200);
     }
 
-    /*
+    /**
      * Update the specified material in storage.
      *
-     * @param UpdatematerialRequest $request
-     * @param material $material
+     * @param UpdateMaterialRequest $request
+     * @param Material $material
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(UpdateMaterialRequest $request, material $material)
+    public function update(UpdateMaterialRequest $request, Material $material)
     {  
         $validatedData = $request->validated();
-        $material = $this->materialService->updatematerial($material, $validatedData);
-        if (!$material) {
-            return $this->error('Updating material faild');
-        } 
-        return $this->success($material, 'material updated successfully.', 200);
+        $updatedMaterial = $this->materialService->updateMaterial($material, $validatedData);
 
+        if (!$updatedMaterial) {
+            return $this->error('Failed to update material.');
+        }
+
+        return $this->success($updatedMaterial, 'Material updated successfully.', 200);
     }
 
-    /*
+    /**
      * Remove the specified material from storage.
      *
-     * @param material $material
+     * @param Material $material
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Material $material)
     {   
-        $this->materialService->deleteMaterial($material);
-        return $this->success('material deleted successfully.',200);
+        $deleted = $this->materialService->deleteMaterial($material);
 
+        if (!$deleted) {
+            return $this->error('Failed to delete material.');
+        }
+
+        return $this->success(null, 'Material deleted successfully.', 200);
     }
 }
-

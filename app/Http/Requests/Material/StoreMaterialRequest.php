@@ -23,8 +23,8 @@ class StoreMaterialRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255', // العنوان مطلوب ونصي بطول أقصى 255 حرفًا
-            'file_path' => 'required|string|max:255', // مسار الملف مطلوب ونصي
-            'video_path' => 'nullable|string|max:255', // مسار الفيديو اختياري ونصي
+            'file_path' => 'required|file|mimes:pdf|max:50240',
+            'video_path' => 'nullable|file|mimes:mp4,MP4|max:50240',
             'course_id' => 'required|exists:courses,id', // معرف الدورة مطلوب ويجب أن يكون موجودًا في جدول courses
         ];
     }
@@ -38,6 +38,9 @@ class StoreMaterialRequest extends FormRequest
             'file_path.required' => 'حقل مسار الملف مطلوب.',
             'course_id.required' => 'حقل معرف الدورة مطلوب.',
             'course_id.exists' => 'الدورة المحددة غير موجودة.',
+            'video_path.mimes' => 'يجب أن يكون الفيديو من نوع MP4.',
+            'video_path.max' => 'يجب ألا يتجاوز حجم الفيديو 20 ميجابايت.',
+
         ];
     }
 }

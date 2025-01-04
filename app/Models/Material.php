@@ -12,9 +12,12 @@ class Material extends Model
         'title',
         'file_path',
         'video_path',
-        'cource_id'
+        'course_id'
     ];
-    public function cource(){
-        return $this->belongsTo(Course::class);
-    }
+    //The relationship between cource and materials
+    public function cource()
+{
+    return $this->belongsTo(Course::class, 'course_id');
+}
+
 }

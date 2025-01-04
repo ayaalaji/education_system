@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\MaterialController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -63,6 +64,15 @@ Route::controller(TeacherController::class)->group(function () {
     Route::get('/teachers/{teacher}', 'show');
     Route::put('/teachers/{teacher}', 'update');
     Route::delete('/teachers/{teacher}', 'destroy');
+});
+
+///////Material////////
+Route::controller(MaterialController::class)->group(function () {
+    Route::get('/materials', 'index');
+    Route::post('/materials', 'store');
+    Route::get('/materials/{material}', 'show');
+    Route::put('/materials/{material}', 'update');
+    Route::delete('/materials/{material}', 'destroy');
 });
 
 ////////////Category///////////
