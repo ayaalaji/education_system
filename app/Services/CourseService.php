@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 
+use App\Events\CourseRegistrationEvent;
+use App\Jobs\SendCourseRegistrationEmail;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
@@ -382,6 +384,8 @@ public function updateEnRegisterdDate($data,$course)
  */
 public function addUserToCourse($data,$course)
 {
+    //echo $data['users'];
+        echo $course;
     try {
         DB::beginTransaction();
 
@@ -392,10 +396,23 @@ public function addUserToCourse($data,$course)
         
 
         // Use syncWithoutDetaching to add new users without removing existing ones
-        $course->users()->sync($data['users']);
+     //   $course->users()->sync($data['users']);
 
+     $course->users()->syncWithoutDetaching($data['users']);
+        
+      
+        
         DB::commit();
-            
+        foreach ($data['users'] as $userId) {
+            echo $userId;
+            $student = User::find($userId); 
+            echo $student;
+            if ($student) {
+                event( new CourseRegistrationEvent($student, $course));
+                echo 5;
+                //SendCourseRegistrationEmail::dispatch($student, $course);
+            }
+        } 
         // Return the course with updated users
         return $course->load('users');
         
