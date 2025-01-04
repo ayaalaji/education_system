@@ -23,7 +23,7 @@ class SendAssignmentDeadlineReminder implements ShouldQueue
         try {
             $tasks = Task::where('status', 'UnComplete') // Get tasks that are not complete
                 ->get();
-
+                
             foreach ($tasks as $task) {
                 $users = $task->users; // Get users assigned to this task
                 $course = $task->course;

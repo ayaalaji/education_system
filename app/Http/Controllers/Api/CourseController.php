@@ -211,7 +211,7 @@ class CourseController extends Controller
      */
     public function addUser(AddUserToCourseRequest $request, Course $course)
     {
-       $data = $request->only(['users']);
+       $data = $request->only(['user']);
        $course = $this->courseService->addUserToCourse($data,$course);
        return $this->success($course,'Add User to course Successfully',200);
        
