@@ -40,16 +40,29 @@ class Course extends Model
         return $this->belongsTo(Category::class);
     }
 
+    //..................
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    //.................
+
+    public function materials()
+    {
+        return $this->hasMany(Material::class);
+    }
+    
   //----------------------------Scope----------------------------------------------------
-  
+     /*
+   if the filters are null , no condection will add to the query and it will back with all the course:
+    select * from courses
+   */
   public function scopeByFilter($query ,$teacher = null, $status = null,
                                 $category = null, $start_date = null, $end_date = null,
                                 $teacher_ids= [],$category_ids =[])
   {
-   /*
-   if the filters are null , no condection will add to the query and it will back with all the course:
-    select * from courses
-   */
    return $query->when($teacher && !empty($teacher_ids), function ($q) use ($teacher_ids) {
                     $q->whereIn('teacher_id', $teacher_ids);
             })
@@ -67,6 +80,30 @@ class Course extends Model
             });        
    
     }
+
+//.......................................
+//.......................................
+    /**
+     * when soft delete ,delete also softdeleting all the tasks,materials and the user signed into course
+     * from (course-user table)
+     * @return void
+     */
+    protected static function boot()
+{
+    parent::boot();
+
+    static::deleting(function ($course) {
+        // Soft delete related tasks
+        $course->tasks()->delete();
+
+        // Soft delete related course materials
+        $course->materials()->delete();
+
+        // Detach users from the course in the pivot table
+        $course->users()->detach();
+    });
+}
+
     
 
 }

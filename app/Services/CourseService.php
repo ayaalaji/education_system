@@ -194,7 +194,7 @@ class CourseService
             return true;
         } catch (Exception $e) {
             Log::error('Error while Deliting  the course ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed in the server.'], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed in the server.'.$e->getMessage()], 500));
         }
 
     }
@@ -468,14 +468,15 @@ public function addUserToCourse($data,$course)
         DB::beginTransaction();
 
         // Validate the users input
-        if (!isset($data['users']) || !is_array($data['users'])) {
-            throw new InvalidArgumentException('Invalid users data.');
+        if (!isset($data['user']) || !is_numeric($data['user'])) {
+            throw new InvalidArgumentException('Invalid user data.');
         }
+        
         
 
         // Use syncWithoutDetaching to add new users without removing existing ones
-        $course->users()->sync($data['users']);
-
+        $course->users()->attach($data['user']);
+ 
         DB::commit();
             
         // Return the course with updated users
