@@ -24,9 +24,7 @@ class AddUserToCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'users'       => 'required|array',
-            'users.*'     => 'required|exists:users,id',
-            
+            'user'   => 'required|exists:users,id',      
         ];
 
     }
@@ -38,8 +36,8 @@ class AddUserToCourseRequest extends FormRequest
     public function attributes()
     {
        return[
-        'students' => 'students list',
-        'students.*' => 'student ID',
+        'user' => 'user ID',
+       
        ]; 
     }
 
@@ -50,7 +48,6 @@ class AddUserToCourseRequest extends FormRequest
     {
         return[
             'required' => 'Each student must have a valid :attribute.',
-            'array' => 'The student must be :attribute.',
             'exists' => 'The selected :attribute is not exists.',
         ];
     }

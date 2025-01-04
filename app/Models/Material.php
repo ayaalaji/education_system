@@ -11,10 +11,13 @@ class Material extends Model
     protected $fillable=[
         'title',
         'file_path',
-        'vedio_path',
+        'video_path',
         'course_id'
     ];
-    public function cource(){
-        return $this->belongsTo(Course::class);
-    }
+    //The relationship between cource and materials
+    public function cource()
+{
+    return $this->belongsTo(Course::class, 'course_id');
+}
+
 }

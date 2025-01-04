@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\MaterialController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -67,6 +68,15 @@ Route::controller(TeacherController::class)->group(function () {
     Route::delete('/teachers/{teacher}', 'destroy');
 });
 
+///////Material////////
+Route::controller(MaterialController::class)->group(function () {
+    Route::get('/materials', 'index');
+    Route::post('/materials', 'store');
+    Route::get('/materials/{material}', 'show');
+    Route::put('/materials/{material}', 'update');
+    Route::delete('/materials/{material}', 'destroy');
+});
+
 ////////////Category///////////
 Route::controller(CategoryController::class)->group(function () {
     Route::get('/categories', 'index');
@@ -94,6 +104,25 @@ Route::controller(CourseController::class)->group(function () {
 //    ->middleware('permission:');
 
    //---------------------------------------
+
+   /**
+    * Force delete and Restore
+    */
+
+    Route::delete('/courses/{course}/forcedelete','forceDeleteCourse');
+//    ->middleware('permission:');
+
+
+    Route::get('courses/{course}/restore','restoreCourse');
+    //    ->middleware('permission:');
+
+
+    Route::get('/courses-trashed','getAllTrashed');
+    //    ->middleware('permission:');
+
+
+    //-----------------------------------------
+
 
     Route::put('/courses/{course}/updatestatus', 'updateStatus');
     // ->middleware('permission:');
@@ -135,6 +164,9 @@ Route::apiResource('task',TaskController::class);
  */
 Route::post('task/{task}/assigne',[TaskController::class,'AssigneTask']);
 
+<<<<<<< HEAD
 Route::post('test',[MaterialController::class,'store']);
 
 Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
+=======
+>>>>>>> ef19ca33e882997dae5f9dba5dbe78130e9c40d5
