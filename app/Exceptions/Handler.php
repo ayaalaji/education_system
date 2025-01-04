@@ -10,11 +10,12 @@ use Illuminate\Validation\ValidationException;
 
 
 //........................................
-/* 
+/*
    Define Custom Exceptions ( courses model index function ) , when cant find
    teacher name or category name that user send in request
    the exception throw in courses service class , listCourse function .
 */
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -82,8 +83,32 @@ class Handler extends ExceptionHandler
         if ($exception instanceof QueryException) {
             return response()->json(['message' => 'Database Error'], 500);
         }
+      
+         if ($exception instanceof ModelNotFoundException) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Resource not found',
+            ], 404);
+        }
 
-       
+
+        if ($exception instanceof AuthorizationException) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized action',
+            ], 403);
+        }
+
+
+        if ($exception instanceof ValidationException) {
+            return response()->json([
+                'status' => false,
+                'errors' => $exception->errors(),
+                'message' => 'Validation failed',
+            ], 422);
+        }
+
+
 
         //........................................................
         return response()->json(['message' => 'something went wronge : '.$exception->getMessage()], 404);

@@ -194,12 +194,94 @@ class CourseService
             return true;
         } catch (Exception $e) {
             Log::error('Error while Deliting  the course ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed in the server.'], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed in the server.'.$e->getMessage()], 500));
         }
 
     }
 
 //-------------------------------------------End OF CRUD FUNCTION------------------------------------------------------
+
+//..........................................Soft Deltes................................................................
+/**
+ *force delete a course 
+ * @param mixed $id
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return bool
+ */
+public function forceDeleteCourse($id)
+{
+    try {
+            $arry_of_deleted_corses = Course::onlyTrashed()->pluck('id')->toArray();
+            if(in_array($id,$arry_of_deleted_corses))
+            {
+                $course = Course::onlyTrashed()->find($id);
+                $course->forceDelete();
+                return true;
+            }else{
+                throw new Exception("This id is not Deleted yet,or dosn't exist!!");
+            }
+
+
+    } catch (Exception $e) {
+        Log::error('Error while  Force Deliting  the course ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+    }
+
+}
+
+//................................................
+//................................................
+/**
+ * Restore a Course
+ * @param mixed $id
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return array|mixed|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|null
+ */
+public function restoreCorse($id)
+{
+    try {
+         $course = Course::onlyTrashed()->find($id);
+
+         if(is_null($course))
+         {
+            throw new Exception("This id is not Deleted yet,or dosn't exist!!");
+         }
+         $course->restore();
+         return $course;
+
+    } catch (Exception $e) {
+        Log::error('Error while  Restoring the course ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+    }
+
+}
+//...........................
+//...........................
+ /**
+  * get All the Trashed Courses
+  * @throws \Exception
+  * @throws \Illuminate\Http\Exceptions\HttpResponseException
+  * @return array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+  */
+ public function getAllTrashedCourses()
+ {
+    try {
+        $courses = Course::onlyTrashed()->get();
+        if($courses->isEmpty())
+        {
+            throw new Exception('There are no Deleted Corses');
+        }
+        return $courses;
+    } catch (Exception $e) {
+        Log::error('Error while  get all trashed courses ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+    }
+ }
+
+//.....................................................................................................................
+//.....................................................................................................................
 /**
  * Summary of updateStatus
  * @param mixed $data
@@ -386,14 +468,15 @@ public function addUserToCourse($data,$course)
         DB::beginTransaction();
 
         // Validate the users input
-        if (!isset($data['users']) || !is_array($data['users'])) {
-            throw new InvalidArgumentException('Invalid users data.');
+        if (!isset($data['user']) || !is_numeric($data['user'])) {
+            throw new InvalidArgumentException('Invalid user data.');
         }
+        
         
 
         // Use syncWithoutDetaching to add new users without removing existing ones
-        $course->users()->sync($data['users']);
-
+        $course->users()->attach($data['user']);
+ 
         DB::commit();
             
         // Return the course with updated users

@@ -1,5 +1,6 @@
 <?php
 namespace App\Services;
+
 use Exception;
 use App\Models\Material;
 use Illuminate\Http\UploadedFile;
@@ -58,6 +59,7 @@ class MaterialService{
 
 }
 
+
         /**
          * return spacific material
          * 
@@ -74,15 +76,15 @@ class MaterialService{
         }
     }
 
+   //..............................
+ 
     /**
      * update material's data if exists
-     * 
-     * @param Material $material,the material model instance .
-      * @param array $data The data to update the material 
-     * @return array An array containing  data of updated material 
-     * @throws HttpResponseException If an error occurs during database interaction.
+     * @param \App\Models\Material $material
+     * @param array $data
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return Material
      */
-   
     public function updateMaterial(Material $material,array $data){
         try{
             $material->update(array_filter($data));//remove the feild which null value 
@@ -115,4 +117,7 @@ class MaterialService{
 
 
 
+
 ?>
+
+

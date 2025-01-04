@@ -18,6 +18,18 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        \App\Events\TaskEvaluationEvent::class => [
+            \App\Listeners\SendTaskEvaluationEmailListener::class,
+        ],
+        \App\Events\CourseRegistrationEvent::class => [
+            \App\Listeners\SendCourseRegistrationEmailListener::class,
+        ],
+        \App\Events\CourseSessionUploadedEvent::class => [
+            \App\Listeners\SendCourseSessionUploadedEmailListener::class,
+        ],
+        \App\Events\TaskSubmittedEvent::class => [
+            \App\Listeners\TrackTaskSubmissionActivityListener::class,
+        ],
     ];
 
     /**
