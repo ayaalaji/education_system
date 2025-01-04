@@ -479,19 +479,18 @@ public function addUserToCourse($data,$course)
         
 
         // Use syncWithoutDetaching to add new users without removing existing ones
-        $course->users()->sync($data['users']);
+        $course->users()->sync($data['user']);
 
         DB::commit();
-        foreach ($data['users'] as $userId) {
-            echo $userId;
-            $student = User::find($userId); 
+      
+            $student = User::find($data['user'] ); 
             echo $student;
             if ($student) {
                 event( new CourseRegistrationEvent($student, $course));
                 echo 5;
 
             }
-        } 
+        
         // Return the course with updated users
         return $course->load('users');
         
