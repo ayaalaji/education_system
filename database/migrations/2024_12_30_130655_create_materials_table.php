@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('file_path');
-            $table->string('vedio_path');
-            $table->foreignId('course_id')->constrained()->cascadeOnDelete();
+            $table->string('video_path')->nullable(); 
+            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade'); 
             $table->timestamps();
         });
+        
     }
 
     /**
