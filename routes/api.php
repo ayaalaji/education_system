@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\MaterialController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -164,9 +164,7 @@ Route::apiResource('task',TaskController::class);
  */
 Route::post('task/{task}/assigne',[TaskController::class,'AssigneTask']);
 
-<<<<<<< HEAD
+
 Route::post('test',[MaterialController::class,'store']);
 
 Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
-=======
->>>>>>> ef19ca33e882997dae5f9dba5dbe78130e9c40d5

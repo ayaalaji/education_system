@@ -466,7 +466,7 @@ public function updateEnRegisterdDate($data,$course)
  */
 public function addUserToCourse($data,$course)
 {
-    //echo $data['users'];
+    echo $data['user'];
         echo $course;
     try {
         DB::beginTransaction();
@@ -489,7 +489,7 @@ public function addUserToCourse($data,$course)
             if ($student) {
                 event( new CourseRegistrationEvent($student, $course));
                 echo 5;
-                //SendCourseRegistrationEmail::dispatch($student, $course);
+
             }
         } 
         // Return the course with updated users
