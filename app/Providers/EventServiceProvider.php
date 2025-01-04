@@ -18,9 +18,6 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        \App\Events\AssignmentDeadlineReminderEvent::class => [
-            \App\Listeners\SendAssignmentDeadlineReminderListener::class,
-        ],
         \App\Events\TaskEvaluationEvent::class => [
             \App\Listeners\SendTaskEvaluationEmailListener::class,
         ],
