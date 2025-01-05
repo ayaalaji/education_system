@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('title')->unique();
             $table->date('due_date');
-            $table->enum('status',['Complete','UnComplete'])->nullable();
+            $table->enum('status',['Complete','UnComplete'])->default('UnComplete');
             $table->foreignId('course_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('notes')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Task\AddAttachmentRequest;
 use App\Http\Requests\Task\AssigneTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
 use App\Http\Requests\Task\TaskStoreRequest;
 use App\Http\Requests\Task\TaskUpdateRequest;
+use App\Http\Resources\Task\TaskResource;
 
 class TaskController extends Controller
 {
@@ -32,8 +34,9 @@ class TaskController extends Controller
     {
         $filters = $request->only('status');
         $perPage = $request->input('per_page', 15);
-        $tasks = $this->taskService->listAllTask($filters,$perPage);
-        return $this->paginated($tasks,'tasks retreive successfuly');
+        $courseId = $request->course_id;
+        $tasks = $this->taskService->listAllTask($filters,$perPage,$courseId);
+        return $this->paginated(TaskResource::collection($tasks),'tasks retreive successfuly');
     }
 
     /**
@@ -56,7 +59,7 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         $this->taskService->getTask($task);
-        return $this->success($task,'task retrive success');
+        return $this->success(new TaskResource($task),'task retrive success');
     }
 
     /**
@@ -83,16 +86,10 @@ class TaskController extends Controller
        return $this->success(null,'task deleted success',204);
     }
 
-    /**
-     * Summary of AssigneTask
-     * @param \App\Models\Task $task
-     * @param \App\Http\Requests\Task\AssigneTaskRequest $request
-     * @return mixed|\Illuminate\Http\JsonResponse
-     */
-    public function AssigneTask(Task $task,AssigneTaskRequest $request)
-    {
-        $data = $request->validated();
-        $this->taskService->assignTaskToUser($task,$data);
-        return $this->success(null,'task assigne to user',201);
-    }
+ public function uploadTask(Task $task,AddAttachmentRequest $request)
+ {
+
+    $this->taskService->addAttachment($task,$request);
+    return $this->success(null,'task uploaded');
+ }
 }

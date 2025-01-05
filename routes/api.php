@@ -27,7 +27,7 @@ use App\Http\Controllers\Api\MaterialController;
 
 //Auth for(students)
 Route::post('/login/user', [AuthController::class, 'login'])->defaults('guard', 'api');
-Route::post('register/user',[AuthController::class, 'register']);
+Route::post('register/user', [AuthController::class, 'register']);
 Route::middleware(['auth:api'])->group(function () {
     Route::post('/logout/user', [AuthController::class, 'logout'])->defaults('guard', 'api');
     Route::post('/refresh/user', [AuthController::class, 'refresh'])->defaults('guard', 'api');
@@ -92,32 +92,32 @@ Route::controller(CourseController::class)->group(function () {
 
 
     Route::post('/courses', 'store');
-//    ->middleware('permission:');
+    //    ->middleware('permission:');
 
     Route::get('/courses/{course}', 'show');
-//    ->middleware('permission:');
+    //    ->middleware('permission:');
 
     Route::put('/courses/{course}', 'update');
-//    ->middleware('permission:');
+    //    ->middleware('permission:');
 
     Route::delete('/courses/{course}', 'destroy');
-//    ->middleware('permission:');
+    //    ->middleware('permission:');
 
-   //---------------------------------------
+    //---------------------------------------
 
-   /**
-    * Force delete and Restore
-    */
+    /**
+     * Force delete and Restore
+     */
 
-    Route::delete('/courses/{course}/forcedelete','forceDeleteCourse');
-//    ->middleware('permission:');
-
-
-    Route::get('courses/{course}/restore','restoreCourse');
+    Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse');
     //    ->middleware('permission:');
 
 
-    Route::get('/courses-trashed','getAllTrashed');
+    Route::get('courses/{course}/restore', 'restoreCourse');
+    //    ->middleware('permission:');
+
+
+    Route::get('/courses-trashed', 'getAllTrashed');
     //    ->middleware('permission:');
 
 
@@ -131,40 +131,49 @@ Route::controller(CourseController::class)->group(function () {
      * start and end date  of the course
      */
 
-    Route::put('/courses/{course}/updateStartDate','updateStartDate');
+    Route::put('/courses/{course}/updateStartDate', 'updateStartDate');
     // ->middleware('permission:');
 
-    Route::put('/courses/{course}/updateEndDate','updateEndDate');
+    Route::put('/courses/{course}/updateEndDate', 'updateEndDate');
     // ->middleware('permission:');
 
     //................
     /**
      * start and end registaer date of the course
      */
-    Route::put('/courses/{course}/updateStartRegisterDate','updateStartRegisterDate');
+    Route::put('/courses/{course}/updateStartRegisterDate', 'updateStartRegisterDate');
     // ->middleware('permission:');
 
     //..................
 
-    Route::put('/courses/{course}/updateEndRegisterDate','updateEndRegisterDate');
+    Route::put('/courses/{course}/updateEndRegisterDate', 'updateEndRegisterDate');
     // ->middleware('permission:');
 
 
-  
-    // ->middleware('permission:');
+    Route::post('/courses/{course}/addUser', 'addUser');
 
 });
 
-/**
- * api resource for task crud
- */
-Route::apiResource('task',TaskController::class);
-/**
- * assign task to user
- */
-Route::post('task/{task}/assigne',[TaskController::class,'AssigneTask']);
 
+
+
+Route::middleware('course.teacher')->controller(TaskController::class)->group(function () {
+
+    Route::get('task', 'index');
+
+    Route::get('task/{task}', 'show');
+    
+    Route::post('task', 'store');
+    
+    Route::put('task/{task}', 'update');
+   
+    Route::delete('task/{task}', 'destroy');
+});
+
+
+Route::post('/task/{task}/attachments', [TaskController::class, 'uploadTask'])->defaults('guard', 'api');
 
 Route::post('test',[MaterialController::class,'store']);
 
 Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
+
