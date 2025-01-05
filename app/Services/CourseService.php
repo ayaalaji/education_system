@@ -472,6 +472,7 @@ public function addUserToCourse($data,$course)
         DB::beginTransaction();
 
         // Validate the users input
+        
         if (!isset($data['user']) || !is_numeric($data['user'])) {
             throw new InvalidArgumentException('Invalid user data.');
         }
