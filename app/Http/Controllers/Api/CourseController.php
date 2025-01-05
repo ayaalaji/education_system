@@ -174,7 +174,7 @@ class CourseController extends Controller
     {
         $data = $request->only(['end_date']);
         $coursenew = $this->courseService->updateCourseEndDate($course,$data);
-        return $this->success(CourseResource::make($coursenew),'Update Start and End Date Successfully',200);
+        return $this->success(CourseResource::make($coursenew),'Update End Date Successfully',200);
 
     }
 

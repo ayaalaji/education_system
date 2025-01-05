@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\Api\MaterialController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
+use App\Jobs\SendAssignmentDeadlineReminder;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
@@ -147,7 +147,7 @@ Route::controller(CourseController::class)->group(function () {
     //..................
 
     Route::put('/courses/{course}/updateEndRegisterDate','updateEndRegisterDate');
-    // ->middleware('permission:');
+    // ->middleware('auht:api');
 
 
     Route::post('/courses/{course}/addUser','addUser');

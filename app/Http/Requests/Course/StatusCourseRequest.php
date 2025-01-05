@@ -24,7 +24,7 @@ class StatusCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status'   => 'required|in:Open','Closed',  
+            'status'   => 'required|in:Open,Closed',  
         ];
     }
 

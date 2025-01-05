@@ -474,7 +474,7 @@ public function addUserToCourse($data,$course)
         
         
 
-        // Use syncWithoutDetaching to add new users without removing existing ones
+        //use attach to add the user to the course
         $course->users()->attach($data['user']);
  
         DB::commit();
