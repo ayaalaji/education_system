@@ -472,25 +472,18 @@ public function addUserToCourse($data,$course)
         DB::beginTransaction();
 
         // Validate the users input
+        
         if (!isset($data['user']) || !is_numeric($data['user'])) {
             throw new InvalidArgumentException('Invalid user data.');
         }
         
-        
 
-        // Use syncWithoutDetaching to add new users without removing existing ones
-        $course->users()->sync($data['user']);
 
+        // Use syncWithoutDetaching to avoid duplicate entries
+         $course->users()->syncWithoutDetaching($data['user']);
+ 
         DB::commit();
-      
-            $student = User::find($data['user'] ); 
-            echo $student;
-            if ($student) {
-                event( new CourseRegistrationEvent($student, $course));
-                echo 5;
-
-            }
-        
+           
         // Return the course with updated users
         return $course->load('users');
         
