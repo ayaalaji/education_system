@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('task_user', function (Blueprint $table) {
             $table->id();
-            $table->string('file_path');
-            $table->date('summation_date');
+            $table->string('file_path')->nullable();
+            $table->date('summation_date')->nullable();
             $table->foreignId('student_id')->constrained('users');
             $table->foreignId('task_id')->constrained();
             $table->timestamps();

@@ -4,7 +4,7 @@ namespace App\Http\Requests\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TaskStoreRequest extends FormRequest
+class AddAttachmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,8 @@ class TaskStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-           'title' => 'required|string|unique:tasks,title|min:8',
-           'due_date' => 'required|date|after:now',
-           'description' => 'nullable|string',
-           'status' => 'nullable|in:Complete,UnComplete',
-           'course_id' => 'required|integer|exists:courses,id'
+            'file_path' => 'required|file|mimes:pdf,txt,doc,docx,xlsx,xls,jpeg,png,gif,webp|max:10240',
+            'summation_date' => 'required|date|after_or_equal:today',
         ];
     }
 }
