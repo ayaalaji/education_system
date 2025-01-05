@@ -478,8 +478,9 @@ public function addUserToCourse($data,$course)
         }
         
 
-        //use attach to add the user to the course
-        $course->users()->attach($data['user']);
+
+        // Use syncWithoutDetaching to avoid duplicate entries
+         $course->users()->syncWithoutDetaching($data['user']);
  
         DB::commit();
            
