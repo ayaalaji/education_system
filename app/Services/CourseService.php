@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 
+use App\Events\CourseRegistrationEvent;
+use App\Jobs\SendCourseRegistrationEmail;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
@@ -464,6 +466,8 @@ public function updateEnRegisterdDate($data,$course)
  */
 public function addUserToCourse($data,$course)
 {
+    echo $data['user'];
+        echo $course;
     try {
         DB::beginTransaction();
 
@@ -474,11 +478,21 @@ public function addUserToCourse($data,$course)
         
         
 
+
         //use attach to add the user to the course
         $course->users()->attach($data['user']);
  
+
         DB::commit();
-            
+      
+            $student = User::find($data['user'] ); 
+            echo $student;
+            if ($student) {
+                event( new CourseRegistrationEvent($student, $course));
+                echo 5;
+
+            }
+        
         // Return the course with updated users
         return $course->load('users');
         

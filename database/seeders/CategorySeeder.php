@@ -14,21 +14,21 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::create([
-            'name'          =>  'cat 1',
-            'description'   => 'this is category one',
+            'name'          =>  'Programming',
+            'description'   => 'Courses related to programming languages and development techniques.',
             'teacher_id'    => 1
         ]);
 
 
         Category::create([
-            'name'          =>  'cat 2',
-            'description'   => 'this is category two',
+            'name'          =>  'Data Science',
+            'description'   => 'Learn data analysis, machine learning, and data visualization techniques.',
             'teacher_id'    => 2
         ]);
 
         Category::create([
-            'name'          =>  'cat 3',
-            'description'   => 'this is category two',
+            'name'          =>  'Design',
+            'description'   => 'Courses focused on graphic design, UI/UX, and creative design tools.',
             'teacher_id'    => 3
         ]);
     }

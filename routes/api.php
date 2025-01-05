@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -150,7 +151,7 @@ Route::controller(CourseController::class)->group(function () {
     // ->middleware('auht:api');
 
 
-    Route::post('/courses/{course}/addUser','addUser');
+  
     // ->middleware('permission:');
 
 });
@@ -164,3 +165,7 @@ Route::apiResource('task',TaskController::class);
  */
 Route::post('task/{task}/assigne',[TaskController::class,'AssigneTask']);
 
+
+Route::post('test',[MaterialController::class,'store']);
+
+Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);

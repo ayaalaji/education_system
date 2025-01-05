@@ -13,24 +13,20 @@ use Illuminate\Queue\SerializesModels;
 class CourseRegistrationEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+    
+
+    public $student;
+    public $course;
 
     /**
      * Create a new event instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @param $student
+     * @param $course
      */
-    public function broadcastOn(): array
+    public function __construct($student, $course)
     {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
+        $this->student = $student;
+        $this->course = $course;
     }
 }
