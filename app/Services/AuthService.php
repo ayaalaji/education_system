@@ -31,7 +31,7 @@ class AuthService {
                 'token' => $token
             ];
         }catch(Exception $e){
-            throw new \Exception('Failed to registering ' . $e->getMessage());
+            throw new Exception('Failed to registering ' . $e->getMessage());
         }
     }
     /**
@@ -56,7 +56,7 @@ class AuthService {
                 'token' => $token
             ];
         }catch(Exception $e){
-            throw new \Exception('Failed to login ' . $e->getMessage());
+            throw new Exception('Failed to login ' . $e->getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ class AuthService {
             Auth::shouldUse($guard);
             Auth::logout();
         } catch(Exception $e){
-        throw new \Exception('Failed to logout ' . $e->getMessage());
+        throw new Exception('Failed to logout ' . $e->getMessage());
     }
     }
 
@@ -92,7 +92,7 @@ class AuthService {
                 'token' => $token
             ];
         }catch(Exception $e){
-            throw new \Exception('Failed to refresh ' . $e->getMessage());
+            throw new Exception('Failed to refresh ' . $e->getMessage());
         }
     }
 }

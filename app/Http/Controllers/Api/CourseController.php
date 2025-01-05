@@ -29,7 +29,7 @@ class CourseController extends Controller
 
     public function __construct(CourseService $courseService)
     {
-        $this->middleware('auth:teacher-api');
+      //  $this->middleware('auth:teacher-api');
         $this->courseService = $courseService;
     }
 
@@ -174,7 +174,7 @@ class CourseController extends Controller
     {
         $data = $request->only(['end_date']);
         $coursenew = $this->courseService->updateCourseEndDate($course,$data);
-        return $this->success(CourseResource::make($coursenew),'Update Start and End Date Successfully',200);
+        return $this->success(CourseResource::make($coursenew),'Update End Date Successfully',200);
 
     }
 
@@ -211,7 +211,7 @@ class CourseController extends Controller
      */
     public function addUser(AddUserToCourseRequest $request, Course $course)
     {
-       $data = $request->only(['users']);
+       $data = $request->only(['user']);
        $course = $this->courseService->addUserToCourse($data,$course);
        return $this->success($course,'Add User to course Successfully',200);
        

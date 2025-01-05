@@ -1,11 +1,12 @@
 <?php
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
@@ -65,6 +66,15 @@ Route::controller(TeacherController::class)->group(function () {
     Route::get('/teachers/{teacher}', 'show');
     Route::put('/teachers/{teacher}', 'update');
     Route::delete('/teachers/{teacher}', 'destroy');
+});
+
+///////Material////////
+Route::controller(MaterialController::class)->group(function () {
+    Route::get('/materials', 'index');
+    Route::post('/materials', 'store');
+    Route::get('/materials/{material}', 'show');
+    Route::put('/materials/{material}', 'update');
+    Route::delete('/materials/{material}', 'destroy');
 });
 
 ////////////Category///////////
@@ -141,9 +151,9 @@ Route::controller(CourseController::class)->group(function () {
 
 
     Route::post('/courses/{course}/addUser', 'addUser');
-    // ->middleware('permission:');
 
 });
+
 
 
 
@@ -162,3 +172,8 @@ Route::middleware('course.teacher')->controller(TaskController::class)->group(fu
 
 
 Route::post('/task/{task}/attachments', [TaskController::class, 'uploadTask'])->defaults('guard', 'api');
+
+Route::post('test',[MaterialController::class,'store']);
+
+Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
+
