@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -7,7 +8,6 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
-use App\Jobs\SendAssignmentDeadlineReminder;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
@@ -147,10 +147,10 @@ Route::controller(CourseController::class)->group(function () {
     //..................
 
     Route::put('/courses/{course}/updateEndRegisterDate','updateEndRegisterDate');
-    // ->middleware('auht:api');
+    // ->middleware('permission:');
 
 
-    Route::post('/courses/{course}/addUser','addUser');
+  
     // ->middleware('permission:');
 
 });
@@ -164,3 +164,7 @@ Route::apiResource('task',TaskController::class);
  */
 Route::post('task/{task}/assigne',[TaskController::class,'AssigneTask']);
 
+
+Route::post('test',[MaterialController::class,'store']);
+
+Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
