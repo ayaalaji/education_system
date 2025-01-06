@@ -79,7 +79,7 @@ public function course()
 public function users()
 {
     return $this->belongsToMany(User::class,'task_user', 'task_id', 'student_id')
-                ->withPivot('file_path', 'summation_date')
+                ->withPivot('file_path', 'summation_date','note','grade')
                 ->withTimestamps();;
 }
 }
