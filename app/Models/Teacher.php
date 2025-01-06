@@ -37,7 +37,14 @@ class Teacher extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+    ];
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
