@@ -150,7 +150,7 @@ Route::controller(CourseController::class)->group(function () {
     // ->middleware('permission:');
 
 
-  
+    Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
     // ->middleware('permission:');
 
 });
@@ -167,4 +167,3 @@ Route::post('task/{task}/assigne',[TaskController::class,'AssigneTask']);
 
 Route::post('test',[MaterialController::class,'store']);
 
-Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);

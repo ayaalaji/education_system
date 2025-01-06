@@ -41,7 +41,7 @@ class StoreCourseRequest extends FormRequest
             $category_id = Category::where('name', $this->category_name)->pluck('id')->first();
      
             $this->merge([
-                'teacher_id'  => Auth::id(),
+                'teacher_id'  => auth('teacher-api')->id(),
                 'category_id' => $category_id,
             ]);
         }
