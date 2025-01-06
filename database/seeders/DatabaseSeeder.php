@@ -18,8 +18,9 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             TeacherSeeder::class,
             CategorySeeder::class,
-            CourseSeeder::class
+            CourseSeeder::class,
+            TaskSeeder::class
         ]);
-   
+
     }
 }
