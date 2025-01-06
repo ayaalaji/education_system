@@ -466,25 +466,23 @@ public function updateEnRegisterdDate($data,$course)
  */
 public function addUserToCourse($data,$course)
 {
-    echo $data['user'];
-        echo $course;
     try {
         DB::beginTransaction();
-
-        // Validate the users input
-        
-        if (!isset($data['user']) || !is_numeric($data['user'])) {
-            throw new InvalidArgumentException('Invalid user data.');
-        }
-        
-
-
+      
         // Use syncWithoutDetaching to avoid duplicate entries
          $course->users()->syncWithoutDetaching($data['user']);
  
         DB::commit();
-           
-        // Return the course with updated users
+
+        $student = User::find($data['user'] ); 
+       
+        // //strat an register new student event
+        if ($student) 
+        {
+            event( new CourseRegistrationEvent($student, $course));
+        }
+        
+       // Return the course with updated users
         return $course->load('users');
         
     } catch (Exception $e) {

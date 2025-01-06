@@ -150,7 +150,8 @@ Route::controller(CourseController::class)->group(function () {
     // ->middleware('permission:');
 
 
-    Route::post('/courses/{course}/addUser', 'addUser');
+    Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
+    // ->middleware('permission:');
 
 });
 
@@ -174,6 +175,4 @@ Route::middleware('course.teacher')->controller(TaskController::class)->group(fu
 Route::post('/task/{task}/attachments', [TaskController::class, 'uploadTask'])->defaults('guard', 'api');
 
 Route::post('test',[MaterialController::class,'store']);
-
-Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
 
