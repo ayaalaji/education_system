@@ -90,7 +90,9 @@ class User extends Authenticatable implements JWTSubject
     public function courses()
     {
         return $this->belongsToMany(Course::class,"course_user")
-                    ->withTimestamps();
+                    ->withTimestamps()
+                    ->withPivot('deleted_at')
+                    ->wherePivotNull('deleted_at');
     }
 
     public function tasks()

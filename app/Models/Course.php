@@ -22,7 +22,7 @@ class Course extends Model
     {
 
         return $this->belongsToMany(User::class)
-                    ->withTimestamps();
+                    ->withTimestamps()->withPivot('deleted_at')->wherePivotNull('deleted_at');
 
     }
 
