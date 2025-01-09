@@ -1,29 +1,31 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Task\AddAttachmentRequest;
-use App\Http\Requests\Task\AssigneTaskRequest;
 use App\Models\Task;
+use App\Services\FcmService;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
+use App\Events\TaskSubmittedEvent;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Task\TaskResource;
 use App\Http\Requests\Task\TaskStoreRequest;
 use App\Http\Requests\Task\TaskUpdateRequest;
-use App\Http\Resources\Task\TaskResource;
+use App\Http\Requests\Task\AssigneTaskRequest;
+use App\Http\Requests\Task\AddAttachmentRequest;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
-
-
+    protected $fcmService;
     protected $taskService;
     /**
      * Summary of __construct
      * @param \App\Services\TaskService $taskService
      */
-    public function __construct(TaskService $taskService)
+    public function __construct(TaskService $taskService, FcmService $fcmService)
     {
-
         $this->taskService = $taskService;
+        $this->fcmService =$fcmService;
     }
     /**
      * Summary of index
@@ -86,10 +88,23 @@ class TaskController extends Controller
        return $this->success(null,'task deleted success',204);
     }
 
- public function uploadTask(Task $task,AddAttachmentRequest $request)
- {
+    public function uploadTask(Task $task,AddAttachmentRequest $request)
+    {
+        // إضافة المرفق
+        $this->taskService->addAttachment($task, $request);
 
-    $this->taskService->addAttachment($task,$request);
-    return $this->success(null,'task uploaded');
- }
+        // إذا تم رفع المرفق بنجاح، نرسل إشعار عبر FCM
+        $to = "dummy_device_token_for_testing"; // توكن وهمي للجهاز
+        $title = "Task Uploaded Successfully";
+        $body = "The task has been uploaded with attachments.";
+
+        // استدعاء خدمة FCM لإرسال الإشعار
+        $response = $this->fcmService->sendNotification($to, $title, $body);
+
+        // إرجاع الاستجابة التي تحتوي على نتيجة إرسال الإشعار
+        return $this->success([
+            'message' => 'Task uploaded and notification sent',
+            'fcm_response' => $response // عرض الاستجابة من FCM
+        ]);
+    }
 }

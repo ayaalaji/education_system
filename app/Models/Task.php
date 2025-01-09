@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Course;
-use App\Events\TaskSubmittedEvent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -22,27 +21,6 @@ class Task extends Model
     protected $casts = ['due_date' => 'datetime',
     'course_id' => 'integer'
 ];
-/**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        self::updated(function ($task) {
-            // Check if the pivot table has been updated (submission date added)
-            if ($task->isDirty('submitted_at') && $task->submitted_at != null) {
-                // Retrieve the student who submitted the task
-                // Assuming that 'users' is the relationship that links tasks to students
-                $student = $task->users()->wherePivot('task_id', $task->id)->first(); 
-
-                // Trigger the TaskSubmittedEvent to notify the teacher
-                event(new TaskSubmittedEvent($task, $student)); // Fire the event
-            }
-        });
-    }
 /**
  * Summary of seTtitleAttribute
  * @param mixed $value
