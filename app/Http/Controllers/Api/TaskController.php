@@ -13,6 +13,9 @@ use App\Http\Requests\Task\TaskUpdateRequest;
 use App\Http\Requests\Task\AssigneTaskRequest;
 use App\Http\Requests\Task\AddAttachmentRequest;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\Note\StoreNoteRequest;
+use App\Http\Requests\Note\UpdateNoteRequest;
+use App\Http\Resources\Task\TaskResource;
 
 class TaskController extends Controller
 {
@@ -90,21 +93,60 @@ class TaskController extends Controller
 
     public function uploadTask(Task $task,AddAttachmentRequest $request)
     {
-        // إضافة المرفق
+      
         $this->taskService->addAttachment($task, $request);
 
-        // إذا تم رفع المرفق بنجاح، نرسل إشعار عبر FCM
-        $to = "dummy_device_token_for_testing"; // توكن وهمي للجهاز
+        $to = "dummy_device_token_for_testing"; // firebase token not real
         $title = "Task Uploaded Successfully";
         $body = "The task has been uploaded with attachments.";
 
-        // استدعاء خدمة FCM لإرسال الإشعار
         $response = $this->fcmService->sendNotification($to, $title, $body);
 
-        // إرجاع الاستجابة التي تحتوي على نتيجة إرسال الإشعار
         return $this->success([
             'message' => 'Task uploaded and notification sent',
-            'fcm_response' => $response // عرض الاستجابة من FCM
+            'fcm_response' => $response 
         ]);
     }
+
+
+ /**
+ * Add a note to a task.
+ *
+ * This method validates the incoming request data and stores the note 
+ * associated with the specified task and user.
+ *
+ * @param AppHttpRequestsStoreNoteRequest $request The request containing the note data.
+ * @param int $taskId The ID of the task to which the note is being added.
+ * @param int $userId The ID of the user adding the note.
+ * @return IlluminateHttpJsonResponse A JSON response indicating success.
+ */
+public function addNote(StoreNoteRequest $request, $taskId, $userId)
+{  
+    // Validate the incoming request data
+    $validatedData = $request->validated();
+
+    // Store the validated note data using the task service
+    $this->taskService->storeNote($validatedData, $taskId, $userId);
+
+    // Return a success response indicating that the note was added successfully
+    return $this->success(null, 'note added success', 201);
+}
+
+/**
+ * Delete a note from a task.
+ *
+ * This method removes the note associated with the specified task and user.
+ *
+ * @param int $taskId The ID of the task from which the note is being deleted.
+ * @param int $userId The ID of the user who owns the note.
+ * @return IlluminateHttpJsonResponse A JSON response indicating success.
+ */
+public function deleteNote($taskId, $userId)
+{
+    // Remove the note associated with the specified task and user
+    $this->taskService->removeNote($taskId, $userId);
+
+    // Return a success response indicating that the note was deleted successfully
+    return $this->success(null, 'note deleted success', 204);
+}
 }

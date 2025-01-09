@@ -175,3 +175,8 @@ Route::middleware('course.teacher')->controller(TaskController::class)->group(fu
 Route::post('/task/{task}/attachments', [TaskController::class, 'uploadTask'])->defaults('guard', 'api');
 Route::post('test',[MaterialController::class,'store']);
 
+// Route to add a note for a specific user on a task
+Route::post('/tasks/{taskId}/users/{userId}/add-note', [TaskController::class, 'addNote']);
+
+// Route to delete a note for a specific user on a task
+Route::delete('/tasks/{taskId}/users/{userId}/delete-note', [TaskController::class, 'deleteNote']);
