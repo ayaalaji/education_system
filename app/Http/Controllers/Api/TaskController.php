@@ -15,7 +15,7 @@ use App\Http\Requests\Task\AddAttachmentRequest;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Note\StoreNoteRequest;
 use App\Http\Requests\Note\UpdateNoteRequest;
-use App\Http\Resources\Task\TaskResource;
+
 
 class TaskController extends Controller
 {
