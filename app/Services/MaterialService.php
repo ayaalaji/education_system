@@ -5,6 +5,7 @@ use Exception;
 use App\Models\Material;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
+use App\Events\CourseSessionUploadedEvent;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class MaterialService{
@@ -30,15 +31,15 @@ class MaterialService{
         }  
 
         }
-         /**
+    /**
      * create new material
-     *
-     * @param array $data of the material to create
-     * @return array An array containing data (created material)
-     * @throws HttpResponseException If an error occurs during database interaction.
+     * @param array $data
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return Material|\Illuminate\Database\Eloquent\Model
      */
     public function createMaterial(array $data)
 {  try {
+
     $fileData = $this->fileService->storeFile($data['file_path']);
     $videoData = isset($data['video_path']) && $data['video_path'] instanceof UploadedFile
         ? $this->fileService->storeVideo($data['video_path'])
@@ -50,6 +51,9 @@ class MaterialService{
         'video_path' => $videoData['video_path'] ?? null,
         'course_id' => $data['course_id'],
     ]);
+
+    //Lanch an Event after creat new material
+    event(new CourseSessionUploadedEvent($material));
 
     return $material;
 } catch (Exception $e) {
