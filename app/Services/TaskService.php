@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Course;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Events\TaskSubmittedEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
