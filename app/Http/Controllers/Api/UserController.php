@@ -111,7 +111,7 @@ class UserController extends Controller
         if (!$user) {
             return $this->error('Delete User faild');
         }
-        return $this->success(null, 'User Updated Successfully', 201);
+        return $this->success(null, 'User Deleted Successfully', 201);
     }
 
      //........................................SoftDeletes..............................................
@@ -146,7 +146,7 @@ class UserController extends Controller
     {
         $users = $this->userService->getAllTrashedUsers();
 
-        return $this->success($users,'Get All Trashed Couses Successfully');
+        return $this->success($users,'Get All Trashed Users Successfully');
      }
 
 }
