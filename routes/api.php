@@ -37,20 +37,24 @@ Route::controller(RoleController::class)->group(function () {
 
 // ---------------------- User Routes ---------------------- //
 Route::controller(UserController::class)->group(function () {
+
     Route::get('users', 'index')->middleware('permission:show_user'); // Get a list of all users
     Route::post('user', 'store')->middleware('permission:add_user'); // Create a new user
     Route::get('users/{user}', 'show')->middleware('permission:show_user'); // Get details of a specific user
     Route::put('users/{user}', 'update')->middleware('permission:update_user'); // Update an existing user
     Route::delete('users/{user}', 'destroy')->middleware('permission:delete_user'); // Delete a specific user
+
 });
 
 // ---------------------- Teacher Routes ---------------------- //
 Route::controller(TeacherController::class)->group(function () {
+
     Route::get('/teachers', 'index')->middleware('permission:show_teacher'); // Get a list of all teachers
     Route::post('/teachers', 'store')->middleware('permission:add_teacher'); // Create a new teacher
     Route::get('/teachers/{teacher}', 'show')->middleware('permission:show_teacher'); // Get details of a specific teacher
     Route::put('/teachers/{teacher}', 'update')->middleware('permission:update_teacher'); // Update an existing teacher
     Route::delete('/teachers/{teacher}', 'destroy')->middleware('permission:delete_teacher'); // Delete a specific teacher
+
 });
 
 // ---------------------- Material Routes ---------------------- //
