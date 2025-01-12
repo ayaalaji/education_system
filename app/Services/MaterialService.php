@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use App\Events\CourseSessionUploadedEvent;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Cache;
 
 class MaterialService{
     protected $fileService;
@@ -23,12 +24,17 @@ class MaterialService{
      */
     public function getAllMaterial(){
         try{
+        $cacheKey = 'materials_' . md5(request('page', 1));
+        return cacheData($cacheKey,function(){
             $materials=Material::select('title')->get();
             return $materials;
+        });
+
+
         }catch (Exception $e) {
             Log::error('Error getting materials: ' . $e->getMessage());
             throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve materials.'], 500));
-        }  
+        }
 
         }
     /**
@@ -52,6 +58,8 @@ class MaterialService{
         'course_id' => $data['course_id'],
     ]);
 
+    cache()->forget('materials_' . md5(request('page', 1)));
+
     //Lanch an Event after creat new material
     event(new CourseSessionUploadedEvent($material));
 
@@ -66,14 +74,17 @@ class MaterialService{
 
         /**
          * return spacific material
-         * 
+         *
          * @param Material $material ,material model instance
-         * @return $array,array containing data of spacific material 
+         * @return $array,array containing data of spacific material
          * @throws HttpResponseException If an error occurs. This is unlikely here, but good practice.
      */
     public function getMaterial(Material $material){
         try{
-            return $material;
+            return cacheData("material_{$material->id}",function() use($material){
+                return $material;
+
+            });
         }catch(Exception $e){
         Log::error('Error getting Material'.$e->getMessage());
         throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve material.'], 500));
@@ -81,7 +92,7 @@ class MaterialService{
     }
 
    //..............................
- 
+
     /**
      * update material's data if exists
      * @param \App\Models\Material $material
@@ -91,7 +102,8 @@ class MaterialService{
      */
     public function updateMaterial(Material $material,array $data){
         try{
-            $material->update(array_filter($data));//remove the feild which null value 
+            $material->update(array_filter($data));//remove the feild which null value
+            Cache::forget("material_{$material->id}");
             return $material;
         }catch (Exception $e) {
             Log::error('Error updating teacher: ' . $e->getMessage());
@@ -99,9 +111,9 @@ class MaterialService{
         }
 }
 /**
- * Delete Material 
- * 
- * @param Material $material,the material model instance 
+ * Delete Material
+ *
+ * @param Material $material,the material model instance
  *  @throws HttpResponseException If an error occurs during database interaction.
  */
 
@@ -109,11 +121,12 @@ class MaterialService{
  {
      try {
          $material->delete();
- 
+         Cache::forget("material_{$material->id}");
+
          return true;
      } catch (Exception $e) {
          Log::error('Error deleting material: ' . $e->getMessage());
- 
+
          return false;
      }
  }
