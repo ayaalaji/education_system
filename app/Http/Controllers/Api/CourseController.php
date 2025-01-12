@@ -115,7 +115,7 @@ class CourseController extends Controller
     {
         $this->courseService->forceDeleteCourse( $id);
 
-        return $this->success(null,'Force Delete Course Successfully',200);
+        return $this->success(null,'Force Deleted Course Successfully',200);
     }
 
     //...................................................................
@@ -198,7 +198,7 @@ class CourseController extends Controller
     public function updateEndRegisterDate(EndRegisterCourseRequest $request, Course $course)
     {
         $data = $request->only(['end_register_date']);
-        $courseNew = $this->courseService->updateEnRegisterdDate($data,$course);
+        $courseNew = $this->courseService->updateEndRegisterdDate($data,$course);
         return $this->success(CourseResource::make($courseNew),'Update Start Register Date Successfully',200);
         
     }

@@ -58,6 +58,10 @@ Route::controller(UserController::class)->group(function () {
     Route::get('users/{user}', 'show');
     Route::put('users/{user}', 'update');
     Route::delete('users/{user}', 'destroy');
+
+    Route::delete('users/{user}/forcedelete', 'forceDeleteUser');
+    Route::get('users/{user}/restore', 'restoreUser');
+    Route::get('users-getallTrashed', 'getAllUserTrashed');
 });
 
 ///////Teacher////////

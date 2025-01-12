@@ -8,12 +8,13 @@ use Spatie\Permission\Traits\HasRoles;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles ,SoftDeletes;
 
     protected $guard = 'api';
     /**
@@ -98,7 +99,29 @@ class User extends Authenticatable implements JWTSubject
     public function tasks()
     {
         return $this->belongsToMany(Task::class,'task_user', 'task_id', 'student_id')
+                ->withTimestamps()
                 ->withPivot('file_path', 'summation_date','note','grade')
-                ->withTimestamps();
+                ->withPivot('deleted_at')
+                ->wherePivotNull('deleted_at');
     }
+
+
+    //........................................
+        /**
+     * when soft delete User ,also softdeleting  the user signed into course
+     * from (course-user table), and their tasks (in task_user pivot table)
+     * @return void
+     */
+    protected static function boot()
+{
+    parent::boot();
+
+    static::deleting(function ($user) {
+    // Detach courses from the user in the pivot table
+    $user->courses()->detach();
+
+    // Detach tasks from the user in the pivot table
+    $user->tasks()->detach();
+    });
+}
 }
