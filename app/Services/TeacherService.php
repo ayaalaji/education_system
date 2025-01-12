@@ -113,24 +113,4 @@ class TeacherService
         }
     }
 
-    /**
-     * Delete a teacher.
-     *
-     * This method removes a specific teacher record from the database.
-     *
-     * @param Teacher $teacher The teacher model instance.
-     * @return void No return value.
-     * @throws HttpResponseException If an error occurs during database interaction.
-     */
-    public function deleteTeacher(Teacher $teacher)
-    {
-        try {
-            $teacher->delete(); // Delete the specified teacher from the database
-        } catch (Exception $e) {
-            // Log the error message for debugging purposes
-            Log::error('Error deleting teacher: ' . $e->getMessage());
-            // Throw an exception with a JSON response indicating failure
-            throw new HttpResponseException(response()->json(['message' => 'Failed to delete teacher.'], 500));
-        }
-    }
 }

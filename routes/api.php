@@ -71,7 +71,6 @@ Route::controller(TeacherController::class)->group(function () {
     Route::get('/teachers/{teacher}', 'show');
     Route::put('/teachers/{teacher}', 'update');
     Route::delete('/teachers/{teacher}', 'destroy');
-    Route::get('/teachers/archive','archive');
     Route::delete('/teachers/softDelete/{id}' ,'soft_delete');
     Route::delete('/teachers/forceDelete/{id}','force_delete');
     Route::get('/teachers/restore/{id}','restore');

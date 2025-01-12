@@ -93,22 +93,6 @@ class TeacherController extends Controller
     }
 
     /*
-     * Retrieve a list of archived teachers.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function archive()
-    { 
-        $teachers =  Teacher::onlyTrashed()->get();
-
-        if ($teachers->isEmpty()) {
-            return $this->success(null, 'There are no teachers in the archive yet.', 200);
-        }
-
-        return $this->success($teachers, 'Archive Teachers list retrieved successfully.', 200);
-    }
-
-    /*
      * Soft delete a teacher by their ID. This marks the teacher as deleted but doesn't permanently remove it.
      *
      * @param int $id The ID of the teacher to be soft deleted.
