@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
+use App\Http\Controllers\Api\PushNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -175,9 +176,7 @@ Route::middleware('course.teacher')->controller(TaskController::class)->group(fu
     Route::delete('task/{task}', 'destroy');
 });
 
-
 Route::post('/task/{task}/attachments', [TaskController::class, 'uploadTask'])->defaults('guard', 'api');
-
 Route::post('test',[MaterialController::class,'store']);
 
 // Route to add a note for a specific user on a task

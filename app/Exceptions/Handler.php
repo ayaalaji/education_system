@@ -73,9 +73,6 @@ class Handler extends ExceptionHandler
     }
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof ModelNotFoundException) {
-            return response()->json(['message' => "This iD Dosen't Exist."], 404);
-        }
         if ($exception instanceof ValidationException) {
             return response()->json(['message' => 'Validation Error', 'errors' => $exception->errors()], 422);
         }
