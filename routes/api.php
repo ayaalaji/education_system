@@ -103,6 +103,9 @@ Route::middleware( ['auth:teacher-api','course.teacher'])->group(function () {
         Route::post('task', 'store');
         Route::put('task/{task}', 'update');
         Route::delete('task/{task}', 'destroy');
+
+        Route::post('task/{task}/forcedelete',[TaskController::class,'forceDeleteForTask']);
+        Route::post('task/{task}/restore',[TaskController::class,'restoreTask']);
         // Route to add a note for a specific user on a task
         Route::post('/tasks/{taskId}/users/{userId}/add-note', [TaskController::class, 'addNote']);
 

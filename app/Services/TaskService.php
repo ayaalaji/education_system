@@ -27,16 +27,16 @@ class TaskService
     {
         $cacheKey = 'tasks_' . md5(json_encode($filters) . $perPage . request('page', 1));
 
-    return cacheData($cacheKey, function () use ($filters, $perPage, $courseId) {
-        $status = $filters['status'] ?? null;
+        return cacheData($cacheKey, function () use ($filters, $perPage, $courseId) {
+            $status = $filters['status'] ?? null;
 
-        return Task::when($status, function($query) use ($status) {
+            return Task::when($status, function ($query) use ($status) {
                 return $query->where('status', $status);
             })
-            ->where('course_id', $courseId)
-            ->with(['users', 'course'])
-            ->paginate($perPage);
-    });
+                ->where('course_id', $courseId)
+                ->with(['users', 'course'])
+                ->paginate($perPage);
+        });
     }
 
     public function createTask(array $data)
@@ -47,7 +47,6 @@ class TaskService
             cache()->forget('tasks_' . md5(json_encode([]) . request('page', 1)));
             return $task;
         });
-
     }
 
     public function getTask(Task $task)
@@ -110,11 +109,16 @@ class TaskService
 
 
         $allowedMimeTypes = [
-            'application/pdf', 'text/plain',
+            'application/pdf',
+            'text/plain',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/msword', 'application/vnd.ms-excel',
+            'application/msword',
+            'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'image/jpeg', 'image/png', 'image/gif', 'image/webp'
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp'
         ];
 
         $mime_type = $file->getClientMimeType();
@@ -128,7 +132,9 @@ class TaskService
             $response = Http::withHeaders([
                 'x-apikey' => env('VIRUSTOTAL_API_KEY')
             ])->attach(
-                'file', file_get_contents($file->getRealPath()), $originalName
+                'file',
+                file_get_contents($file->getRealPath()),
+                $originalName
             )->post('https://www.virustotal.com/api/v3/files');
 
 
@@ -139,11 +145,12 @@ class TaskService
             $scanResult = $response->json();
 
 
-            if (isset($scanResult['data']['attributes']['last_analysis_stats']['malicious']) &&
-                $scanResult['data']['attributes']['last_analysis_stats']['malicious'] > 0) {
+            if (
+                isset($scanResult['data']['attributes']['last_analysis_stats']['malicious']) &&
+                $scanResult['data']['attributes']['last_analysis_stats']['malicious'] > 0
+            ) {
                 throw new FileException(trans('general.virusDetected'), 403);
             }
-
         } catch (Exception $e) {
             Log::error('Error during virus scanning: ' . $e->getMessage());
             throw new Exception(trans('general.virusScanFailed'), 500);
@@ -176,17 +183,17 @@ class TaskService
 
         return response()->json(['message' => 'File uploaded and task assigned successfully']);
     }
-  /**
- * Store a note on a specific task.
- *
- * This method attaches a note and grade to a user associated with a task.
- *
- * @param array $data The data containing the note and grade.
- * @param int $taskId The ID of the task to which the note is being added.
- * @param int $userId The ID of the user to whom the note belongs.
- * @return AppModelsTask The task instance with the attached note.
- * @throws IlluminateHttpExceptionsHttpResponseException If adding the note fails.
- */
+    /**
+     * Store a note on a specific task.
+     *
+     * This method attaches a note and grade to a user associated with a task.
+     *
+     * @param array $data The data containing the note and grade.
+     * @param int $taskId The ID of the task to which the note is being added.
+     * @param int $userId The ID of the user to whom the note belongs.
+     * @return AppModelsTask The task instance with the attached note.
+     * @throws IlluminateHttpExceptionsHttpResponseException If adding the note fails.
+     */
     public function storeNote(array $data, $taskId, $userId)
     {
         try {
@@ -197,9 +204,9 @@ class TaskService
             // Update the existing pivot table entry with the note and grade
             $task->users()->updateExistingPivot($user->id, ['note' => $data['note'], 'grade' => $data['grade']]);
             //sending a email to student include the grade and note
-            $studentName=$user->name;
-            $taskNote=$data['note'];
-            $taskgrade=$data['grade'];
+            $studentName = $user->name;
+            $taskNote = $data['note'];
+            $taskgrade = $data['grade'];
             Mail::to($user->email)->send(new TaskEvaluationMail($studentName, $taskNote, $taskgrade));
 
             return $task;
@@ -211,15 +218,15 @@ class TaskService
         }
     }
 
-/**
- * Remove a note from a specific task for a user.
- *
- * This method deletes the note associated with a user on a task by setting it to null.
- *
- * @param int $taskId The ID of the task from which the note is being deleted.
- * @param int $userId The ID of the user whose note is being deleted.
- * @throws IlluminateHttpExceptionsHttpResponseException If deleting the note fails.
- */
+    /**
+     * Remove a note from a specific task for a user.
+     *
+     * This method deletes the note associated with a user on a task by setting it to null.
+     *
+     * @param int $taskId The ID of the task from which the note is being deleted.
+     * @param int $userId The ID of the user whose note is being deleted.
+     * @throws IlluminateHttpExceptionsHttpResponseException If deleting the note fails.
+     */
     public function removeNote($taskId, $userId)
     {
         try {
@@ -236,5 +243,29 @@ class TaskService
             throw new HttpResponseException(response()->json(['message' => 'Failed to delete note'], 500));
         }
     }
-}
 
+    /**
+     * Summary of forceDeleteTask
+     * @param mixed $id
+     * @return void
+     */
+    public function forceDeleteTask($id)
+    {
+         $arry_of_deleted_taskes = Task::onlyTrashed()->pluck('id')->toArray();
+        if (in_array($id, $arry_of_deleted_taskes)) {
+            $task = Task::onlyTrashed()->find($id);
+            $task->forceDelete();
+        }
+    }
+    /**
+     * Summary of restoreTask
+     * @param mixed $id
+     * @return array|mixed|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|null
+     */
+    public function restoreTask($id)
+    {
+        $task = Task::onlyTrashed()->find($id);
+        $task->restore();
+        return $task;
+    }
+}

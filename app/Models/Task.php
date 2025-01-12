@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Models\Course;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     /**
      * Summary of fillable
      * @var array

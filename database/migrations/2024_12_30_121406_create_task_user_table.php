@@ -16,9 +16,10 @@ return new class extends Migration
             $table->string('file_path')->nullable();
             $table->date('summation_date')->nullable();
             $table->foreignId('student_id')->constrained('users');
-            $table->foreignId('task_id')->constrained();
+            $table->foreignId('task_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->text('note')->nullable();
             $table->tinyInteger('grade')->nullable()->unsigned()->check('grade >= 0 AND grade <= 10');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
