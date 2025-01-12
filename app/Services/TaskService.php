@@ -33,7 +33,7 @@ class TaskService
         return Task::when($status, function($query) use ($status) {
                 return $query->where('status', $status);
             })
-            ->where('course_id', $courseId) // استخدام course_id الممرر من الميدلوير
+            ->where('course_id', $courseId)
             ->with(['users', 'course'])
             ->paginate($perPage);
     });
@@ -193,7 +193,7 @@ class TaskService
             // Attach the note to a specific task
             $task = Task::findOrFail($taskId);
             $user = User::findOrFail($userId);
-            
+
             // Update the existing pivot table entry with the note and grade
             $task->users()->updateExistingPivot($user->id, ['note' => $data['note'], 'grade' => $data['grade']]);
             //sending a email to student include the grade and note
@@ -201,7 +201,7 @@ class TaskService
             $taskNote=$data['note'];
             $taskgrade=$data['grade'];
             Mail::to($user->email)->send(new TaskEvaluationMail($studentName, $taskNote, $taskgrade));
-           
+
             return $task;
         } catch (Exception $e) {
             // Log the error message for debugging purposes
