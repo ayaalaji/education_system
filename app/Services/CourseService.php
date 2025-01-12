@@ -214,7 +214,10 @@ class CourseService
 public function forceDeleteCourse($id)
 {
     try {
+            // get the deleted courses as an array
             $arry_of_deleted_corses = Course::onlyTrashed()->pluck('id')->toArray();
+
+            //check if the given id is deleted or not
             if(in_array($id,$arry_of_deleted_corses))
             {
                 $course = Course::onlyTrashed()->find($id);
@@ -244,6 +247,7 @@ public function forceDeleteCourse($id)
 public function restoreCorse($id)
 {
     try {
+        //find out if the given id exsist as deleted element
          $course = Course::onlyTrashed()->find($id);
 
          if(is_null($course))
@@ -343,7 +347,14 @@ public function updateCourseStartDate($course,$data)
 
 //............................................
 //............................................
-
+/**
+ * update Course End Date
+ * @param mixed $course
+ * @param mixed $data
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return mixed
+ */
 public function updateCourseEndDate($course,$data)
 {
     try {
@@ -421,8 +432,15 @@ public function updateStartRegisterDate($data,$course)
 //.......................................................
 
 
-
-public function updateEnRegisterdDate($data,$course)
+/**
+ * update End Registerd Date
+ * @param mixed $data
+ * @param mixed $course
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return mixed
+ */
+public function updateEndRegisterdDate($data,$course)
 {
     try {
         DB::beginTransaction();

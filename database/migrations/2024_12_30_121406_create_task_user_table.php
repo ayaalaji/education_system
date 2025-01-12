@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('task_id')->constrained();
             $table->text('note')->nullable();
             $table->tinyInteger('grade')->nullable()->unsigned()->check('grade >= 0 AND grade <= 10');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
