@@ -93,15 +93,60 @@ class TeacherController extends Controller
     }
 
     /*
-     * Remove the specified teacher from storage.
+     * Retrieve a list of archived teachers.
      *
-     * @param Teacher $teacher
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Teacher $teacher)
-    {   
-        $result = $this->teacherService->deleteTeacher($teacher);
-        return $this->success('Teacher deleted successfully.',200);
+    public function archive()
+    { 
+        $teachers =  Teacher::onlyTrashed()->get();
 
+        if ($teachers->isEmpty()) {
+            return $this->success(null, 'There are no teachers in the archive yet.', 200);
+        }
+
+        return $this->success($teachers, 'Archive Teachers list retrieved successfully.', 200);
     }
+
+    /*
+     * Soft delete a teacher by their ID. This marks the teacher as deleted but doesn't permanently remove it.
+     *
+     * @param int $id The ID of the teacher to be soft deleted.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function soft_delete($id)
+    {
+        $teacher = Teacher::findOrFail($id); 
+
+        $teacher->delete(); 
+
+        return $this->success('Teacher archived successfully.', 200);
+    }
+
+    /*
+     * Permanently delete a teacher by their ID. This completely removes the teacher from the database.
+     *
+     * @param int $id The ID of the teacher to be permanently deleted.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function force_delete($id)
+    {
+        Teacher::withTrashed()->where('id', $id)->forceDelete(); 
+
+        return $this->success('Teacher deleted successfully.', 200);
+    }
+
+    /*
+     * Restore a soft-deleted teacher by their ID.
+     *
+     * @param int $id The ID of the teacher to be restored.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function restore($id)
+    {
+        Teacher::withTrashed()->where('id', $id)->restore(); 
+
+        return $this->success('Teacher restored successfully.', 200);
+    }
+
 }
