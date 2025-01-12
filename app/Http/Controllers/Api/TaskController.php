@@ -93,7 +93,7 @@ class TaskController extends Controller
 
     public function uploadTask(Task $task,AddAttachmentRequest $request)
     {
-      
+
         $this->taskService->addAttachment($task, $request);
 
         $to = "dummy_device_token_for_testing"; // firebase token not real
@@ -104,7 +104,7 @@ class TaskController extends Controller
 
         return $this->success([
             'message' => 'Task uploaded and notification sent',
-            'fcm_response' => $response 
+            'fcm_response' => $response
         ]);
     }
 
@@ -112,7 +112,7 @@ class TaskController extends Controller
  /**
  * Add a note to a task.
  *
- * This method validates the incoming request data and stores the note 
+ * This method validates the incoming request data and stores the note
  * associated with the specified task and user.
  *
  * @param AppHttpRequestsStoreNoteRequest $request The request containing the note data.
@@ -121,7 +121,7 @@ class TaskController extends Controller
  * @return IlluminateHttpJsonResponse A JSON response indicating success.
  */
 public function addNote(StoreNoteRequest $request, $taskId, $userId)
-{  
+{
     // Validate the incoming request data
     $validatedData = $request->validated();
 
@@ -148,5 +148,27 @@ public function deleteNote($taskId, $userId)
 
     // Return a success response indicating that the note was deleted successfully
     return $this->success(null, 'note deleted success', 204);
+}
+
+/**
+ * Summary of forceDeleteForTask
+ * @param int $id
+ * @return mixed|\Illuminate\Http\JsonResponse
+ */
+public function forceDeleteForTask(int $id)
+{
+    $this->taskService->forceDeleteTask($id);
+    return $this->success(null,'task deleted success');
+}
+
+/**
+ * Summary of restoreTask
+ * @param int $id
+ * @return mixed|\Illuminate\Http\JsonResponse
+ */
+public function restoreTask(int $id)
+{
+   $task = $this->taskService->restoreTask($id);
+    return $this->success($task,'task restore success');
 }
 }
