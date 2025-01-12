@@ -1,31 +1,34 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Task\AddAttachmentRequest;
-use App\Http\Requests\Task\AssigneTaskRequest;
 use App\Models\Task;
+use App\Services\FcmService;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
+use App\Events\TaskSubmittedEvent;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Task\TaskResource;
 use App\Http\Requests\Task\TaskStoreRequest;
 use App\Http\Requests\Task\TaskUpdateRequest;
+use App\Http\Requests\Task\AssigneTaskRequest;
+use App\Http\Requests\Task\AddAttachmentRequest;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Note\StoreNoteRequest;
 use App\Http\Requests\Note\UpdateNoteRequest;
-use App\Http\Resources\Task\TaskResource;
+
 
 class TaskController extends Controller
 {
-
-
+    protected $fcmService;
     protected $taskService;
     /**
      * Summary of __construct
      * @param \App\Services\TaskService $taskService
      */
-    public function __construct(TaskService $taskService)
+    public function __construct(TaskService $taskService, FcmService $fcmService)
     {
-
         $this->taskService = $taskService;
+        $this->fcmService =$fcmService;
     }
     /**
      * Summary of index
@@ -88,12 +91,23 @@ class TaskController extends Controller
        return $this->success(null,'task deleted success',204);
     }
 
- public function uploadTask(Task $task,AddAttachmentRequest $request)
- {
+    public function uploadTask(Task $task,AddAttachmentRequest $request)
+    {
+      
+        $this->taskService->addAttachment($task, $request);
 
-    $this->taskService->addAttachment($task,$request);
-    return $this->success(null,'task uploaded');
- }
+        $to = "dummy_device_token_for_testing"; // firebase token not real
+        $title = "Task Uploaded Successfully";
+        $body = "The task has been uploaded with attachments.";
+
+        $response = $this->fcmService->sendNotification($to, $title, $body);
+
+        return $this->success([
+            'message' => 'Task uploaded and notification sent',
+            'fcm_response' => $response 
+        ]);
+    }
+
 
  /**
  * Add a note to a task.

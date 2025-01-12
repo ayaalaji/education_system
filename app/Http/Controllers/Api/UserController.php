@@ -18,7 +18,7 @@ class UserController extends Controller
      */
     public function __construct(UserService $userService)
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:teacher-api');
         $this->middleware('security');
         $this->userService = $userService;
     }
@@ -113,4 +113,40 @@ class UserController extends Controller
         }
         return $this->success(null, 'User Updated Successfully', 201);
     }
+
+     //........................................SoftDeletes..............................................
+
+    /**
+     * Force Delete the user
+     */
+    public function forceDeleteUser(string $id)
+    {
+        $this->userService->forceDeleteUser($id);
+
+        return $this->success(null,'Force Deleted User Successfully',200);
+    }
+
+    //...................................................................
+    //...................................................................
+    /**
+     * Rstore a deleted user
+     */
+    public function restoreUser(string $id)
+    {
+        $this->userService->restoreUser( $id);
+
+        return $this->success(null,'Restore User Successfully',200); 
+    }
+
+
+    /**
+     * get All Trashed users
+     */
+    public function getAllUserTrashed()
+    {
+        $users = $this->userService->getAllTrashedUsers();
+
+        return $this->success($users,'Get All Trashed Couses Successfully');
+     }
+
 }

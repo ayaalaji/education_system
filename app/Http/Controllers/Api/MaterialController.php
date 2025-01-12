@@ -35,10 +35,6 @@ class MaterialController extends Controller
             return $this->error('Failed to retrieve materials.');
         }
 
-        if ($materials->isEmpty()) {
-            return $this->success(null, 'No materials found in the database.', 200);
-        }
-
         return $this->success($materials, 'All materials retrieved successfully.', 200);
     }
 

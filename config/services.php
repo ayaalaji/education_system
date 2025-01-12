@@ -30,5 +30,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'fcm' => [
+        'credentialsPath' => storage_path('app/education-system-fc905-firebase-adminsdk-u2f1n-a7a06ef0e6.json'),
+        'project_id' => env('FCM_PROJECT_ID'),
+    ],
 
 ];

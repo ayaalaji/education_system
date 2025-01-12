@@ -21,7 +21,6 @@ class Task extends Model
     protected $casts = ['due_date' => 'datetime',
     'course_id' => 'integer'
 ];
-
 /**
  * Summary of seTtitleAttribute
  * @param mixed $value
