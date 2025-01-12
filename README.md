@@ -1,66 +1,204 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Education System
 
-## About Laravel
+## Introduction to the Educational Platform Project
+The **Educational Platform** is a comprehensive solution designed to streamline and enhance the learning experience by leveraging the power of modern technology. This platform features a role-based structure with four distinct roles: **Admin**, **Manager**, **Teacher**, and **Student**. Each role comes with tailored permissions to ensure secure and efficient access to the platform’s features.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+To manage access and ensure robust security, the platform utilizes two guards: **API** and **Teacher-API**, facilitating role-specific authentication and authorization mechanisms.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The platform also incorporates a set of CRUD operations to manage various resources efficiently.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## CRUD Functionalities:
 
-## Learning Laravel
+### Auth
+- Handles user authentication on the platform.
+- Login can be performed through either the **API** or the **Teacher-API**.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### User
+- Managed by the **Admin** to:
+  - Add new users to the platform.
+  - Edit user information.
+  - Delete users.
+  - Soft Delete.
+  - Testing.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Role
+- Managed by the **Admin** to:
+  - Add new roles.
+  - Edit existing roles.
+  - Delete roles.
+  - Soft Delete.
+  - Testing.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Teacher
+- Managed by the **Admin** to:
+  - Add new teachers.
+  - Edit teacher information.
+  - Delete teachers.
+  - Soft Delete.
+  - Testing.
 
-## Laravel Sponsors
+### Category
+- Managed by the **Admin** to:
+  - Add new categories.
+  - Edit existing categories.
+  - Delete categories.
+  - Soft Delete.
+  - Testing.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Course
+- Managed by **Teachers** to:
+  - Add new courses.
+  - Edit course details.
+  - Delete courses.
+  - Soft Delete.
+  - Testing.
 
-### Premium Partners
+- Managed by **Managers** to:
+  - Set course start time.
+  - Set course end time.
+  - Set registration start time.
+  - Set registration end time.
+  - Change the status of a course.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### Task
+- Managed by **Teachers** to:
+  - Add new tasks.
+  - Edit task details.
+  - Delete tasks.
+  - Soft Delete.
+  - Testing.
+- **Students** can upload completed tasks as files.
 
-## Contributing
+### Materials
+- Managed by **Teachers** to:
+  - Add materials to a specific course.
+  - Edit existing materials.
+  - Delete materials.
+  - Soft Delete.
+  - Testing.
+  # Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Prerequisites
+Ensure you have the following installed on your machine:
 
-## Code of Conduct
+- **XAMPP**: For running MySQL and Apache servers locally.
+- **Composer**: For PHP dependency management.
+- **PHP**: Required for running Laravel.
+- **MySQL**: Database for the project.
+- **Postman**: Required for testing the requests.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## step to run the project :
+  ### 1. Clone the Repository :
+  ```bash
+  git clone https://github.com/ayaalaji/education_system
+  ```
+  ### 2. Install Dependencies :
+  ```bash
+  composer install
+  ```
+  ### 3. Create Environment File :
+  ```bash
+  cp .env.example .env
+  ```
+  ### 4. Generate Application Key:
+  ```bash
+  php artisan key:generate 
+  ```
 
-## Security Vulnerabilities
+  ### 5. Add Database Name in phpMyAdmin
+  Create a new database in **phpMyAdmin** and note its name.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+  ### 6. Update the `.env` File
+  Add the database name to the `DB_DATABASE` field in the `.env`   file.
 
-## License
+  ### 7. Run the Project in Terminal Using These Steps:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+  #### 1. Clear Configuration Cache
+  Clear the cached configuration to ensure the `.env` file is     updated:
+  ```bash
+  php artisan config:clear
+  ```
+  #### 2. Cache Configuration
+  Cache the current configuration to enhance performance:
+  ```bash
+  php artisan config:cache
+  ```
+
+  #### 3.  Run Migrations and Migrate Seeder :
+  Run migrations to set up or update the database schema and Migrate Seeder :
+  ```bash
+  php artisan migrate --seed
+  ```
+### Installing Required Packages: 
+  #### 1. Install JWT Authentication Package:
+  Install and configure the JWT Auth package for API token management:
+  ```bash
+  composer require php-open-source-saver/jwt-auth
+php artisan vendor:publish --provider="PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider"
+php artisan jwt:secret
+  ```
+  #### 2. Install Spatie Laravel Permission Package:
+  Install and configure the Spatie Laravel Permission package for role and permission management:
+  ```bash
+  composer require spatie/laravel-permission
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan migrate
+  ```
+  ### 3. Set Up Firebase Authentication
+
+Follow the steps below to set up Firebase and integrate it with the project:
+
+1. **Create a Firebase Account**  
+   First, create an account on [Firebase](https://firebase.google.com/).
+
+2. **Create a New Project**  
+   After logging into Firebase, create a new project.
+
+3. **Navigate to Project Settings**  
+   Go to the **Project Settings** by clicking on the gear icon next to **Project Overview**.
+
+4. **Save the Project ID**  
+   Under the **General** tab, note down the **Project ID** as we will use this later in the `.env` file.
+
+5. **Create a Service Account**  
+   Go to the **Service Accounts** tab and click on **Generate New Private Key**.  
+   A `.json` file will be downloaded, save it in the `storage/app/` directory of your project.
+
+6. **Install Firebase Authentication Package**  
+   Install the Google Auth package for Firebase integration by running:
+   ```bash
+   composer require google/auth
+7. **Configure Firebase Credentials in config/services.php**  
+   In the config/services.php file, update the credentialsPath with the path to the JSON file you downloaded:
+   ```bash
+   'credentialsPath' => storage_path('app/education-system-fc905-firebase-adminsdk-u2f1n-a7a06ef0e6.json')
+8. **Update .env File**
+  Add the Firebase Project ID to the .env file:
+  ```bash
+  FCM_PROJECT_ID=your_firebase_project_id
+  ```
+  Replace your_firebase_project_id with the Project ID you saved earlier.
+### 4. Set Up VirusTotal API
+
+Follow these steps to create an account on VirusTotal and integrate the API with your project:
+
+1. **Create a VirusTotal Account**  
+   Go to [VirusTotal](https://www.virustotal.com/) and create a new account or log in if you already have one.
+
+2. **Get the API Key**  
+   After logging in, navigate to your **Profile Settings** by clicking on your username in the top-right corner of the dashboard.  
+   Under the **API Key** section, you will find your **API Key**.
+
+3. **Store the API Key in `.env`**  
+   Copy the **API Key** and add it to your `.env` file as follows:
+   ```env
+   VIRUSTOTAL_API_KEY=your_virustotal_api_key
+  Replace your_virustotal_api_key with the VIRUSTOTAL_API_KEY in the [VirusTotal](https://www.virustotal.com/).
+## doc of postman is
+https://documenter.getpostman.com/view/34555205/2sAYBa8omR
+
+
+
+
+

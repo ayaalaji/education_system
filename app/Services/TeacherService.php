@@ -102,6 +102,7 @@ class TeacherService
         }
     }
 
+
     /**
      * Delete a teacher and clear cache.
      *
@@ -121,4 +122,6 @@ class TeacherService
             throw new HttpResponseException(response()->json(['message' => 'Failed to delete teacher.'], 500));
         }
     }
+
+
 }

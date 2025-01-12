@@ -42,6 +42,10 @@ Route::controller(UserController::class)->group(function () {
     Route::get('users/{user}', 'show');
     Route::put('users/{user}', 'update');
     Route::delete('users/{user}', 'destroy');
+
+    Route::delete('users/{user}/forcedelete', 'forceDeleteUser');
+    Route::get('users/{user}/restore', 'restoreUser');
+    Route::get('users-getallTrashed', 'getAllUserTrashed');
 });
 
 // ---------------------- Teacher Routes ---------------------- //
@@ -51,6 +55,9 @@ Route::controller(TeacherController::class)->group(function () {
     Route::get('/teachers/{teacher}', 'show');
     Route::put('/teachers/{teacher}', 'update');
     Route::delete('/teachers/{teacher}', 'destroy');
+    Route::delete('/teachers/softDelete/{id}' ,'soft_delete');
+    Route::delete('/teachers/forceDelete/{id}','force_delete');
+    Route::get('/teachers/restore/{id}','restore');
 });
 
 // ---------------------- Material Routes ---------------------- //
