@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('specialization');
             $table->string('password'); // Add password field if needed.
             $table->index('name');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
