@@ -13,16 +13,16 @@ class StoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->role == 'manager';
+        return true;
     }
 
     public function prepareForValidation()
     {
         $this->merge([
             'name' =>ucwords($this->input('name')),
-            
+
         ]);
-        
+
     }
 
     /**
@@ -39,8 +39,8 @@ class StoreRequest extends FormRequest
                 'string',
                 $roleId ? Rule::unique('roles')->ignore($roleId) : 'unique:roles,name',
             ],
-            'permission' => 'nullable|array', 
-            'permission.*' => 'integer|exists:permissions,id', 
+            'permission' => 'nullable|array',
+            'permission.*' => 'integer|exists:permissions,id',
         ];
     }
 }
