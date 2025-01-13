@@ -115,7 +115,7 @@ class UserService
     {
         try {
 
-            $user->delete();
+            $user = User::findOrFail($user->id);
 
             Cache::forget("user_{$user->id}");
             Cache::forget('users_list');

@@ -22,6 +22,7 @@ class PermissionSeeder extends Seeder
             'update_user',
             'delete_user_temporary',
             'restore_user',
+            'get_trashed_user',
             'delete_user',
 
             'show_teacher',
@@ -41,6 +42,7 @@ class PermissionSeeder extends Seeder
             'update_course',
             'delete_course_temporary',
             'restore_course',
+            'get_trashed_corse',
             'delete_course',
 
             'show_category',
@@ -49,6 +51,7 @@ class PermissionSeeder extends Seeder
             'delete_category_temporary',
             'restore_category',
             'delete_category',
+            'getTrashed',
 
             'access_materials',
             'add_material',
@@ -62,6 +65,7 @@ class PermissionSeeder extends Seeder
             'set_registration_start_time',
             'set_registration_end_time',
             'change_the_status_of_course',
+            'add_user_to_course'
         ];
 
         $permissions_api = [
@@ -115,12 +119,16 @@ class PermissionSeeder extends Seeder
                         'delete_teacher_temporary',
                         'restore_teacher',
                         'delete_course',
-                        
+                        'add_user_to_course',
+                        'get_trashed_corse',
+
                         'add_material',
                         'update_material',
                         'delete_material_temporary',
                         'restore_material',
                         'delete_material',
+                        
+
 
                     ]);
                     break;
