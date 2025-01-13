@@ -82,16 +82,19 @@ Route::controller(MaterialController::class)->group(function () {
     Route::delete('/materials/{material}', 'destroy');
 });
 
-////////////Category///////////
+///////Category////////
 Route::controller(CategoryController::class)->group(function () {
     Route::get('/categories', 'index');
     Route::post('/categories', 'store');
     Route::get('/categories/{category}', 'show');
     Route::put('/categories/{category}', 'update');
     Route::delete('/categories/{category}', 'destroy');
+    Route::get('/categories-trashed', 'trashed'); 
+    Route::post('/categories/{id}/restore', 'restore'); 
+    Route::delete('/categories/{id}/force-delete', 'forceDelete');
 });
 
-/////////Courses/////////////
+/////////Courses//////////
 Route::controller(CourseController::class)->group(function () {
     Route::get('/courses', 'index');
 

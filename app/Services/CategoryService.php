@@ -88,4 +88,51 @@ class CategoryService
             throw new \Exception('Failed to delete category: ' . $e->getMessage());
         }
     }
+      /**
+     * Get trashed categories.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getTrashedCategories()
+    { 
+        try {
+           $Category=Category::onlyTrashed()->get(); 
+           return $Category;
+                } catch (\Exception $e) {
+            throw new \Exception('Failed to fetch trashed categories: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Restore a soft-deleted category.
+     *
+     * @param int $id
+     * @return Category
+     */
+    public function restoreCategory(int $id): Category
+    {
+        try {
+            $category = Category::onlyTrashed()->findOrFail($id); 
+            $category->restore(); 
+            return $category;
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to restore category: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Permanently delete a category.
+     *
+     * @param int $id
+     * @return void
+     */
+    public function forceDeleteCategory(int $id): void
+    {
+        try {
+            $category = Category::onlyTrashed()->findOrFail($id);
+            $category->forceDelete(); 
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to force delete category: ' . $e->getMessage());
+        }
+}
 }

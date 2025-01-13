@@ -86,4 +86,42 @@ class CategoryController extends Controller
 
         return $this->success(null, 'Category deleted successfully!', 200);
     }
+    /**
+ * Display a listing of trashed categories.
+ *
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function trashed()
+{
+    $categories = $this->categoryService->getTrashedCategories();
+
+    return $this->success($categories, 'Trashed categories fetched successfully.', 200);
+}
+
+/**
+ * Restore a soft-deleted category.
+ *
+ * @param int $id
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function restore($id)
+{
+    $restoredCategory = $this->categoryService->restoreCategory($id);
+
+    return $this->success($restoredCategory, 'Category restored successfully!', 200);
+}
+
+/**
+ * Permanently delete a soft-deleted category.
+ *
+ * @param int $id
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function forceDelete($id)
+{
+    $this->categoryService->forceDeleteCategory($id);
+
+    return $this->success(null, 'Category permanently deleted!', 200);
+}
+
 }
