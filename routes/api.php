@@ -43,6 +43,8 @@ Route::controller(UserController::class)->group(function () {
     Route::get('users/{user}', 'show')->middleware('permission:show_user'); // Get details of a specific user
     Route::put('users/{user}', 'update')->middleware('permission:update_user'); // Update an existing user
     Route::delete('users/{user}', 'destroy')->middleware('permission:delete_user'); // Delete a specific user
+    Route::delete('users/{user}', 'forceDeleteUser')->middleware('permission:delete_user'); // Delete a specific user
+    Route::delete('users/{user}', 'restoreUser')->middleware('permission:delete_user'); // Delete a specific user
 
 });
 
@@ -53,22 +55,22 @@ Route::controller(TeacherController::class)->group(function () {
     Route::post('/teachers', 'store')->middleware('permission:add_teacher'); // Create a new teacher
     Route::get('/teachers/{teacher}', 'show')->middleware('permission:show_teacher'); // Get details of a specific teacher
     Route::put('/teachers/{teacher}', 'update')->middleware('permission:update_teacher'); // Update an existing teacher
-    Route::delete('/teachers/{teacher}', 'destroy')->middleware('permission:delete_teacher'); // Delete a specific teacher
+    Route::delete('/teachers/{teacher}', 'soft_delete')->middleware('permission:delete_teacher_temporary'); // Delete a specific teacher(Soft Delete)
+    Route::get('/teachers/restore/{id}','restore')->middleware('permission:restore_teacher'); //Restore a specific teacher
+    Route::delete('/teachers/forceDelete/{id}','force_delete')->middleware('permission:delete_teacher'); //Delete a specific teacher permanently
 
 });
 
 // ---------------------- Material Routes ---------------------- //
-Route::middleware('permission:access_materials')->group(function(){
-    Route::controller(MaterialController::class)->group(function () {
-        Route::get('/materials', 'index');
-        Route::get('/materials/{material}', 'show');
-        Route::middleware(['course.teacher','auth:teacher-api'])->group(function(){
-            Route::post('/materials', 'store');
-            Route::put('/materials/{material}', 'update');
-            Route::delete('/materials/{material}', 'destroy');
-        });
-
+Route::controller(MaterialController::class)->group(function () {
+    Route::get('/materials', 'index')->middleware('permission:show_teacher');
+    Route::get('/materials/{material}', 'show');
+    Route::middleware(['course.teacher','auth:teacher-api'])->group(function(){
+        Route::post('/materials', 'store');
+        Route::put('/materials/{material}', 'update');
+        Route::delete('/materials/{material}', 'destroy');
     });
+
 });
 
 
