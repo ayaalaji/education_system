@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Category;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryService
 {
@@ -12,16 +13,20 @@ class CategoryService
      * @param string|null $name
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getCategories(?string $name = null)
+    public function getCategories(?string $name = null,array $filters, int $perPage)
     {
         try {
-            $query = Category::with('courses');
+            $cacheKey = 'categories_' . md5(json_encode($filters) . $perPage . request('page', 1));
+            return cacheData($cacheKey,function () use ($name){
 
-            if ($name) {
-                $query->where('name', 'LIKE', '%' . $name . '%');
-            }
+                $query = Category::with('courses');
+                if ($name) {
+                    $query->where('name', 'LIKE', '%' . $name . '%');
+                }
+            });
 
-            return $query->get();
+
+
         } catch (\Exception $e) {
             throw new \Exception('Failed to fetch categories: ' . $e->getMessage());
         }
@@ -36,7 +41,10 @@ class CategoryService
     public function getCategory(Category $category)
     {
         try {
-            return $category->load('courses');
+
+            return cacheData("category_{$category->id}", function () use ($category) {
+                return $category->load('courses');
+            });
         } catch (\Exception $e) {
             throw new \Exception('Failed to fetch category details: ' . $e->getMessage());
         }
@@ -51,6 +59,7 @@ class CategoryService
     public function createCategory(array $data): Category
     {
         try {
+            cache()->forget('categories_' . md5(json_encode([]) . request('page', 1)));
             return Category::create($data);
         } catch (\Exception $e) {
             throw new \Exception('Failed to create category: ' . $e->getMessage());
@@ -68,6 +77,8 @@ class CategoryService
     {
         try {
             $category->update($data);
+            Cache::forget("category_{$category->id}");
+
             return $category;
         } catch (\Exception $e) {
             throw new \Exception('Failed to update category: ' . $e->getMessage());
@@ -83,7 +94,9 @@ class CategoryService
     public function deleteCategory(Category $category): void
     {
         try {
+            Cache::forget("category_{$category->id}");
             $category->delete();
+
         } catch (\Exception $e) {
             throw new \Exception('Failed to delete category: ' . $e->getMessage());
         }

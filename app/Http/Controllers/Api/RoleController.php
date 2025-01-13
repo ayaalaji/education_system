@@ -15,8 +15,6 @@ class RoleController extends Controller
     protected $roleService;
     public function __construct(RoleService $roleService)
     {
-        $this->middleware('auth:api');
-        $this->middleware('manager');
         $this->middleware('security');
         $this->roleService = $roleService;
     }

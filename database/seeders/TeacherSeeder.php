@@ -16,21 +16,21 @@ class TeacherSeeder extends Seeder
         Teacher::create([
             'name' => 'admin',
             'email' => 'admin@gmail.com',
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => 'password',
             'specialization'=>'security'
         ])->assignRole('admin');
 
         Teacher::create([
             'name' => 'teacher',
             'email' => 'teacher@gmail.com',
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => 'password',
             'specialization'=>'mathes'
         ])->assignRole('teacher');
 
         Teacher::create([
             'name' => 'manager',
             'email' => 'manager@gmail.com',
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => 'password',
             'specialization'=>'db mangment'
         ])->assignRole('manager');
     }

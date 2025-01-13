@@ -20,11 +20,15 @@ class PermissionSeeder extends Seeder
             'show_user',
             'add_user',
             'update_user',
+            'delete_user_temporary',
+            'restore_user',
             'delete_user',
 
             'show_teacher',
             'add_teacher',
             'update_teacher',
+            'delete_teacher_temporary',
+            'restore_teacher',
             'delete_teacher',
 
             'show_role',
@@ -35,14 +39,23 @@ class PermissionSeeder extends Seeder
             'show_course',
             'add_course',
             'update_course',
+            'delete_course_temporary',
+            'restore_course',
             'delete_course',
 
             'show_category',
             'add_category',
             'update_category',
+            'delete_category_temporary',
+            'restore_category',
             'delete_category',
 
             'access_materials',
+            'add_material',
+            'update_material',
+            'delete_material_temporary',
+            'restore_material',
+            'delete_material',
             
             'set_course_start_time',
             'set_course_end_time',
@@ -99,7 +112,16 @@ class PermissionSeeder extends Seeder
                     $role->syncPermissions([
                         'add_course',
                         'update_course',
+                        'delete_teacher_temporary',
+                        'restore_teacher',
                         'delete_course',
+                        
+                        'add_material',
+                        'update_material',
+                        'delete_material_temporary',
+                        'restore_material',
+                        'delete_material',
+
                     ]);
                     break;
 
