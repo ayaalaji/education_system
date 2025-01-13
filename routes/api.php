@@ -80,7 +80,10 @@ Route::controller(CategoryController::class)->group(function () {
     Route::post('/categories', 'store')->middleware('permission:add_category'); // Create a new category
     Route::get('/categories/{category}', 'show')->middleware('permission:show_category'); // Get details of a specific category
     Route::put('/categories/{category}', 'update')->middleware('permission:update_category'); // Update an existing category
-    Route::delete('/categories/{category}', 'destroy')->middleware('permission:delete_category'); // Delete a specific category
+    Route::delete('/categories/{category}', 'destroy')->middleware('permission:delete_category_temporary'); // Delete a specific category temporary
+    Route::get('/categories-trashed', 'trashed');
+    Route::post('/categories/{id}/restore', 'restore')->middleware('permission:restore_category'); // ReStore a specific category
+    Route::delete('/categories/{id}/force-delete', 'forceDelete')->middleware('permission:delete_category'); // Delete a specific category
 });
 
 // ---------------------- Course Routes ---------------------- //
