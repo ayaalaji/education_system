@@ -113,7 +113,7 @@ class CourseService
         try{
             DB::beginTransaction();
             
-            //check if the course name is allready excist 9the whole name the same)
+            //check if the course name is allready excist (the whole name the same)
             $title = course::where('title','LIKE', $data['title'] )->count();
             
             if($title > 0)
@@ -129,7 +129,7 @@ class CourseService
                 ]);
 
                 Cache::forget('courses_filter');
-                Cache::forget('titcher_id');
+                Cache::forget('teacher_id');
                 Cache::forget('category_id');
 
                 DB::commit();

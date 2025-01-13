@@ -42,9 +42,11 @@ Route::controller(UserController::class)->group(function () {
     Route::post('user', 'store')->middleware('permission:add_user'); // Create a new user
     Route::get('users/{user}', 'show')->middleware('permission:show_user'); // Get details of a specific user
     Route::put('users/{user}', 'update')->middleware('permission:update_user'); // Update an existing user
-    Route::delete('users/{user}', 'destroy')->middleware('permission:delete_user'); // Delete a specific user
-    Route::delete('users/{user}', 'forceDeleteUser')->middleware('permission:delete_user'); // Delete a specific user
-    Route::delete('users/{user}', 'restoreUser')->middleware('permission:delete_user'); // Delete a specific user
+    Route::delete('users/{user}', 'destroy')->middleware('permission:delete_user_temporary'); // Delete a specific user Temporary
+   
+    Route::delete('users/{user}/forcedelete', 'forceDeleteUser')->middleware('permission:delete_user'); // Delete a specific user
+    Route::get('users/{user}/restore', 'restoreUser')->middleware('permission:restore_user'); // Restore a specific user
+    Route::get('users-getallTrashed', 'getAllUserTrashed')->middleware('permission:get_trashed_user'); // Get all soft deleted users
 
 });
 
@@ -94,11 +96,20 @@ Route::controller(CourseController::class)->group(function () {
     Route::middleware(['auth:teacher-api', 'course.teacher'])->group(function () {
         Route::post('/courses', 'store')->middleware('permission:add_course'); // Create a new course
         Route::put('/courses/{course}', 'update')->middleware('permission:update_course'); // Update an existing course
-        Route::delete('/courses/{course}', 'destroy')->middleware('permission:delete_course'); // Delete a specific course
+        
+        Route::delete('/courses/{course}', 'destroy')->middleware('permission:delete_course_temporary'); // Delete a specific course
         Route::put('/courses/{course}/updateStartDate', 'updateStartDate')->middleware('permission:set_course_start_time'); // Update course start date
         Route::put('/courses/{course}/updateEndDate', 'updateEndDate')->middleware('permission:set_course_end_time'); // Update course end date
         Route::put('/courses/{course}/updateStartRegisterDate', 'updateStartRegisterDate')->middleware('permission:set_registration_start_time'); // Update course registration start date
         Route::put('/courses/{course}/updateEndRegisterDate', 'updateEndRegisterDate')->middleware('permission:set_registration_end_time'); // Update course registration end date
+        Route::put('/courses/{course}/updatestatus', 'updateStatus')->middleware('permission:change_the_status_of_course'); //Update the course status
+        Route::post('/courses/{course}/addUser','addUser')->middleware('permission:add_user_to_course');//Add user to course
+        
+        Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse')->middleware('permission:delete_course');
+        Route::get('courses/{course}/restore', 'restoreCourse')->middleware('permission:restore_course');
+        Route::get('/courses-trashed', 'getAllTrashed')->middleware('permission:get_trashed_corse');
+
+        
     });
 
     Route::get('/courses/{course}', 'show');
