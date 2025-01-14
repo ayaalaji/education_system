@@ -47,19 +47,19 @@ class CourseService
             
 
             $teacher_ids = $teacher ? 
-            Cache::remember('teacher_ids_' . md5($teacher),60, function () use($teacher) 
-            {
+            cacheData('teacher_ids_' . md5($teacher), function () use ($teacher) {
                 return Teacher::where('name', 'LIKE', '%' . $teacher . '%')
-                                ->pluck('id')->toArray() ; 
-            }):[]; 
-            
-            
-            $category_ids = $category ?
-            Cache::remember('category_ids_' . md5($category),60, function () use($category) 
-            {
+                              ->pluck('id')
+                              ->toArray();
+            }, 60) : [];
+        
+        $category_ids = $category ? 
+            cacheData('category_ids_' . md5($category), function () use ($category) {
                 return Category::where('name', 'LIKE', '%' . $category . '%')
-                                ->pluck('id')->toArray();
-            }) : [];
+                              ->pluck('id')
+                              ->toArray();
+            }, 60) : [];
+        
            
              
             /*
@@ -71,24 +71,22 @@ class CourseService
                 return false;
             }
         
-           // uniqe cache key
-            $cacheKey = 'courses_filter_' . md5(serialize([
-                'teacher' => $teacher,
-                'status' => $status,
-                'category' => $category,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-                'teacher_ids' => $teacher_ids,
-                'category_ids' => $category_ids,
-            ]));
-          
-            $courses = Cache::remember($cacheKey ,60,
-            function()use($teacher, $status, $category,$start_date, $end_date,$teacher_ids,$category_ids)
-            {
-                return Course::byFilter($teacher, $status, $category,
-                                   $start_date, $end_date,
-                                  $teacher_ids,$category_ids)->get();
-            });
+        // Unique cache key
+        $cacheKey = 'courses_filter_' . md5(serialize([
+            'teacher' => $teacher,
+            'status' => $status,
+            'category' => $category,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'teacher_ids' => $teacher_ids,
+            'category_ids' => $category_ids,
+        ]));
+
+        // Use the cacheData helper
+        $courses = cacheData($cacheKey, function () use ($teacher, $status, $category, $start_date, $end_date, $teacher_ids, $category_ids) {
+            return Course::byFilter($teacher, $status, $category, $start_date, $end_date, $teacher_ids, $category_ids)->get();
+        }, 60);
+
        
            //dd($courses);
          return $courses;
@@ -128,9 +126,7 @@ class CourseService
                     'teacher_id'      => $data['teacher_id']
                 ]);
 
-                Cache::forget('courses_filter');
-                Cache::forget('teacher_id');
-                Cache::forget('category_id');
+               Cache::flush();
 
                 DB::commit();
                
@@ -164,9 +160,8 @@ class CourseService
             $course['category_id'] = $validation_data['category_id']?? $course['category_id'];
             $course->save();
      
-            Cache::forget('courses_filter');
-            Cache::forget('titcher_id');
-            Cache::forget('category_id');
+           Cache::flush();
+
             
             DB::commit();
 
@@ -190,9 +185,9 @@ class CourseService
     {
         try {
             $course->delete();
-            Cache::forget('courses_filter');
-            Cache::forget('titcher_id');
-            Cache::forget('category_id');
+
+           Cache::flush();
+
             return true;
         } catch (Exception $e) {
             Log::error('Error while Deliting  the course ' . $e->getMessage());
@@ -222,6 +217,8 @@ public function forceDeleteCourse($id)
             {
                 $course = Course::onlyTrashed()->find($id);
                 $course->forceDelete();
+               Cache::flush();
+
                 return true;
             }else{
                 throw new Exception("This id is not Deleted yet,or dosn't exist!!");
@@ -302,7 +299,7 @@ public function updateStatus($data, $course)
 
        $course->status = $data['status'];
        $course->save();
-       Cache::forget('courses_filter');
+      Cache::flush();
 
        DB::commit();
        return $course;
@@ -332,7 +329,7 @@ public function updateCourseStartDate($course,$data)
 
         $course->start_date = $data['start_date'];
 
-       Cache::forget('courses_filter');
+      Cache::flush();
 
        DB::commit();
 
@@ -383,7 +380,7 @@ public function updateCourseEndDate($course,$data)
             throw new Exception('The start Date should not be null .');
         }
         
-        Cache::forget('courses_filter');
+       Cache::flush();
 
         DB::commit();
  
@@ -413,7 +410,8 @@ public function updateStartRegisterDate($data,$course)
 
        $course->start_register_date = $data['start_register_date'];
 
-       Cache::forget('courses_filter');
+       Cache::flush();
+       
        $course->save();
 
         DB::commit();
@@ -459,7 +457,7 @@ public function updateEndRegisterdDate($data,$course)
 
         $course->end_register_date = $data['end_register_date'];
 
-        Cache::forget('courses_filter');
+       Cache::flush();
     
         DB::commit();
 

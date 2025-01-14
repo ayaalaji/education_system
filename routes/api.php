@@ -88,24 +88,35 @@ Route::controller(CategoryController::class)->group(function () {
 // ---------------------- Course Routes ---------------------- //
 Route::controller(CourseController::class)->group(function () {
     Route::get('/courses', 'index');
+    
 
     // Middleware for ensuring the teacher is responsible for the course
-    Route::middleware(['auth:teacher-api', 'course.teacher'])->group(function () {
-        Route::post('/courses', 'store')->middleware('permission:add_course'); // Create a new course
-        Route::put('/courses/{course}', 'update')->middleware('permission:update_course'); // Update an existing course
+    Route::middleware(['auth:teacher-api'])->group(function () {
+        Route::post('/courses', 'store')
+                ->middleware('permission:add_course'); // Create a new course
+        Route::put('/courses/{course}', 'update')
+                ->middleware(['permission:update_course','course.teacher']); // Update an existing course 
+        Route::delete('/courses/{course}', 'destroy')
+                ->middleware(['permission:delete_course_temporary','course.teacher']); // Delete a specific course
+        Route::put('/courses/{course}/updateStartDate', 'updateStartDate')
+                ->middleware('permission:set_course_start_time'); // Update course start date
+        Route::put('/courses/{course}/updateEndDate', 'updateEndDate')
+                ->middleware('permission:set_course_end_time'); // Update course end date
+        Route::put('/courses/{course}/updateStartRegisterDate', 'updateStartRegisterDate')
+                ->middleware('permission:set_registration_start_time'); // Update course registration start date
+        Route::put('/courses/{course}/updateEndRegisterDate', 'updateEndRegisterDate')
+                ->middleware('permission:set_registration_end_time'); // Update course registration end date
+        Route::put('/courses/{course}/updatestatus', 'updateStatus')
+                ->middleware('permission:change_the_status_of_course'); //Update the course status
+        Route::post('/courses/{course}/addUser','addUser')
+                ->middleware(['permission:add_user_to_course','course.teacher']);//Add user to course
         
-        Route::delete('/courses/{course}', 'destroy')->middleware('permission:delete_course_temporary'); // Delete a specific course
-        Route::put('/courses/{course}/updateStartDate', 'updateStartDate')->middleware('permission:set_course_start_time'); // Update course start date
-        Route::put('/courses/{course}/updateEndDate', 'updateEndDate')->middleware('permission:set_course_end_time'); // Update course end date
-        Route::put('/courses/{course}/updateStartRegisterDate', 'updateStartRegisterDate')->middleware('permission:set_registration_start_time'); // Update course registration start date
-        Route::put('/courses/{course}/updateEndRegisterDate', 'updateEndRegisterDate')->middleware('permission:set_registration_end_time'); // Update course registration end date
-        Route::put('/courses/{course}/updatestatus', 'updateStatus')->middleware('permission:change_the_status_of_course'); //Update the course status
-        Route::post('/courses/{course}/addUser','addUser')->middleware('permission:add_user_to_course');//Add user to course
-        
-        Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse')->middleware('permission:delete_course');
-        Route::get('courses/{course}/restore', 'restoreCourse')->middleware('permission:restore_course');
-        Route::get('/courses-trashed', 'getAllTrashed')->middleware('permission:get_trashed_corse');
-
+        Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse')
+                ->middleware('permission:delete_course');
+        Route::get('courses/{course}/restore', 'restoreCourse')
+                ->middleware('permission:restore_course');
+        Route::get('/courses-trashed', 'getAllTrashed')
+                ->middleware('permission:get_trashed_corse');
         
     });
 
@@ -113,7 +124,7 @@ Route::controller(CourseController::class)->group(function () {
 });
 
 // ---------------------- Task Routes ---------------------- //
-Route::middleware( ['auth:teacher-api','course.teacher'])->group(function () {
+Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
     Route::controller(TaskController::class)->group(function () {
         Route::get('task', 'index');
         Route::get('task/{task}', 'show');
