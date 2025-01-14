@@ -28,7 +28,7 @@ class RoleTest extends TestCase
     }
 
     /**
-     * Test the method index 
+     * Test the method index
      */
     public function test_get_all_roles(): void
     {
@@ -169,6 +169,6 @@ class RoleTest extends TestCase
         $response->assertStatus(200);
 
     }
-    
+
 
 }
