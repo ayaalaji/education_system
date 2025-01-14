@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->text('description')->nullable();;
-            $table->foreignId('teacher_id')->constrained();
+            $table->foreignId('teacher_id')->constrained()->onDelete('cascade');
             $table->index('name');
             $table->timestamps();
             $table->softDeletes();
