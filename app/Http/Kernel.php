@@ -72,7 +72,8 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-        'course.teacher' => \App\Http\Middleware\EnsureUserIsCourseTeacher::class,
-        'task.user' => EnsureTaskIsForUser::class
+        'task.teacher' => \App\Http\Middleware\EnsureUserIsCourseTeacher::class,
+        'task.user' => EnsureTaskIsForUser::class,
+        'course.teacher' =>\App\Http\Middleware\CheckCourseTeacher::class
     ];
 }

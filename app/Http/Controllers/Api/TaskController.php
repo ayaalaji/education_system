@@ -53,7 +53,7 @@ class TaskController extends Controller
     {
       $data = $request->validated();
       $task = $this->taskService->createTask($data);
-      return $this->success(null,'task created success',201);
+      return $this->success($task,'task created success',201);
     }
 
     /**
