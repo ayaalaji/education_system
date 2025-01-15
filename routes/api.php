@@ -121,8 +121,7 @@ Route::controller(CourseController::class)->group(function () {
         
     });
 
-    Route::get('/courses/{course}', 'show');
-});
+
 
 // ---------------------- Task Routes ---------------------- //
 Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
@@ -140,6 +139,7 @@ Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
 
         // Route to delete a note for a specific user on a task
         Route::delete('/tasks/{taskId}/users/{userId}/delete-note', [TaskController::class, 'deleteNote']);
+
 
     });
 });
