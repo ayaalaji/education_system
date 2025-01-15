@@ -114,7 +114,7 @@ Route::middleware(['auth:teacher-api', 'course.teacher'])->group(function () {
         Route::post('/', 'store');
         Route::put('/{task}', 'update');
         Route::delete('/{task}', 'destroy');
-        Route::post('/{task}/forcedelete', 'forceDeleteForTask');
+        Route::delete('/{task}/forcedelete', 'forceDeleteForTask');
         Route::post('/{task}/restore', 'restoreTask');
 
         Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
