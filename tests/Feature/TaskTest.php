@@ -28,22 +28,26 @@ class TaskTest extends TestCase
         $this->artisan('db:seed');
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        // إنشاء معلم مع صلاحيات API
-        // $this->teacher = Teacher::factory()->create();
-        // $this->actingAs($this->teacher, 'teacher-api');
+
     }
 
     /** @test */
     public function it_can_list_all_tasks_for_teacher_course()
     {
-        $admin = Teacher::where('email', 'admin@gmail.com')->first();
-        $course = Course::where('teacher_id',$admin->id)->first();
+        $admin = Teacher::factory()->create(['email' => fake()->unique()->safeEmail()]);
 
-        $token = JWTAuth::fromUser($admin);
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->getJson("/api/tasks?course_id={$course->id}");
+    // إنشاء الدورة
+    $course = Course::factory()->create(['teacher_id' => $admin->id]);
 
-        $response->assertStatus(200);
+    // توليد التوكن
+    $token = JWTAuth::fromUser($admin);
+
+    // استدعاء API
+    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        ->getJson("/api/task?course_id={$course->id}");
+
+    // التحقق من الاستجابة
+    $response->assertStatus(200);
     }
 
 
@@ -62,7 +66,7 @@ class TaskTest extends TestCase
 
         $token = JWTAuth::fromUser($admin);
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-        ->postJson("/api/tasks?course_id={$course->id}", $data);
+        ->postJson("/api/task?course_id={$course->id}", $data);
 
 
         $response->assertStatus(201);
@@ -87,7 +91,7 @@ public function it_allows_to_retrieve_task_with_users_and_course()
     $this->withHeader('Authorization', 'Bearer ' . $token);
 
     // إرسال طلب GET لاسترجاع المهمة
-    $response = $this->getJson("/api/tasks/{$task->id}?course_id={$course->id}");
+    $response = $this->getJson("/api/task/{$task->id}?course_id={$course->id}");
 
     // التحقق من حالة الاستجابة
     $response->assertStatus(200);
@@ -119,7 +123,7 @@ public function it_allows_to_retrieve_task_with_users_and_course()
         // إرسال طلب لإنشاء مهمة جديدة
         $token = JWTAuth::fromUser($admin);
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-                         ->postJson("/api/tasks?course_id={$course->id}", $data);
+                         ->postJson("/api/task?course_id={$course->id}", $data);
 
         // التحقق من استجابة الإنشاء
         $response->assertStatus(201); // تحقق من أن المهمة تم إنشاؤها بنجاح
@@ -146,7 +150,7 @@ public function it_allows_to_retrieve_task_with_users_and_course()
 
         // تحديث المهمة
         $updateResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
-                               ->putJson("/api/tasks/{$taskId}?course_id={$course->id}", $updateData);
+                               ->putJson("/api/task/{$taskId}?course_id={$course->id}", $updateData);
 
         // التحقق من الاستجابة للتحديث
         $updateResponse->assertStatus(200)
@@ -177,7 +181,7 @@ public function it_can_delete_a_task_for_teacher_course()
     // إرسال طلب لحذف المهمة
     $token = JWTAuth::fromUser($admin);
     $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-                     ->deleteJson("/api/tasks/{$task->id}?course_id={$course->id}");
+                     ->deleteJson("/api/task/{$task->id}?course_id={$course->id}");
 
     // التحقق من الاستجابة (204: تم الحذف بنجاح)
     $response->assertStatus(204);
@@ -283,7 +287,7 @@ public function it_allows_forced_deletion_of_a_task_for_teacher()
     $task->delete(); // حذف المهمة بشكل ناعم
 
     // استدعاء الوظيفة الخاصة بحذف المهمة بشكل دائم
-    $response = $this->deleteJson("/api/tasks/{$task->id}/forcedelete?course_id={$course->id}");
+    $response = $this->deleteJson("/api/task/{$task->id}/forcedelete?course_id={$course->id}");
 
 
 
@@ -311,7 +315,7 @@ public function it_allows_teacher_to_restore_task()
     $this->withHeader('Authorization', 'Bearer ' . $token);
 
     // إرسال طلب استرجاع المهمة
-    $response = $this->postJson("/api/tasks/{$task->id}/restore?course_id={$course->id}");
+    $response = $this->postJson("/api/task/{$task->id}/restore?course_id={$course->id}");
 
     // التحقق من أن المهمة تم استرجاعها بنجاح
     $response->assertStatus(200);

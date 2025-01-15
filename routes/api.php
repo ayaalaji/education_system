@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
+use App\Http\Controllers\Api\NoteController;
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -96,7 +97,7 @@ Route::controller(CourseController::class)->group(function () {
         Route::post('/courses', 'store')
                 ->middleware('permission:add_course'); // Create a new course
         Route::put('/courses/{course}', 'update')
-                ->middleware(['permission:update_course','course.teacher']); // Update an existing course 
+                ->middleware(['permission:update_course','course.teacher']); // Update an existing course
         Route::delete('/courses/{course}', 'destroy')
                 ->middleware(['permission:delete_course_temporary','course.teacher']); // Delete a specific course
         Route::put('/courses/{course}/updateStartDate', 'updateStartDate')
@@ -111,44 +112,44 @@ Route::controller(CourseController::class)->group(function () {
                 ->middleware('permission:change_the_status_of_course'); //Update the course status
         Route::post('/courses/{course}/addUser','addUser')
                 ->middleware(['permission:add_user_to_course','course.teacher']);//Add user to course
-        
+
         Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse')
                 ->middleware('permission:delete_course');
         Route::get('courses/{course}/restore', 'restoreCourse')
                 ->middleware('permission:restore_course');
         Route::get('/courses-trashed', 'getAllTrashed')
                 ->middleware('permission:get_trashed_corse');
-        
+
     });
 });
+
 
 // ---------------------- Task Routes ---------------------- //
 Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
-    Route::controller(TaskController::class)->group(function () {
-        Route::get('task', 'index');
-        Route::get('task/{task}', 'show');
-        Route::post('task', 'store');
-        Route::put('task/{task}', 'update');
-        Route::delete('task/{task}', 'destroy');
-
-        Route::post('task/{task}/forcedelete',[TaskController::class,'forceDeleteForTask']);
-        Route::post('task/{task}/restore',[TaskController::class,'restoreTask']);
-        // Route to add a note for a specific user on a task
-        Route::post('/tasks/{taskId}/users/{userId}/add-note', [TaskController::class, 'addNote']);
-
-        // Route to delete a note for a specific user on a task
-        Route::delete('/tasks/{taskId}/users/{userId}/delete-note', [TaskController::class, 'deleteNote']);
-
-
+    Route::controller(TaskController::class)->prefix('tasks')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{task}', 'show');
+        Route::post('/', 'store');
+        Route::put('/{task}', 'update');
+        Route::delete('/{task}', 'destroy');
+        Route::post('/{task}/forcedelete', 'forceDeleteForTask');
+        Route::post('/{task}/restore', 'restoreTask');
     });
 });
 
-//-----------------  i added fpr Export ---------------------------//
-Route::controller(TaskController::class)->middleware('auth:teacher-api')->group(function () {
+Route::middleware(['auth:teacher-api'])->group(function () {
+    //-----------------  For Export ---------------------------//
+    Route::controller(TaskController::class)->group(function () {
+        Route::get('/tasks/{taskId}/export', [TaskController::class, 'generateExcel'])->middleware('permission:export_task_note');
+    });
 
-    Route::get('/tasks/{taskId}/export', [TaskController::class, 'generateExcel'])->middleware('permission:export_task_note');
+    // ---------------------- Note Routes ---------------------- //
+    Route::controller(NoteController::class)->prefix('notes')->group(function () {
+        Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
+        Route::delete('/{taskId}/users/{userId}/delete-note', 'deleteNote');
+
+    });
 });
-//--------------------- End Excel -------------------------//
 
 // ---------------------- Task Attachment Routes ---------------------- //
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
