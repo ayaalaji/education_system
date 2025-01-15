@@ -116,8 +116,8 @@ class PermissionSeeder extends Seeder
                     $role->syncPermissions([
                         'add_course',
                         'update_course',
-                        'delete_teacher_temporary',
-                        'restore_teacher',
+                        'delete_course_temporary',
+                        'restore_course',
                         'delete_course',
                         'add_user_to_course',
                         'get_trashed_corse',

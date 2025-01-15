@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             MaterialSeeder::class,
             TaskSeeder::class,
-
             Course_UserSeeder::class,
             Task_UserSeeder::class
 

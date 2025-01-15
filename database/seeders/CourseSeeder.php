@@ -20,7 +20,6 @@ class CourseSeeder extends Seeder
             'end_register_date' => '2024-01-15',
             'start_date' => '2024-02-01',
             'end_date' => '2024-05-01',
-
             'course_duration' => 16,
             'status' => 'Open',
             'teacher_id' => 1,
@@ -53,11 +52,11 @@ class CourseSeeder extends Seeder
             'end_date' => '2024-12-01',
             'course_duration' => 12,
             'status' => 'Open',
-            'teacher_id' => 2,
+            'teacher_id' => 1,
             'category_id' => 1,
         ]); 
         Course::create([
-            'title' => 'Course 3',
+            'title' => 'Course 4',
             'description' => 'This is the description for Course 3',
             'start_register_date' => '2024-05-01',
             'end_register_date' => '2024-05-20',
@@ -65,10 +64,33 @@ class CourseSeeder extends Seeder
             'end_date' => '2024-04-01',
             'course_duration' => 5,
             'status' => 'Open',
-            'teacher_id' => 3,
+            'teacher_id' => 1,
             'category_id' => 1,
         ]);  
-
+        Course::create([
+            'title' => 'Course 5',
+            'description' => 'This is the description for Course 3',
+            'start_register_date' => '2024-05-01',
+            'end_register_date' => '2024-05-20',
+            'start_date' => '2024-01-01',
+            'end_date' => '2024-04-01',
+            'course_duration' => 5,
+            'status' => 'Open',
+            'teacher_id' => 1,
+            'category_id' => 1,
+        ]);
+        Course::create([
+            'title' => 'Course 6',
+            'description' => 'This is the description for Course 3',
+            'start_register_date' => '2024-05-01',
+            'end_register_date' => '2024-05-20',
+            'start_date' => '2024-01-01',
+            'end_date' => '2024-04-01',
+            'course_duration' => 5,
+            'status' => 'Open',
+            'teacher_id' => 1,
+            'category_id' => 1,
+        ]);
 
 
 
