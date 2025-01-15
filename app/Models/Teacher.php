@@ -27,7 +27,7 @@ class Teacher extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'specialization' // Add specialization to fillable attributes
+        'specialization'
     ];
 
     /*

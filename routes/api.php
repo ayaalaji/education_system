@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
+use App\Http\Controllers\Api\NoteController;
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -121,29 +122,30 @@ Route::controller(CourseController::class)->group(function () {
         
     });
 
-
-
-// ---------------------- Task Routes ---------------------- //
-Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
-    Route::controller(TaskController::class)->group(function () {
-        Route::get('task', 'index');
-        Route::get('task/{task}', 'show');
-        Route::post('task', 'store');
-        Route::put('task/{task}', 'update');
-        Route::delete('task/{task}', 'destroy');
-
-        Route::post('task/{task}/forcedelete',[TaskController::class,'forceDeleteForTask']);
-        Route::post('task/{task}/restore',[TaskController::class,'restoreTask']);
-        // Route to add a note for a specific user on a task
-        Route::post('/tasks/{taskId}/users/{userId}/add-note', [TaskController::class, 'addNote']);
-
-        // Route to delete a note for a specific user on a task
-        Route::delete('/tasks/{taskId}/users/{userId}/delete-note', [TaskController::class, 'deleteNote']);
-
-
+    // ---------------------- Task Routes ---------------------- //
+    Route::controller(TaskController::class)->prefix('tasks')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{task}', 'show');
+        Route::post('/', 'store');
+        Route::put('/{task}', 'update');
+        Route::delete('/{task}', 'destroy');
+        Route::post('/{task}/forcedelete', 'forceDeleteForTask');
+        Route::post('/{task}/restore', 'restoreTask');
     });
+
+
 });
 
+Route::middleware(['auth:teacher-api'])->group(function () {
+
+    // ---------------------- Note Routes ---------------------- //
+    Route::controller(NoteController::class)->prefix('notes')->group(function () {
+        Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
+        Route::delete('/{taskId}/users/{userId}/delete-note', 'deleteNote');
+
+});
+
+});
 // ---------------------- Task Attachment Routes ---------------------- //
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
