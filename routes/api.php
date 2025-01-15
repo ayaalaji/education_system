@@ -120,8 +120,7 @@ Route::controller(CourseController::class)->group(function () {
                 ->middleware('permission:get_trashed_corse');
         
     });
-
-
+});
 
 // ---------------------- Task Routes ---------------------- //
 Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
@@ -143,6 +142,13 @@ Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
 
     });
 });
+
+//-----------------  i added fpr Export ---------------------------//
+Route::controller(TaskController::class)->middleware('auth:teacher-api')->group(function () {
+
+    Route::get('/tasks/{taskId}/export', [TaskController::class, 'generateExcel'])->middleware('permission:export_task_note');
+});
+//--------------------- End Excel -------------------------//
 
 // ---------------------- Task Attachment Routes ---------------------- //
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
