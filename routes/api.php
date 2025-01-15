@@ -40,6 +40,7 @@ Route::controller(RoleController::class)->prefix('roles')->middleware('auth:teac
 
 // ---------------------- User Routes ---------------------- //
 Route::controller(UserController::class)->prefix('users')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/trashed', 'getAllUserTrashed')->middleware('permission:get_trashed_user');
     Route::get('/', 'index')->middleware('permission:show_user');
     Route::post('/', 'store')->middleware('permission:add_user');
     Route::get('/{user}', 'show')->middleware('permission:show_user');
@@ -48,7 +49,6 @@ Route::controller(UserController::class)->prefix('users')->middleware('auth:teac
 
     Route::delete('/{user}/forcedelete', 'forceDeleteUser')->middleware('permission:delete_user');
     Route::get('/{user}/restore', 'restoreUser')->middleware('permission:restore_user');
-    Route::get('/trashed', 'getAllUserTrashed')->middleware('permission:get_trashed_user');
 });
 
 // ---------------------- Teacher Routes ---------------------- //
@@ -76,49 +76,71 @@ Route::controller(MaterialController::class)->prefix('materials')->middleware('a
 
 // ---------------------- Category Routes ---------------------- //
 Route::controller(CategoryController::class)->prefix('categories')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/trashed', 'trashed')->middleware('permission:getTrashed');
     Route::get('/', 'index')->middleware('permission:show_category');
     Route::post('/', 'store')->middleware('permission:add_category');
     Route::get('/{category}', 'show')->middleware('permission:show_category');
     Route::put('/{category}', 'update')->middleware('permission:update_category');
     Route::delete('/{category}', 'destroy')->middleware('permission:delete_category_temporary');
 
-    Route::get('/trashed', 'trashed')->middleware('permission:getTrashed');
     Route::post('/{id}/restore', 'restore')->middleware('permission:restore_category');
     Route::delete('/{id}/force-delete', 'forceDelete')->middleware('permission:delete_category');
 });
 
-// ---------------------- Shared Middleware Group ---------------------- //
-Route::middleware(['auth:teacher-api', 'course.teacher'])->group(function () {
-    // ---------------------- Course Routes ---------------------- //
-    Route::controller(CourseController::class)->prefix('courses')->group(function () {
-        Route::post('/', 'store')->middleware('permission:add_course');
-        Route::put('/{course}', 'update')->middleware('permission:update_course');
-        Route::delete('/{course}', 'destroy')->middleware('permission:delete_course_temporary');
+// ---------------------- Course Routes ---------------------- //
+Route::controller(CourseController::class)->group(function () {
+    Route::get('/courses', 'index');
 
-        Route::put('/{course}/updateStartDate', 'updateStartDate')->middleware('permission:set_course_start_time');
-        Route::put('/{course}/updateEndDate', 'updateEndDate')->middleware('permission:set_course_end_time');
-        Route::put('/{course}/updateStartRegisterDate', 'updateStartRegisterDate')->middleware('permission:set_registration_start_time');
-        Route::put('/{course}/updateEndRegisterDate', 'updateEndRegisterDate')->middleware('permission:set_registration_end_time');
-        Route::put('/{course}/updatestatus', 'updateStatus')->middleware('permission:change_the_status_of_course');
-        Route::post('/{course}/addUser', 'addUser')->middleware('permission:add_user_to_course');
-
-        Route::delete('/{course}/forcedelete', 'forceDeleteCourse')->middleware('permission:delete_course');
-        Route::get('/{course}/restore', 'restoreCourse')->middleware('permission:restore_course');
-        Route::get('/trashed', 'getAllTrashed')->middleware('permission:get_trashed_corse');
+    // Middleware for ensuring the teacher is responsible for the course
+    Route::middleware(['auth:teacher-api'])->group(function () {
+        Route::post('/courses', 'store')
+                ->middleware('permission:add_course'); // Create a new course
+        Route::put('/courses/{course}', 'update')
+                ->middleware(['permission:update_course','course.teacher']); // Update an existing course 
+        Route::delete('/courses/{course}', 'destroy')
+                ->middleware(['permission:delete_course_temporary','course.teacher']); // Delete a specific course
+        Route::put('/courses/{course}/updateStartDate', 'updateStartDate')
+                ->middleware('permission:set_course_start_time'); // Update course start date
+        Route::put('/courses/{course}/updateEndDate', 'updateEndDate')
+                ->middleware('permission:set_course_end_time'); // Update course end date
+        Route::put('/courses/{course}/updateStartRegisterDate', 'updateStartRegisterDate')
+                ->middleware('permission:set_registration_start_time'); // Update course registration start date
+        Route::put('/courses/{course}/updateEndRegisterDate', 'updateEndRegisterDate')
+                ->middleware('permission:set_registration_end_time'); // Update course registration end date
+        Route::put('/courses/{course}/updatestatus', 'updateStatus')
+                ->middleware('permission:change_the_status_of_course'); //Update the course status
+        Route::post('/courses/{course}/addUser','addUser')
+                ->middleware(['permission:add_user_to_course','course.teacher']);//Add user to course
+        
+        Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse')
+                ->middleware('permission:delete_course');
+        Route::get('courses/{course}/restore', 'restoreCourse')
+                ->middleware('permission:restore_course');
+        Route::get('/courses-trashed', 'getAllTrashed')
+                ->middleware('permission:get_trashed_corse');
+        
     });
 
-    // ---------------------- Task Routes ---------------------- //
-    Route::controller(TaskController::class)->prefix('tasks')->group(function () {
-        Route::get('/', 'index');
-        Route::get('/{task}', 'show');
-        Route::post('/', 'store');
-        Route::put('/{task}', 'update');
-        Route::delete('/{task}', 'destroy');
-        Route::delete('/{task}/forcedelete', 'forceDeleteForTask');
-        Route::post('/{task}/restore', 'restoreTask');
 
-        Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
-        Route::delete('/{taskId}/users/{userId}/delete-note', 'deleteNote');
+
+// ---------------------- Task Routes ---------------------- //
+Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
+    Route::controller(TaskController::class)->group(function () {
+        Route::get('task', 'index');
+        Route::get('task/{task}', 'show');
+        Route::post('task', 'store');
+        Route::put('task/{task}', 'update');
+        Route::delete('task/{task}', 'destroy');
+
+        Route::post('task/{task}/forcedelete',[TaskController::class,'forceDeleteForTask']);
+        Route::post('task/{task}/restore',[TaskController::class,'restoreTask']);
+        // Route to add a note for a specific user on a task
+        Route::post('/tasks/{taskId}/users/{userId}/add-note', [TaskController::class, 'addNote']);
+
+        // Route to delete a note for a specific user on a task
+        Route::delete('/tasks/{taskId}/users/{userId}/delete-note', [TaskController::class, 'deleteNote']);
+
+
     });
 });
 

@@ -36,7 +36,7 @@ class CourseTest extends TestCase
             'title'           => 'test1',
             'description'     => 'this is a test',
             'course_duration' => 15,
-            'category_name'   =>'cat 2'
+            'category_name'   =>'Programming'
 
         ]);
 
@@ -52,8 +52,8 @@ class CourseTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->getJson('api/courses/3');
-
+        $response = $this->actingAs($admin,'teacher-api')->getJson('api/courses/1');
+        
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
             "message" => "Fetch Course Successfully",
@@ -69,7 +69,8 @@ class CourseTest extends TestCase
             'title'           => 'test updated',
             'description'     => 'this is a test',
             'course_duration' => 15,
-            'category_name'   =>'cat 2'
+            'category_name'   =>'Design' 
+
         ]);
 
         $response->assertStatus(200)->assertJsonFragment([
@@ -83,7 +84,8 @@ class CourseTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/courses/4');
+        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/courses/2');
+        
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -97,11 +99,12 @@ class CourseTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/courses/5/forcedelete');
 
+        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/courses/2/forcedelete');
+        
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
-            "message" => "Force Delete Course Successfully",
+            "message" => "Force Deleted Course Successfully",
         ]);
     }
     //....................................
@@ -152,24 +155,24 @@ class CourseTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->putJson('api/courses/7/updateStartDate',[
+        
+        $response = $this->actingAs($admin,'teacher-api')->putJson('api/courses/1/updateStartDate',[
             'start_date'   => '2025-01-25'
         ]);
 
-        $course = Course::find(7);
+        $course = Course::find(1);
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
             "message" => "Update Start Date Successfully",
             'data' => [
-        "Id"                    =>  $course->id,
         "Title"                 =>  $course->title,
         "Description"           =>  $course->description,
-        "Start_register_date"   => $course->start_register_date,
-        "End_register_date"     =>  $course->end_register_date,
+        "Start Register Date"   => $course->start_register_date,
+        "End Register Date"     =>  $course->end_register_date,
         "Course Duration"       =>  $course->course_duration,
-        "Start_date"            =>  $course->start_date,
-        "End_date"              =>  $course->end_date,
+        "Start Date"            =>  $course->start_date,
+        "End Date"              =>  $course->end_date,
         "Status"                =>  $course->status,
         "Teacher"               =>  $course->teacher->name,
         "Category"              =>  $course->category->name
@@ -182,27 +185,28 @@ class CourseTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->putJson('api/courses/7/updateEndDate',[
+        
+        $response = $this->actingAs($admin,'teacher-api')->putJson('api/courses/1/updateEndDate',[
+
             'end_date'   => '2025-08-30'
         ]);
 
-        $course = Course::find(7);
+        $course = Course::find(1);
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
-            "message" => "Update Start and End Date Successfully",
+            "message" => "Update End Date Successfully",
             'data' => [
-        "Id"                    =>  $course->id,
-        "Title"                 =>  $course->title,
-        "Description"           =>  $course->description,
-        "Start_register_date"   => $course->start_register_date,
-        "End_register_date"     =>  $course->end_register_date,
-        "Course Duration"       =>  $course->course_duration,
-        "Start_date"            =>  $course->start_date,
-        "End_date"              =>  $course->end_date,
-        "Status"                =>  $course->status,
-        "Teacher"               =>  $course->teacher->name,
-        "Category"              =>  $course->category->name
+                "Title"                 =>  $course->title,
+                "Description"           =>  $course->description,
+                "Start Register Date"   => $course->start_register_date,
+                "End Register Date"     =>  $course->end_register_date,
+                "Course Duration"       =>  $course->course_duration,
+                "Start Date"            =>  $course->start_date,
+                "End Date"              =>  $course->end_date,
+                "Status"                =>  $course->status,
+                "Teacher"               =>  $course->teacher->name,
+                "Category"              =>  $course->category->name
             ]
         ]);
     }
@@ -212,27 +216,28 @@ class CourseTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->putJson('api/courses/7/updateStartRegisterDate',[
+        
+        $response = $this->actingAs($admin,'teacher-api')->putJson('api/courses/1/updateStartRegisterDate',[
+
             'start_register_date'   => '2025-08-30'
         ]);
 
-        $course = Course::find(7);
+        $course = Course::find(1);
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
             "message" => "Update Start Register Date Successfully",
             'data' => [
-        "Id"                    =>  $course->id,
-        "Title"                 =>  $course->title,
-        "Description"           =>  $course->description,
-        "Start_register_date"   => $course->start_register_date,
-        "End_register_date"     =>  $course->end_register_date,
-        "Course Duration"       =>  $course->course_duration,
-        "Start_date"            =>  $course->start_date,
-        "End_date"              =>  $course->end_date,
-        "Status"                =>  $course->status,
-        "Teacher"               =>  $course->teacher->name,
-        "Category"              =>  $course->category->name
+                "Title"                 =>  $course->title,
+                "Description"           =>  $course->description,
+                "Start Register Date"   => $course->start_register_date,
+                "End Register Date"     =>  $course->end_register_date,
+                "Course Duration"       =>  $course->course_duration,
+                "Start Date"            =>  $course->start_date,
+                "End Date"              =>  $course->end_date,
+                "Status"                =>  $course->status,
+                "Teacher"               =>  $course->teacher->name,
+                "Category"              =>  $course->category->name
             ]
         ]);
     }
@@ -242,27 +247,28 @@ class CourseTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->putJson('api/courses/7/updateEndRegisterDate',[
+        
+        $response = $this->actingAs($admin,'teacher-api')->putJson('api/courses/1/updateEndRegisterDate',[
+
             'end_register_date'   => '2025-09-01'
         ]);
 
-        $course = Course::find(7);
+        $course = Course::find(1);
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
             "message" => "Update Start Register Date Successfully",
             'data' => [
-        "Id"                    =>  $course->id,
-        "Title"                 =>  $course->title,
-        "Description"           =>  $course->description,
-        "Start_register_date"   => $course->start_register_date,
-        "End_register_date"     =>  $course->end_register_date,
-        "Course Duration"       =>  $course->course_duration,
-        "Start_date"            =>  $course->start_date,
-        "End_date"              =>  $course->end_date,
-        "Status"                =>  $course->status,
-        "Teacher"               =>  $course->teacher->name,
-        "Category"              =>  $course->category->name
+                "Title"                 =>  $course->title,
+                "Description"           =>  $course->description,
+                "Start Register Date"   => $course->start_register_date,
+                "End Register Date"     =>  $course->end_register_date,
+                "Course Duration"       =>  $course->course_duration,
+                "Start Date"            =>  $course->start_date,
+                "End Date"              =>  $course->end_date,
+                "Status"                =>  $course->status,
+                "Teacher"               =>  $course->teacher->name,
+                "Category"              =>  $course->category->name
             ]
         ]);
     }
@@ -272,7 +278,7 @@ class CourseTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->postjson('api/courses/7/addUser',[
+        $response = $this->actingAs($admin,'teacher-api')->postjson('api/courses/1/addUser',[
             'user' => 1
         ]);
 
