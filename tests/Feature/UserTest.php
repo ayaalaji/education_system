@@ -30,8 +30,8 @@ class UserTest extends TestCase
     public function test_store_User(): void
     {
         $admin = Teacher::find(1);
-
-        $response = $this->actingAs($admin,'teacher-api')->postJson('api/user',[
+  
+        $response = $this->actingAs($admin,'teacher-api')->postJson('api/users',[
             'name'           => 'test1',
             'email'          => 'thest1@gmail.com',
             'password' => Hash::make('password123'),
@@ -49,8 +49,8 @@ class UserTest extends TestCase
     public function test_show_User(): void
     {
         $admin = Teacher::find(1);
-
-        $response = $this->actingAs($admin,'teacher-api')->getJson('api/users/5');
+     
+        $response = $this->actingAs($admin,'teacher-api')->getJson('api/users/2');
         
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -63,7 +63,7 @@ class UserTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->putJson('api/users/6',[
+        $response = $this->actingAs($admin,'teacher-api')->putJson('api/users/1',[
             'password'     => Hash::make('password123'),
         ]);
         
@@ -78,7 +78,7 @@ class UserTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/users/5');
+        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/users/4');
         
         $response->assertStatus(201)->assertJsonFragment([
             "status"  => "success",
@@ -92,7 +92,7 @@ class UserTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/users/6/forcedelete');
+        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/users/4/forcedelete');
         
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -118,7 +118,7 @@ class UserTest extends TestCase
     {
         $admin = Teacher::find(1);
 
-        $response = $this->actingAs($admin,'teacher-api')->getJson('api/users-getallTrashed');
+        $response = $this->actingAs($admin,'teacher-api')->getJson('api/users/trashed');
         
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
