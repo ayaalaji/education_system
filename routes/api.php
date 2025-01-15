@@ -97,7 +97,7 @@ Route::controller(CourseController::class)->group(function () {
         Route::post('/courses', 'store')
                 ->middleware('permission:add_course'); // Create a new course
         Route::put('/courses/{course}', 'update')
-                ->middleware(['permission:update_course','course.teacher']); // Update an existing course 
+                ->middleware(['permission:update_course','course.teacher']); // Update an existing course
         Route::delete('/courses/{course}', 'destroy')
                 ->middleware(['permission:delete_course_temporary','course.teacher']); // Delete a specific course
         Route::put('/courses/{course}/updateStartDate', 'updateStartDate')
@@ -112,17 +112,20 @@ Route::controller(CourseController::class)->group(function () {
                 ->middleware('permission:change_the_status_of_course'); //Update the course status
         Route::post('/courses/{course}/addUser','addUser')
                 ->middleware(['permission:add_user_to_course','course.teacher']);//Add user to course
-        
+
         Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse')
                 ->middleware('permission:delete_course');
         Route::get('courses/{course}/restore', 'restoreCourse')
                 ->middleware('permission:restore_course');
         Route::get('/courses-trashed', 'getAllTrashed')
                 ->middleware('permission:get_trashed_corse');
-        
-    });
 
-    // ---------------------- Task Routes ---------------------- //
+    });
+});
+
+
+// ---------------------- Task Routes ---------------------- //
+Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
     Route::controller(TaskController::class)->prefix('tasks')->group(function () {
         Route::get('/', 'index');
         Route::get('/{task}', 'show');
@@ -132,8 +135,6 @@ Route::controller(CourseController::class)->group(function () {
         Route::post('/{task}/forcedelete', 'forceDeleteForTask');
         Route::post('/{task}/restore', 'restoreTask');
     });
-
-
 });
 
 Route::middleware(['auth:teacher-api'])->group(function () {
@@ -143,8 +144,7 @@ Route::middleware(['auth:teacher-api'])->group(function () {
         Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
         Route::delete('/{taskId}/users/{userId}/delete-note', 'deleteNote');
 
-});
-
+    });
 });
 // ---------------------- Task Attachment Routes ---------------------- //
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
