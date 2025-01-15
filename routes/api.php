@@ -96,7 +96,7 @@ Route::controller(CourseController::class)->group(function () {
         Route::post('/courses', 'store')
                 ->middleware('permission:add_course'); // Create a new course
         Route::put('/courses/{course}', 'update')
-                ->middleware(['permission:update_course','course.teacher']); // Update an existing course 
+                ->middleware(['permission:update_course','course.teacher']); // Update an existing course
         Route::delete('/courses/{course}', 'destroy')
                 ->middleware(['permission:delete_course_temporary','course.teacher']); // Delete a specific course
         Route::put('/courses/{course}/updateStartDate', 'updateStartDate')
@@ -111,16 +111,16 @@ Route::controller(CourseController::class)->group(function () {
                 ->middleware('permission:change_the_status_of_course'); //Update the course status
         Route::post('/courses/{course}/addUser','addUser')
                 ->middleware(['permission:add_user_to_course','course.teacher']);//Add user to course
-        
+
         Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse')
                 ->middleware('permission:delete_course');
         Route::get('courses/{course}/restore', 'restoreCourse')
                 ->middleware('permission:restore_course');
         Route::get('/courses-trashed', 'getAllTrashed')
                 ->middleware('permission:get_trashed_corse');
-        
-    });
 
+    });
+});
 
 
 // ---------------------- Task Routes ---------------------- //
@@ -132,7 +132,7 @@ Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
         Route::put('task/{task}', 'update');
         Route::delete('task/{task}', 'destroy');
 
-        Route::post('task/{task}/forcedelete',[TaskController::class,'forceDeleteForTask']);
+        Route::delete('task/{task}/forcedelete',[TaskController::class,'forceDeleteForTask']);
         Route::post('task/{task}/restore',[TaskController::class,'restoreTask']);
         // Route to add a note for a specific user on a task
         Route::post('/tasks/{taskId}/users/{userId}/add-note', [TaskController::class, 'addNote']);
