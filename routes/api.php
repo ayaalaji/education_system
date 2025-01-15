@@ -40,6 +40,7 @@ Route::controller(RoleController::class)->prefix('roles')->middleware('auth:teac
 
 // ---------------------- User Routes ---------------------- //
 Route::controller(UserController::class)->prefix('users')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/trashed', 'getAllUserTrashed')->middleware('permission:get_trashed_user');
     Route::get('/', 'index')->middleware('permission:show_user');
     Route::post('/', 'store')->middleware('permission:add_user');
     Route::get('/{user}', 'show')->middleware('permission:show_user');
@@ -48,7 +49,6 @@ Route::controller(UserController::class)->prefix('users')->middleware('auth:teac
 
     Route::delete('/{user}/forcedelete', 'forceDeleteUser')->middleware('permission:delete_user');
     Route::get('/{user}/restore', 'restoreUser')->middleware('permission:restore_user');
-    Route::get('/trashed', 'getAllUserTrashed')->middleware('permission:get_trashed_user');
 });
 
 // ---------------------- Teacher Routes ---------------------- //
@@ -76,13 +76,13 @@ Route::controller(MaterialController::class)->prefix('materials')->middleware('a
 
 // ---------------------- Category Routes ---------------------- //
 Route::controller(CategoryController::class)->prefix('categories')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/trashed', 'trashed')->middleware('permission:getTrashed');
     Route::get('/', 'index')->middleware('permission:show_category');
     Route::post('/', 'store')->middleware('permission:add_category');
     Route::get('/{category}', 'show')->middleware('permission:show_category');
     Route::put('/{category}', 'update')->middleware('permission:update_category');
     Route::delete('/{category}', 'destroy')->middleware('permission:delete_category_temporary');
 
-    Route::get('/trashed', 'trashed')->middleware('permission:getTrashed');
     Route::post('/{id}/restore', 'restore')->middleware('permission:restore_category');
     Route::delete('/{id}/force-delete', 'forceDelete')->middleware('permission:delete_category');
 });
@@ -90,7 +90,6 @@ Route::controller(CategoryController::class)->prefix('categories')->middleware('
 // ---------------------- Course Routes ---------------------- //
 Route::controller(CourseController::class)->group(function () {
     Route::get('/courses', 'index');
-    
 
     // Middleware for ensuring the teacher is responsible for the course
     Route::middleware(['auth:teacher-api'])->group(function () {
