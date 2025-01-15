@@ -20,7 +20,7 @@ class RoleTest extends TestCase
 
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        $this->artisan('db:seed');
+        $this->artisan('migrate:fresh --seed');
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 

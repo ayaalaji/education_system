@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
+use App\Http\Controllers\Api\NoteController;
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -116,12 +117,20 @@ Route::middleware(['auth:teacher-api', 'course.teacher'])->group(function () {
         Route::delete('/{task}', 'destroy');
         Route::post('/{task}/forcedelete', 'forceDeleteForTask');
         Route::post('/{task}/restore', 'restoreTask');
-
-        Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
-        Route::delete('/{taskId}/users/{userId}/delete-note', 'deleteNote');
     });
+
+
 });
 
+Route::middleware(['auth:teacher-api'])->group(function () {
+
+    // ---------------------- Note Routes ---------------------- //
+    Route::controller(NoteController::class)->prefix('notes')->group(function () {
+        Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
+        Route::delete('/{taskId}/users/{userId}/delete-note', 'deleteNote');
+});
+
+});
 // ---------------------- Task Attachment Routes ---------------------- //
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
