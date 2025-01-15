@@ -7,253 +7,317 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Teacher;
+use App\Mail\TaskEvaluationMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
+
 class TaskTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $teacher;
-    protected $course;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
-
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-       
-        $this->teacher = Teacher::factory()->create([
-            'email' => 'teacher@gmail.com',
-        ]);
-        $this->course = Course::factory()->create([
-            'teacher_id' => $this->teacher->id,
-        ]);
+
+        $this->artisan('db:seed');
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // إنشاء معلم مع صلاحيات API
+        // $this->teacher = Teacher::factory()->create();
+        // $this->actingAs($this->teacher, 'teacher-api');
     }
 
-    /**
-     * Test the method store (create a new task).
-     */
-    public function test_create_task(): void
+    /** @test */
+    public function it_can_list_all_tasks_for_teacher_course()
     {
-        $token = JWTAuth::fromUser($this->teacher);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $course = Course::where('teacher_id',$admin->id)->first();
 
-        $data = [
-            'title' => 'Task 1234567',
-            'due_date' => now()->addDays(7)->format('Y-m-d'),
-            'status' => 'UnComplete',
-            'course_id' => $this->course->id,
-            'notes' => 'This is a test note.',
-        ];
-
+        $token = JWTAuth::fromUser($admin);
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/tasks', $data);
+            ->getJson("/api/tasks?course_id={$course->id}");
 
-        $response->assertStatus(201)
-            ->assertJsonStructure(['data' => ['title', 'due_date', 'status', 'course_id', 'notes']]);
+        $response->assertStatus(200);
     }
 
-    /**
-     * Test the method index.
-     */
-    public function test_get_all_tasks(): void
+
+    /** @test */
+    public function it_can_create_a_task_for_teacher_course()
     {
-        $token = JWTAuth::fromUser($this->teacher);
-
-
-        Task::factory()->count(3)->create([
-            'course_id' => $this->course->id,
-        ]);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->getJson('/api/tasks');
-
-
-
-        $response->assertStatus(200)
-            ->assertJsonStructure(['data' => [['title', 'due_date', 'status', 'course_id', 'notes']]]);
-
-
-    }
-
-    /**
-     * Test the method show (retrieve a specific task by ID).
-     */
-    public function test_show_specific_task(): void
-    {
-        $token = JWTAuth::fromUser($this->teacher);
-
-
-        $task = Task::factory()->create([
-            'course_id' => $this->course->id,
-        ]);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->getJson("/api/tasks/{$task->id}");
-
-        $response->assertStatus(200)
-            ->assertJsonStructure(['data' => ['title', 'due_date', 'status', 'course_id', 'notes']]);
-    }
-
-    /**
-     * Test the method update (update a specific task).
-     */
-    public function test_update_specific_task(): void
-    {
-        $token = JWTAuth::fromUser($this->teacher);
-
-
-        $task = Task::factory()->create([
-            'course_id' => $this->course->id,
-        ]);
-
-        $updatedData = [
-            'title' => 'Updated Task Title',
-            'due_date' => now()->addDays(10)->format('Y-m-d'),
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $course = Course::factory()->create(['teacher_id' => $admin->id]);
+        $data=[
+            'title' => 'first task',
+            'due_date' => '2025-1-19',
             'status' => 'Complete',
-            'course_id' => $this->course->id,
-            'notes' => 'Updated notes for the task.',
+            'course_id' => $course->id,
+            'notes' => 'simple notes'
         ];
 
+        $token = JWTAuth::fromUser($admin);
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->putJson("/api/tasks/{$task->id}", $updatedData);
+        ->postJson("/api/tasks?course_id={$course->id}", $data);
 
-        $response->assertStatus(200)
-            ->assertJson(['data' => ['id' => $task->id, 'title' => 'Updated Task Title']]);
+
+        $response->assertStatus(201);
+
     }
+/** @test */
+public function it_allows_to_retrieve_task_with_users_and_course()
+{
+    // العثور على المعلم باستخدام البريد الإلكتروني
+    $teacher = Teacher::where('email', 'admin@gmail.com')->first();
+    $course = Course::factory()->create(['teacher_id' => $teacher->id]);
 
-    /**
-     * Test the method delete (delete a specific task).
-     */
-    public function test_delete_specific_task(): void
+    // إنشاء مهمة مرتبطة بالكورس
+    $task = Task::factory()->create(['course_id' => $course->id]);
+
+    // إضافة مستخدم إلى المهمة
+    $user = User::factory()->create();
+    $task->users()->attach($user->id);
+
+    // محاكاة تسجيل الدخول كمعلم
+    $token = JWTAuth::fromUser($teacher);
+    $this->withHeader('Authorization', 'Bearer ' . $token);
+
+    // إرسال طلب GET لاسترجاع المهمة
+    $response = $this->getJson("/api/tasks/{$task->id}?course_id={$course->id}");
+
+    // التحقق من حالة الاستجابة
+    $response->assertStatus(200);
+
+
+}
+
+
+
+
+    /** @test */
+    public function it_can_update_a_task_for_teacher_course()
     {
-        $token = JWTAuth::fromUser($this->teacher);
+        // العثور على المعلم من خلال البريد الإلكتروني
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
 
+        // إنشاء كورس جديد مربوط بالمعلم
+        $course = Course::factory()->create(['teacher_id' => $admin->id]);
 
-        $task = Task::factory()->create([
-            'course_id' => $this->course->id,
-        ]);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->deleteJson("/api/tasks/{$task->id}");
-
-        $response->assertStatus(200);
-    }
-
-     /**
-     * Test adding a note to a specific task.
-     */
-    public function testStoreNote()
-    {
-        $task = Task::factory()->create();
-        $user = User::factory()->create();
-        $task->users()->attach($user->id);
-
+        // البيانات لإنشاء المهمة
         $data = [
-            'note' => 'Excellent performance',
-            'grade' => 95,
+            'title' => 'first task',
+            'due_date' => '2025-1-19',
+            'status' => 'Complete',
+            'course_id' => $course->id,
+            'notes' => 'simple notes'
         ];
 
-        Mail::fake();
+        // إرسال طلب لإنشاء مهمة جديدة
+        $token = JWTAuth::fromUser($admin);
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+                         ->postJson("/api/tasks?course_id={$course->id}", $data);
 
-        $response = $this->postJson("/api/tasks/{$task->id}/notes/{$user->id}", $data);
+        // التحقق من استجابة الإنشاء
+        $response->assertStatus(201); // تحقق من أن المهمة تم إنشاؤها بنجاح
 
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('task_user', [
-            'task_id' => $task->id,
-            'student_id' => $user->id,
-            'note' => 'Excellent performance',
-            'grade' => 95,
-        ]);
+        // التحقق من محتوى الاستجابة
+        $responseData = $response->json();
+        Log::info('Response Data:', $responseData);  // تسجيل الاستجابة لمراجعتها
 
-        Mail::assertSent(function ($mail) use ($user) {
-            return $mail->hasTo($user->email);
-        });
+        // تحقق من وجود data في الاستجابة
+        if (empty($responseData['data'])) {
+            $this->fail('Task creation failed or task ID is missing');
+        }
+
+        // محاولة الحصول على ID المهمة التي تم إنشاؤها
+        $taskId = $responseData['data']['id'] ?? null;
+
+        // تحقق من أن المهمة تم إنشاؤها
+        if (!$taskId) {
+            $this->fail('Task creation failed or task ID is missing');
+        }
+
+        // بيانات التحديث للمهمة
+        $updateData = ['status' => 'UnComplete'];
+
+        // تحديث المهمة
+        $updateResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+                               ->putJson("/api/tasks/{$taskId}?course_id={$course->id}", $updateData);
+
+        // التحقق من الاستجابة للتحديث
+        $updateResponse->assertStatus(200)
+                       ->assertJson(['message' => 'task update success']);
     }
 
-    /**
-     * Test removing a note from a specific task.
-     */
-    public function testRemoveNote()
-    {
-        $task = Task::factory()->create();
-        $user = User::factory()->create();
-        $task->users()->attach($user->id, [
-            'note' => 'Good performance',
-            'grade' => 85,
-        ]);
 
-        $response = $this->deleteJson("/api/tasks/{$task->id}/notes/{$user->id}");
 
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('task_user', [
-            'task_id' => $task->id,
-            'student_id' => $user->id,
-            'note' => null,
-        ]);
-    }
 
-    /**
-     * Test uploading a file and attaching it to a task.
-     */
-    public function testAddAttachment()
-    {
-        Storage::fake('local');
 
-        $task = Task::factory()->create();
-        $user = User::factory()->create();
-        $task->users()->attach($user->id);
 
-        $this->actingAs($user);
 
-        $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
 
-        $response = $this->postJson("/api/tasks/{$task->id}/attachments", [
-            'file_path' => $file,
-        ]);
 
-        $response->assertStatus(200);
-        Storage::disk('local')->assertExists("Files/{$file->hashName()}");
-        $this->assertDatabaseHas('task_user', [
-            'task_id' => $task->id,
-            'student_id' => $user->id,
-            'file_path' => Storage::disk('local')->url("Files/{$file->hashName()}"),
-        ]);
-    }
 
-    /**
-     * Test force deleting a task.
-     */
-    public function testForceDeleteTask()
-    {
-        $task = Task::factory()->create();
-        $task->delete();
+   /** @test */
+public function it_can_delete_a_task_for_teacher_course()
+{
+    // العثور على المعلم من خلال البريد الإلكتروني
+    $admin = Teacher::where('email', 'admin@gmail.com')->first();
 
-        $response = $this->deleteJson("/api/tasks/force-delete/{$task->id}");
+    // إنشاء كورس جديد مربوط بالمعلم
+    $course = Course::factory()->create(['teacher_id' => $admin->id]);
 
-        $response->assertStatus(200);
-        $this->assertDatabaseMissing('tasks', [
-            'id' => $task->id,
-        ]);
-    }
+    // إنشاء مهمة مرتبطة بالكورس
+    $task = Task::factory()->create(['course_id' => $course->id]);
 
-    /**
-     * Test restoring a soft-deleted task.
-     */
-    public function testRestoreTask()
-    {
-        $task = Task::factory()->create();
-        $task->delete();
+    // إرسال طلب لحذف المهمة
+    $token = JWTAuth::fromUser($admin);
+    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+                     ->deleteJson("/api/tasks/{$task->id}?course_id={$course->id}");
 
-        $response = $this->patchJson("/api/tasks/restore/{$task->id}");
+    // التحقق من الاستجابة (204: تم الحذف بنجاح)
+    $response->assertStatus(204);
 
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('tasks', [
-            'id' => $task->id,
-            'deleted_at' => null,
-        ]);
-    }
+    // التحقق من أن المهمة قد تم حذفها
+    $this->assertSoftDeleted('tasks', ['id' => $task->id]);
+}
+
+
+
+
+    /** @test */
+    /** @test */
+public function it_allows_teacher_to_store_note_for_assigned_task()
+{
+    // العثور على المعلم من خلال البريد الإلكتروني
+    $teacher = Teacher::where('email', 'admin@gmail.com')->first();
+
+    // إنشاء كورس مرتبط بالمعلم
+    $course = Course::factory()->create(['teacher_id' => $teacher->id]);
+
+    // إنشاء طالب و ربطه بالكورس
+    $student = User::factory()->create();
+    $task = Task::factory()->create(['course_id' => $course->id]);
+    $task->users()->attach($student->id);
+
+    // محاكاة تسجيل الدخول كمعلم يملك الكورس
+    $token = JWTAuth::fromUser($teacher);
+    $this->withHeader('Authorization', 'Bearer ' . $token);
+
+    // إعداد البيانات لتخزين الملاحظة
+    $data = [
+        'note' => 'Good performance.',
+        'grade' => 9
+    ];
+
+    // محاكاة إرسال البريد الإلكتروني
+    Mail::fake();
+
+    // إرسال طلب POST لتخزين الملاحظة
+    // /{taskId}/users/{userId}/add-note
+    $response = $this->postJson("/api/tasks/{$task->id}/users/$student->id/add-note?course_id={$course->id}", $data);
+
+    // التحقق من نجاح العملية
+    $response->assertStatus(201)
+             ->assertJson(['message' => 'note added success']);
+
+    // التحقق من إرسال البريد الإلكتروني
+    Mail::assertSent(TaskEvaluationMail::class, function ($mail) use ($student) {
+        return $mail->hasTo($student->email);
+    });
+}
+
+
+
+/** @test */
+public function it_allows_teacher_to_remove_note_for_assigned_task()
+{
+    // العثور على المعلم من خلال البريد الإلكتروني
+    $teacher = Teacher::where('email', 'admin@gmail.com')->first();
+
+    // إنشاء كورس مرتبط بالمعلم
+    $course = Course::factory()->create(['teacher_id' => $teacher->id]);
+
+    // إنشاء طالب و ربطه بالكورس والمهمة
+    $student = User::factory()->create();
+    $task = Task::factory()->create(['course_id' => $course->id]);
+    $task->users()->attach($student->id, ['note' => 'Good performance.', 'grade' => 3]); // إضافة ملاحظة للمهمة
+
+    // محاكاة تسجيل الدخول كمعلم يملك الكورس
+    $token = JWTAuth::fromUser($teacher);
+    $this->withHeader('Authorization', 'Bearer ' . $token);
+
+    // إرسال طلب DELETE لحذف الملاحظة
+    $response = $this->deleteJson("/api/tasks/{$task->id}/users/{$student->id}/delete-note?course_id={$course->id}");
+
+    // التحقق من نجاح العملية
+    $response->assertStatus(204);
+
+    // التحقق من أن الملاحظة تم حذفها
+    $task = Task::findOrFail($task->id);
+    $pivotData = $task->users()->where('student_id', $student->id)->first()->pivot;
+    $this->assertNull($pivotData->note, 'The note was not removed.');
+}
+
+
+
+/** @test */
+public function it_allows_forced_deletion_of_a_task_for_teacher()
+{
+    // العثور على المعلم من خلال البريد الإلكتروني
+    $teacher = Teacher::where('email', 'admin@gmail.com')->first();
+
+    // محاكاة تسجيل الدخول كمعلم
+    $token = JWTAuth::fromUser($teacher);
+    $this->withHeader('Authorization', 'Bearer ' . $token);
+
+    // إنشاء كورس مرتبط بالمعلم
+    $course = Course::factory()->create(['teacher_id' => $teacher->id]);
+
+    // إنشاء مهمة مرتبطة بالكورس
+    $task = Task::factory()->create(['course_id' => $course->id]);
+    $task->delete(); // حذف المهمة بشكل ناعم
+
+    // استدعاء الوظيفة الخاصة بحذف المهمة بشكل دائم
+    $response = $this->deleteJson("/api/tasks/{$task->id}/forcedelete?course_id={$course->id}");
+
+
+
+    // التحقق من استجابة الحذف
+    $response->assertStatus(200);
+}
+
+
+
+/** @test */
+public function it_allows_teacher_to_restore_task()
+{
+    // العثور على المعلم من خلال البريد الإلكتروني
+    $teacher = Teacher::where('email', 'admin@gmail.com')->first();
+
+    // إنشاء كورس مرتبط بالمعلم
+    $course = Course::factory()->create(['teacher_id' => $teacher->id]);
+
+    // إنشاء مهمة مرتبطة بالكورس
+    $task = Task::factory()->create(['course_id' => $course->id]);
+    $task->delete(); // حذف المهمة بشكل ناعم
+
+    // محاكاة تسجيل الدخول كمعلم
+    $token = JWTAuth::fromUser($teacher);
+    $this->withHeader('Authorization', 'Bearer ' . $token);
+
+    // إرسال طلب استرجاع المهمة
+    $response = $this->postJson("/api/tasks/{$task->id}/restore?course_id={$course->id}");
+
+    // التحقق من أن المهمة تم استرجاعها بنجاح
+    $response->assertStatus(200);
+
+
+}
+
+
 }

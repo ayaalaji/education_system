@@ -14,7 +14,7 @@ class Task extends Model
      * Summary of fillable
      * @var array
      */
-    protected $fillable = ['title','due_date','status','course_id'];
+    protected $fillable = ['title','due_date','status','course_id','notes'];
     /**
      * Summary of casts
      * @var array
