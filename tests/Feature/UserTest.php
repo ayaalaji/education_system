@@ -3,19 +3,37 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\User;
 use App\Models\Teacher;
+use Nette\Utils\Random;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 
 class UserTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * Test of Crud User
      */
+   
+     protected function setUp(): void
+     {
+         parent::setUp();
+ 
+         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+ 
+         $this->artisan('db:seed');
+ 
+         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+ 
+     } 
+
     public function test_index_User(): void
     {
-        $admin = Teacher::find(1);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
 
         $response = $this->actingAs($admin,'teacher-api')->getjson('api/users');
 
@@ -29,11 +47,11 @@ class UserTest extends TestCase
 
     public function test_store_User(): void
     {
-        $admin = Teacher::find(1);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
   
         $response = $this->actingAs($admin,'teacher-api')->postJson('api/users',[
             'name'           => 'test1',
-            'email'          => 'thest1@gmail.com',
+            'email'          => Random::generate(5).'@gmail.com',
             'password' => Hash::make('password123'),
        
         ]);
@@ -48,9 +66,11 @@ class UserTest extends TestCase
 
     public function test_show_User(): void
     {
-        $admin = Teacher::find(1);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
      
-        $response = $this->actingAs($admin,'teacher-api')->getJson('api/users/2');
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($admin,'teacher-api')->getJson("api/users/{$user->id}");
         
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -61,9 +81,11 @@ class UserTest extends TestCase
     //....................................
     public function test_update_User(): void
     {
-        $admin = Teacher::find(1);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
 
-        $response = $this->actingAs($admin,'teacher-api')->putJson('api/users/1',[
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($admin,'teacher-api')->putJson("api/users/{$user->id}",[
             'password'     => Hash::make('password123'),
         ]);
         
@@ -76,9 +98,11 @@ class UserTest extends TestCase
     //....................................
     public function test_soft_delete_User(): void
     {
-        $admin = Teacher::find(1);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
 
-        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/users/4');
+        $user = User::factory()->create();
+        
+        $response = $this->actingAs($admin,'teacher-api')->deleteJson("api/users/{$user->id}");
         
         $response->assertStatus(201)->assertJsonFragment([
             "status"  => "success",
@@ -90,9 +114,13 @@ class UserTest extends TestCase
 
     public function test_force_delete_user(): void
     {
-        $admin = Teacher::find(1);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
 
-        $response = $this->actingAs($admin,'teacher-api')->deleteJson('api/users/4/forcedelete');
+        $user = User::factory()->create();
+
+        $user->delete();
+
+        $response = $this->actingAs($admin,'teacher-api')->deleteJson("api/users/{$user->id}/forcedelete");
         
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -103,9 +131,13 @@ class UserTest extends TestCase
 
     public function test_restore_user(): void
     {
-        $admin = Teacher::find(1);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
 
-        $response = $this->actingAs($admin,'teacher-api')->getJson('api/users/5/restore');
+        $user = User::factory()->create();
+
+        $user->delete();
+
+        $response = $this->actingAs($admin,'teacher-api')->getJson("api/users/{$user->id}/restore");
         
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -116,9 +148,13 @@ class UserTest extends TestCase
 
     public function test_trashed_user(): void
     {
-        $admin = Teacher::find(1);
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
 
-        $response = $this->actingAs($admin,'teacher-api')->getJson('api/users/trashed');
+        $user = User::factory()->create();
+
+        $user->delete();
+
+        $response = $this->actingAs($admin,'teacher-api')->getJson("api/users/trashed");
         
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
