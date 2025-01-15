@@ -138,6 +138,10 @@ Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
 });
 
 Route::middleware(['auth:teacher-api'])->group(function () {
+    //-----------------  For Export ---------------------------//
+    Route::controller(TaskController::class)->group(function () {
+        Route::get('/tasks/{taskId}/export', [TaskController::class, 'generateExcel'])->middleware('permission:export_task_note');
+    });
 
     // ---------------------- Note Routes ---------------------- //
     Route::controller(NoteController::class)->prefix('notes')->group(function () {
@@ -146,6 +150,7 @@ Route::middleware(['auth:teacher-api'])->group(function () {
 
     });
 });
+
 // ---------------------- Task Attachment Routes ---------------------- //
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);

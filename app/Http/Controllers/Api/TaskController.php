@@ -5,16 +5,18 @@ use App\Models\Task;
 use App\Services\FcmService;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
+use App\Exports\TaskNotesExport;
 use App\Events\TaskSubmittedEvent;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\Task\TaskResource;
+use App\Http\Requests\Note\StoreNoteRequest;
 use App\Http\Requests\Task\TaskStoreRequest;
+use App\Http\Requests\Note\UpdateNoteRequest;
 use App\Http\Requests\Task\TaskUpdateRequest;
 use App\Http\Requests\Task\AssigneTaskRequest;
 use App\Http\Requests\Task\AddAttachmentRequest;
-use Illuminate\Support\Facades\Log;
-use App\Http\Requests\Note\StoreNoteRequest;
-use App\Http\Requests\Note\UpdateNoteRequest;
 
 
 class TaskController extends Controller
@@ -129,4 +131,43 @@ public function restoreTask(int $id)
    $task = $this->taskService->restoreTask($id);
     return $this->success($task,'task restore success');
 }
+/**
+     * Generate and save an Excel file for the task with students' notes and grades.
+     *
+     * @param int $taskId The ID of the task
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function generateExcel($taskId)
+    {
+        // Retrieve the task by its ID
+        $task = Task::findOrFail($taskId);
+
+        // Get the desktop path
+        $desktopPath = env('DESKTOP_PATH', 'C:/Users/AL.Shaddad Home/Desktop');
+
+        // Ensure the path exists
+        if (!is_dir($desktopPath)) {
+            mkdir($desktopPath, 0777, true); // Create the directory if it does not 
+        }
+
+        // Define the file name and full path
+        $fileName = 'task_notes_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+        $filePath = $desktopPath . '/' . $fileName;
+
+        // Export the data to an Excel file at the specified path
+        Excel::store(new TaskNotesExport($task), $fileName, 'local');
+
+        // Move the file from temporary storage to the desktop
+        $storedPath = storage_path('app/' . $fileName);
+        if (file_exists($storedPath)) {
+            rename($storedPath, $filePath);
+        } else {
+            throw new \Exception('File not found in temporary storage.');
+        }
+
+        return response()->json([
+            'message' => 'Excel file has been saved successfully!',
+            'file_path' => $filePath,
+        ]);
+    }
 }

@@ -65,7 +65,9 @@ class PermissionSeeder extends Seeder
             'set_registration_start_time',
             'set_registration_end_time',
             'change_the_status_of_course',
-            'add_user_to_course'
+            'add_user_to_course',
+
+            'export_task_note',
         ];
 
         $permissions_api = [
@@ -114,6 +116,8 @@ class PermissionSeeder extends Seeder
 
                 case 'teacher':
                     $role->syncPermissions([
+                        'export_task_note',
+
                         'add_course',
                         'update_course',
                         'delete_course_temporary',
