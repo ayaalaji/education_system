@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class RoleService
 {
     /**
-     * Create a new Role by the manager.
+     * Create a new Role by the admin.
      * @param array $data
      */
     public function createRole(array $data)
@@ -37,7 +37,7 @@ class RoleService
     }
 
     /**
-     * Show specific Role by the manager.
+     * Show specific Role by the admin.
      * @param string $id
      */
     public function showRole(string $id)
@@ -64,7 +64,7 @@ class RoleService
     }
 
     /**
-     * Update specific Role by the manager.
+     * Update specific Role by the admin.
      * @param array $data
      * @param string $id
      */
@@ -92,7 +92,7 @@ class RoleService
     }
 
     /**
-     * Delete specific Role by the manager.
+     * Delete specific Role by the admin.
      * @param string $id
      * @param string $newRoleName
      */
@@ -102,7 +102,7 @@ class RoleService
             $role = Role::findOrFail($id);
             $roleName = $role->name;
 
-            $this->reassignRoleToUsers($roleName, $newRoleName);
+       
             $role->delete();
 
             Cache::forget("role_{$id}");
@@ -115,18 +115,6 @@ class RoleService
         }
     }
 
-    private function reassignRoleToUsers($deletedRoleName, $newRoleName)
-    {
-        try {
-            $users = User::role($deletedRoleName)->get();
-            foreach ($users as $user) {
-                $user->syncRoles([$newRoleName]);
-            }
-        } catch (\Throwable $th) {
-            Log::error($th);
-            throw new \Exception('Unable to reassign roles at this time. Please try again later.');
-        }
-    }
 }
 
 

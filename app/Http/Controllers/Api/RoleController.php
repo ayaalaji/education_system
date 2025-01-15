@@ -20,17 +20,17 @@ class RoleController extends Controller
     }
     /**
      * display all Roles in our website
-     * only manager can get all roles
+     * only admin can get all roles
      * @return /Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        $roles = Role::all();
+        $roles = Role::with('permissions')->get();
         return $this->success($roles);
     }
 
     /**
-     * Store a newly Role by manager.
+     * Store a newly Role by admin.
      * @param StoreRequest $request
      * @return /Illuminate\Http\JsonResponse
      */
@@ -42,7 +42,7 @@ class RoleController extends Controller
     }
 
     /**
-     * Display the specified Role by manager.
+     * Display the specified Role by admin.
      * @param string $id
      * @return /Illuminate\Http\JsonResponse
      */
@@ -53,7 +53,7 @@ class RoleController extends Controller
     }
 
     /**
-     * Update the specified Role by manager.
+     * Update the specified Role by admin.
      * @param UpdateRequest $request
      * @param string $id
      * @return /Illuminate\Http\JsonResponse
@@ -66,7 +66,7 @@ class RoleController extends Controller
     }
 
     /**
-     * Remove the specified Role by manager.
+     * Remove the specified Role by admin.
      * @param string $id
      * @return /Illuminate\Http\JsonResponse
      */
