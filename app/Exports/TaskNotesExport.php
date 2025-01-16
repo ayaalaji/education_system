@@ -42,7 +42,7 @@ class TaskNotesExport implements FromArray , WithStyles
     }
 
     /**
-     * تطبيق التنسيقات باستخدام WithStyles
+     * Formate the row in Excel
      */
     public function styles($sheet)
     {
@@ -50,33 +50,33 @@ class TaskNotesExport implements FromArray , WithStyles
         $sheet->getStyle('A1:F1')->applyFromArray([
             'font' => [
                 'bold' => true,
-                'color' => ['rgb' => 'FFFFFF'], // لون النص أبيض
+                'color' => ['rgb' => 'FFFFFF'], // Set text color to white
             ],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '4CAF50'], // لون الخلفية أخضر
+                'startColor' => ['rgb' => '4CAF50'], // Set background color to green
             ],
             'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER, // محاذاة أفقية
-                'vertical' => Alignment::VERTICAL_CENTER, // محاذاة عمودية
+                'horizontal' => Alignment::HORIZONTAL_CENTER, // Center horizontally
+                'vertical' => Alignment::VERTICAL_CENTER, // Center vertically
             ],
         ]);
 
-        // تنسيق حدود الخلايا
+        // Apply borders to all cells
         $sheet->getStyle('A1:F' . $sheet->getHighestRow())->applyFromArray([
             'borders' => [
                 'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN, // حدود رفيعة
-                    'color' => ['rgb' => '000000'], // لون الحدود أسود
+                    'borderStyle' => Border::BORDER_THIN, // Thin border style
+                    'color' => ['rgb' => '000000'], // Set border color to black
                 ],
             ],
         ]);
 
-        // ضبط عرض الأعمدة بناءً على أطول محتوى
+        // Automatically adjust column width based on the content
         foreach (range('A', 'F') as $column) {
             $maxLength = 0;
 
-            // المرور عبر جميع الصفوف لحساب أطول محتوى في كل عمود
+            // Iterate through all rows to calculate the maximum content length in each column
             foreach ($sheet->getRowIterator() as $row) {
                 $cellValue = $sheet->getCell($column . $row->getRowIndex())->getValue();
                 if ($cellValue !== null) {
@@ -84,8 +84,8 @@ class TaskNotesExport implements FromArray , WithStyles
                 }
             }
 
-            // ضبط عرض العمود وإضافة هامش
-            $sheet->getColumnDimension($column)->setWidth($maxLength + 2); // إضافة هامش
+            // Set the column width with some padding
+            $sheet->getColumnDimension($column)->setWidth($maxLength + 2); // Add padding
         }
 
         return [];
