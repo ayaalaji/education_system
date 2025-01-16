@@ -8,6 +8,13 @@ To manage access and ensure robust security, the platform utilizes two guards: *
 
 The platform also incorporates a set of CRUD operations to manage various resources efficiently.
 
+Additionally, the project includes **Testing** to ensure the quality and reliability of the platform. You can run tests directly from the terminal using the following command:
+
+```bash
+php artisan mi:f --seed
+php artisan test
+```
+
 ## CRUD Functionalities:
 
 ### Auth
@@ -195,6 +202,27 @@ Follow these steps to create an account on VirusTotal and integrate the API with
    ```env
    VIRUSTOTAL_API_KEY=your_virustotal_api_key
   Replace your_virustotal_api_key with the VIRUSTOTAL_API_KEY in the [VirusTotal](https://www.virustotal.com/).
+
+### 5. Set Up Laravel Excel :
+
+Follow these steps to install this Package in your project:
+
+1. **Install the Package**  
+  ```bash
+  composer require maatwebsite/excel:^3.1.62
+  composer require phpoffice/phpspreadsheet
+  ```
+2. **Set the File Path in .env**
+  Define the file storage path in the `.env` file. 
+  For example:
+   ```bash
+  DESKTOP_PATH=your_desktop_path
+  ```
+  Replace the path with the directory where you want to save your Excel files.
+  
+  you can visit **Laravel-Excel**  
+     Go to [Laravel-Excel](https://docs.laravel-excel.com/3.1/getting-started/) to help you.
+
 ## doc of postman is
 https://documenter.getpostman.com/view/34555205/2sAYBa8omR
 
