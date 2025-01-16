@@ -91,6 +91,7 @@ Route::controller(CategoryController::class)->prefix('categories')->middleware('
 // ---------------------- Course Routes ---------------------- //
 Route::controller(CourseController::class)->group(function () {
     Route::get('/courses', 'index');
+    Route::get('/courses/{course}','show');
 
     // Middleware for ensuring the teacher is responsible for the course
     Route::middleware(['auth:teacher-api'])->group(function () {
