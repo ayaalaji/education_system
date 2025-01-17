@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\NoteController;
+use App\Models\Course;
+use App\Exports\CourseReportExport;
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -156,3 +158,11 @@ Route::middleware(['auth:teacher-api'])->group(function () {
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
 });
+
+Route::get('/courses/{course}/export', function (Course $course) { // assumes the Route Model Binding is set up for Courses
+
+    return Excel::download(new CourseReportExport($course->id), 'course_report.xlsx');
+
+})->middleware('auth:teacher-api');
+
+

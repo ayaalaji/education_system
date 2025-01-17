@@ -12,5 +12,5 @@ class TaskUser extends Model
 
     protected $table = 'task_user';
 
-    protected $fillable =['course_id','user_id'];
+    protected $fillable =['course_id','user_id','note','grade'];
 }
