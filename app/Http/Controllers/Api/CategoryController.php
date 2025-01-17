@@ -27,7 +27,7 @@ public function index(Request $request)
 {
     $name = $request->query('name', null); 
     $filters = $request->query('filters', []); 
-    $perPage = $request->query('per_page', 15); 
+    $perPage = $request->query('per_page', 5); 
 
     try {
         $categories = $this->categoryService->getCategories($name, $filters, $perPage);

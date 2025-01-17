@@ -21,7 +21,7 @@ class NoteTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('db:seed');
+        $this->artisan('migrate:fresh --seed'); 
 
         $this->user = User::where('email', 'samer@gmail.com')->first();
         $this->task = Task::where('title', 'Complete Chapter 1')->first();
