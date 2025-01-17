@@ -12,7 +12,7 @@ class CourseUser extends Model
 
     protected $table = 'course_user';
 
-    protected $fillable =[ 'file_path','summation_date','course_id','user_id','note','grade'];
+    protected $fillable =[ 'file_path','summation_date','course_id','user_id'];
    
 
 }

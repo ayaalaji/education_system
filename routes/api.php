@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\NoteController;
+use App\Models\Course;
+use App\Exports\CourseReportExport;
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -144,6 +146,9 @@ Route::middleware('auth:teacher-api')->group(function () {
         Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
         Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
     });
+  Route::get('/courses/{course}/export', function (Course $course) { 
+    return Excel::download(new CourseReportExport($course->id), 'course_report.xlsx');
+});
 
     // ---------------------- Note Routes ---------------------- //
     Route::controller(NoteController::class)->prefix('notes')->group(function () {
@@ -157,3 +162,6 @@ Route::middleware('auth:teacher-api')->group(function () {
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
 });
+
+
+
