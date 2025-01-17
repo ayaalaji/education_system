@@ -18,18 +18,25 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display a listing of the resource with optional name filter.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function index(Request $request)
-    {
-        $name = $request->query('name');
-        $categories = $this->categoryService->getCategories($name);
+ * Display a listing of the resource with optional name filter.
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function index(Request $request)
+{
+    $name = $request->query('name', null); 
+    $filters = $request->query('filters', []); 
+    $perPage = $request->query('per_page', 15); 
 
+    try {
+        $categories = $this->categoryService->getCategories($name, $filters, $perPage);
         return $this->success($categories, 'Categories fetched successfully.', 200);
+    } catch (\Exception $e) {
+        return $this->error('Failed to fetch categories.', 500, $e->getMessage());
     }
+}
+
 
     /**
      * Store a newly created resource in storage.

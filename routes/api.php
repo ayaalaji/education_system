@@ -1,7 +1,11 @@
 <?php
 
+use App\Models\Course;
+use App\Exports\CourseReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
@@ -9,7 +13,6 @@ use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
-use App\Http\Controllers\Api\NoteController;
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -68,7 +71,7 @@ Route::controller(MaterialController::class)->prefix('materials')->middleware('a
     Route::get('/', 'index')->middleware('permission:show_teacher');
     Route::get('/{material}', 'show');
 
-    Route::middleware('course.teacher')->group(function () {
+Route::middleware('course.teacher')->group(function () {
         Route::post('/', 'store');
         Route::put('/{material}', 'update');
         Route::delete('/{material}', 'destroy');
@@ -144,6 +147,9 @@ Route::middleware('auth:teacher-api')->group(function () {
         Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
         Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
     });
+  Route::get('/courses/{course}/export', function (Course $course) { 
+    return Excel::download(new CourseReportExport($course->id), 'course_report.xlsx');
+});
 
     // ---------------------- Note Routes ---------------------- //
     Route::controller(NoteController::class)->prefix('notes')->group(function () {

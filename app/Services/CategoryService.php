@@ -8,29 +8,36 @@ use Illuminate\Support\Facades\Cache;
 class CategoryService
 {
     /**
-     * Get all categories with optional filtering by name.
-     *
-     * @param string|null $name
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getCategories(?string $name = null,array $filters, int $perPage)
-    {
-        try {
-            $cacheKey = 'categories_' . md5(json_encode($filters) . $perPage . request('page', 1));
-            return cacheData($cacheKey,function () use ($name){
+ * Get all categories with optional filtering by name.
+ *
+ * @param string|null $name
+ * @param array $filters
+ * @param int $perPage
+ * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+ */
+public function getCategories(?string $name = null, array $filters = [], int $perPage = 15)
+{
+    try {
+        $cacheKey = 'categories_' . md5(json_encode($filters) . $perPage . request('page', 1));
 
-                $query = Category::with('courses');
-                if ($name) {
-                    $query->where('name', 'LIKE', '%' . $name . '%');
-                }
-            });
+        
+        return cache()->remember($cacheKey, 60, function () use ($name, $filters, $perPage) {
+            $query = Category::with('courses'); 
+            if ($name) {
+                $query->where('name', 'LIKE', '%' . $name . '%');
+            }
 
+           
+            foreach ($filters as $key => $value) {
+                $query->where($key, $value);
+            }
 
-
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to fetch categories: ' . $e->getMessage());
-        }
+            return $query->paginate($perPage); 
+        });
+    } catch (\Exception $e) {
+        throw new \Exception('Failed to fetch categories: ' . $e->getMessage());
     }
+}
 
     /**
      * Get a specific category by ID along with its courses.
