@@ -163,3 +163,6 @@ Route::middleware('auth:teacher-api')->group(function () {
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
 });
+
+
+

@@ -213,91 +213,108 @@ class TaskService
     }
 
     //..................................Export File.............................
-    public function exportUsersWithOverdueTasks()
-    {
-       try {
-                // Get the desktop path
-                $desktopPath = env('DESKTOP_PATH', 'C:/Users/XPRISTO/Desktop');
-                
-                // Ensure the path exists
-                if (!is_dir($desktopPath)) {
-                    mkdir($desktopPath, 0777, true); // Create the directory if it does not 
-                }
-        
-                // Define the file name and full path
-                $fileName = 'overdue_tasks_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
-                $filePath = $desktopPath . '/' . $fileName;
-        
-                // Export the data to an Excel file at the specified path
-                Excel::store(new UsersWithOverdueTasksExport,$fileName,'local');
-                
-                // Move the file from temporary storage to the desktop
-                $storedPath = storage_path('app/' . $fileName);
-                if (file_exists($storedPath)) {
-                    rename($storedPath, $filePath);
-                } else {
-                    throw new Exception('File not found in temporary storage.');
-                }
-        
-                return response()->json([
-                    'message' => 'Excel file has been saved successfully!',
-                    'file_path' => $filePath,
-                ]);
-        
-       } catch (Exception $e) {
-        Log::error('Error Export Excel: ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed to delete user: '.$e->getMessage()], 500));
-        }
-        
-    }
-
+  
     /**
-     * Generate and save an Excel file for the task with students' notes and grades.
-     *
-     * @param int $taskId The ID of the task
-     * @return string The file path of the saved Excel file
-     * @throws Exception
+     * export To Desktop
+     * @param mixed $exportClass
+     * @param mixed $filePrefix
+     * @throws \Exception
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return mixed|\Illuminate\Http\JsonResponse
      */
-    public function generateExcel($taskId): string
+    public function exportToDesktop($exportClass, $filePrefix)
     {
-        try{
-            // Retrieve the task by its ID
-            $task = Task::findOrFail($taskId);
-
-            // Get the desktop path from environment variable
-            $desktopPath = env('DESKTOP_PATH', 'C:/Users/AL.Shaddad Home/Desktop');
-
+        try {
+            // Dynamically get the desktop path based on the OS
+            $desktopPath = $this->getDesktopPath();
+    
             // Ensure the path exists
             if (!is_dir($desktopPath)) {
-                mkdir($desktopPath, 0777, true); // Create the directory if it does not exist
+                mkdir($desktopPath, 0777, true);
             }
-
+    
             // Define the file name and full path
-            $fileName = 'task_notes_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+            $fileName = $filePrefix . '_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
             $filePath = $desktopPath . '/' . $fileName;
-
-            // Define temporary storage path for the file
-            $filePathInStorage = 'task_notes/' . $fileName;
-
-            // Export the data to an Excel file in temporary storage (local)
-            Excel::store(new TaskNotesExport($task), $filePathInStorage, 'local');
-
+    
+            // Export the data to an Excel file at the specified path
+            Excel::store( $exportClass, $fileName, 'local');
+    
             // Move the file from temporary storage to the desktop
-            $storedPath = storage_path('app/' . $filePathInStorage);
+            $storedPath = storage_path('app/' . $fileName);
             if (file_exists($storedPath)) {
-                // Rename (move) the file to the desktop
                 rename($storedPath, $filePath);
             } else {
                 throw new Exception('File not found in temporary storage.');
             }
-
-            return $filePath;
-        } catch (\Exception $e) {
+    
             return response()->json([
-                'message' => 'Failed to generate Excel file.',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => 'Excel file has been saved successfully!',
+                'file_path' => $filePath,
+            ]);
+    
+        } catch (Exception $e) {
+            Log::error('Error Export Excel: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: ' . $e->getMessage()], 500));
         }
+    }
+    
+    //...................................
+    /**
+     * Get the user's desktop path dynamically
+     * @throws \Exception
+     * @return string
+     */
+    private function getDesktopPath()
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return getenv('USERPROFILE') . '\Desktop';
+        } elseif (PHP_OS_FAMILY === 'Linux' || PHP_OS_FAMILY === 'Darwin') { // Darwin is for macOS
+            return getenv('HOME') . '/Desktop';
+        } else {
+            throw new Exception('Unsupported operating system.');
+        }
+
+    }
+
+    //..............................................
+    
+    /**
+     * Generate an Excel for export Users With Overdue Tasks
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
+    public function exportUsersWithOverdueTasks()
+    {
+        try {
+            return $this->exportToDesktop(new UsersWithOverdueTasksExport(), 'overdue_tasks');
+
+        } catch (Exception $e) {
+            Log::error('Error Export Excel: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: ' . $e->getMessage()], 500));
+        }
+    }
+
+    //................................
+
+    /**
+     * Generate and save an Excel file for the task with students' notes and grades.
+     * @param mixed $taskId
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
+    public function generateExcel($taskId)
+    {
+        try {
+             // Retrieve the task by its ID
+             $task = Task::findOrFail($taskId);
+            
+             return $this->exportToDesktop(new TaskNotesExport($task), 'task_notes');
+        } catch (Exception $e) {
+            Log::error('Error Export Excel: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: ' . $e->getMessage()], 500));
+        }
+      
     }
 
 }
