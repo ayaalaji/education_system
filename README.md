@@ -208,24 +208,23 @@ Follow these steps to create an account on VirusTotal and integrate the API with
 Follow these steps to install this Package in your project:
 
 1. **Install the Package**  
-  ```bash
-  composer require maatwebsite/excel:^3.1.62
-  composer require phpoffice/phpspreadsheet
-  ```
-2. **Set the File Path in .env**
-  Define the file storage path in the `.env` file. 
-  For example:
    ```bash
-  DESKTOP_PATH=your_desktop_path
-  ```
-  Replace the path with the directory where you want to save your Excel files.
+   composer require maatwebsite/excel:^3.1.62
+   composer require phpoffice/phpspreadsheet
+   ```
+2. **Set the File Path in .env**
+   Define the file storage path in the `.env` file. 
+   For example:
+    ```bash
+   DESKTOP_PATH=your_desktop_path
+   ```
+   Replace the path with the directory where you want to save your Excel files.
   
-  you can visit **Laravel-Excel**  
-     Go to [Laravel-Excel](https://docs.laravel-excel.com/3.1/getting-started/) to help you.
+you can visit **Laravel-Excel**  
+   Go to [Laravel-Excel](https://docs.laravel-excel.com/3.1/getting-started/) to help you.
 
 ## doc of postman is
 https://documenter.getpostman.com/view/34555205/2sAYBa8omR
-
 
 
 
