@@ -1,7 +1,11 @@
 <?php
 
+use App\Models\Course;
+use App\Exports\CourseReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
@@ -9,9 +13,6 @@ use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
-use App\Http\Controllers\Api\NoteController;
-use App\Models\Course;
-use App\Exports\CourseReportExport;
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -70,7 +71,7 @@ Route::controller(MaterialController::class)->prefix('materials')->middleware('a
     Route::get('/', 'index')->middleware('permission:show_teacher');
     Route::get('/{material}', 'show');
 
-    Route::middleware('course.teacher')->group(function () {
+Route::middleware('course.teacher')->group(function () {
         Route::post('/', 'store');
         Route::put('/{material}', 'update');
         Route::delete('/{material}', 'destroy');
