@@ -133,11 +133,11 @@ public function restoreTask(int $id)
    $task = $this->taskService->restoreTask($id);
     return $this->success($task,'task restore success');
 }
-/**
+
+    /**
      * Generate and save an Excel file for the task with students' notes and grades.
-     *
-     * @param int $taskId The ID of the task
-     * @return \Illuminate\Http\JsonResponse
+     * @param mixed $taskId
+     * @return mixed|\Illuminate\Http\JsonResponse
      */
     public function generateExcel($taskId)
     {
@@ -151,6 +151,10 @@ public function restoreTask(int $id)
 
     //.....................................User With Overdue Tasks........................................
 
+    /**
+     * generate an Excel for export Users With Overdue Tasks
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
     public function exportUsersWithOverdueTasks()
     {
         $this->taskService->exportUsersWithOverdueTasks();
