@@ -68,6 +68,7 @@ class PermissionSeeder extends Seeder
             'add_user_to_course',
 
             'export_task_note',
+            'export_users_with_overdue_tasks',
         ];
 
         $permissions_api = [
@@ -117,7 +118,7 @@ class PermissionSeeder extends Seeder
                 case 'teacher':
                     $role->syncPermissions([
                         'export_task_note',
-
+                        'export_users_with_overdue_tasks',
                         'add_course',
                         'update_course',
                         'delete_course_temporary',
