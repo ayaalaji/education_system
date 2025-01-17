@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use Exception;
 use App\Models\Task;
 use App\Services\FcmService;
 use Illuminate\Http\Request;
@@ -140,31 +141,7 @@ public function restoreTask(int $id)
      */
     public function generateExcel($taskId)
     {
-        // Retrieve the task by its ID
-        $task = Task::findOrFail($taskId);
-
-        // Get the desktop path
-        $desktopPath = env('DESKTOP_PATH', 'C:/Users/AL.Shaddad Home/Desktop');
-
-        // Ensure the path exists
-        if (!is_dir($desktopPath)) {
-            mkdir($desktopPath, 0777, true); // Create the directory if it does not 
-        }
-
-        // Define the file name and full path
-        $fileName = 'task_notes_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
-        $filePath = $desktopPath . '/' . $fileName;
-
-        // Export the data to an Excel file at the specified path
-        Excel::store(new TaskNotesExport($task), $fileName, 'local');
-
-        // Move the file from temporary storage to the desktop
-        $storedPath = storage_path('app/' . $fileName);
-        if (file_exists($storedPath)) {
-            rename($storedPath, $filePath);
-        } else {
-            throw new \Exception('File not found in temporary storage.');
-        }
+        $filePath = $this->taskService->generateExcel($taskId);
 
         return response()->json([
             'message' => 'Excel file has been saved successfully!',
