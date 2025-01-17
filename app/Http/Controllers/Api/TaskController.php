@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\Task\TaskResource;
+use App\Exports\UsersWithOverdueTasksExport;
 use App\Http\Requests\Note\StoreNoteRequest;
 use App\Http\Requests\Task\TaskStoreRequest;
 use App\Http\Requests\Note\UpdateNoteRequest;
@@ -140,39 +141,21 @@ public function restoreTask(int $id)
      */
     public function generateExcel($taskId)
     {
-        // Retrieve the task by its ID
-        $task = Task::findOrFail($taskId);
-
-        // Get the desktop path from environment variable
-        $desktopPath = env('DESKTOP_PATH', 'C:/Users/AL.Shaddad Home/Desktop');
-
-        // Ensure the path exists
-        if (!is_dir($desktopPath)) {
-            mkdir($desktopPath, 0777, true); // Create the directory if it does not exist
-        }
-
-        // Define the file name and full path
-        $fileName = 'task_notes_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
-        $filePath = $desktopPath . '/' . $fileName;
-
-        // Define temporary storage path for the file
-        $filePathInStorage = 'task_notes/' . $fileName;
-
-        // Export the data to an Excel file in temporary storage (local)
-        Excel::store(new TaskNotesExport($task), $filePathInStorage, 'local');
-
-        // Move the file from temporary storage to the desktop
-        $storedPath = storage_path('app/' . $filePathInStorage);
-        if (file_exists($storedPath)) {
-            // Rename (move) the file to the desktop
-            rename($storedPath, $filePath);
-        } else {
-            throw new Exception('File not found in temporary storage.');
-        }
+        $filePath = $this->taskService->generateExcel($taskId);
 
         return response()->json([
             'message' => 'Excel file has been saved successfully!',
             'file_path' => $filePath,
         ]);
+    }
+
+    //.....................................User With Overdue Tasks........................................
+
+    public function exportUsersWithOverdueTasks()
+    {
+        $this->taskService->exportUsersWithOverdueTasks();
+
+        return $this->success(null,'Excel file has been saved successfully!');
+        
     }
 }

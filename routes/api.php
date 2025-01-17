@@ -140,11 +140,15 @@ Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
     });
 });
 
-Route::middleware(['auth:teacher-api'])->group(function () {
-    //-----------------  For Export ---------------------------//
+//-----------------  For Export ---------------------------//
+Route::middleware('auth:teacher-api')->group(function () {
     Route::controller(TaskController::class)->group(function () {
-        Route::get('/tasks/{taskId}/export', [TaskController::class, 'generateExcel'])->middleware('permission:export_task_note');
+        Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
+        Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
     });
+  Route::get('/courses/{course}/export', function (Course $course) { 
+    return Excel::download(new CourseReportExport($course->id), 'course_report.xlsx');
+});
 
     // ---------------------- Note Routes ---------------------- //
     Route::controller(NoteController::class)->prefix('notes')->group(function () {
@@ -159,10 +163,5 @@ Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
 });
 
-Route::get('/courses/{course}/export', function (Course $course) { // assumes the Route Model Binding is set up for Courses
-
-    return Excel::download(new CourseReportExport($course->id), 'course_report.xlsx');
-
-})->middleware('auth:teacher-api');
 
 

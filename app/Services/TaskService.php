@@ -9,16 +9,19 @@ use App\Models\User;
 use App\Models\Course;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Exports\TaskNotesExport;
+use App\Mail\TaskEvaluationMail;
 use App\Events\TaskSubmittedEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use App\Exports\UsersWithOverdueTasksExport;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use App\Mail\TaskEvaluationMail;
-use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 
 class TaskService
@@ -208,4 +211,93 @@ class TaskService
         $task->restore();
         return $task;
     }
+
+    //..................................Export File.............................
+    public function exportUsersWithOverdueTasks()
+    {
+       try {
+                // Get the desktop path
+                $desktopPath = env('DESKTOP_PATH', 'C:/Users/XPRISTO/Desktop');
+                
+                // Ensure the path exists
+                if (!is_dir($desktopPath)) {
+                    mkdir($desktopPath, 0777, true); // Create the directory if it does not 
+                }
+        
+                // Define the file name and full path
+                $fileName = 'overdue_tasks_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+                $filePath = $desktopPath . '/' . $fileName;
+        
+                // Export the data to an Excel file at the specified path
+                Excel::store(new UsersWithOverdueTasksExport,$fileName,'local');
+                
+                // Move the file from temporary storage to the desktop
+                $storedPath = storage_path('app/' . $fileName);
+                if (file_exists($storedPath)) {
+                    rename($storedPath, $filePath);
+                } else {
+                    throw new Exception('File not found in temporary storage.');
+                }
+        
+                return response()->json([
+                    'message' => 'Excel file has been saved successfully!',
+                    'file_path' => $filePath,
+                ]);
+        
+       } catch (Exception $e) {
+        Log::error('Error Export Excel: ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed to delete user: '.$e->getMessage()], 500));
+        }
+        
+    }
+
+    /**
+     * Generate and save an Excel file for the task with students' notes and grades.
+     *
+     * @param int $taskId The ID of the task
+     * @return string The file path of the saved Excel file
+     * @throws Exception
+     */
+    public function generateExcel($taskId): string
+    {
+        try{
+            // Retrieve the task by its ID
+            $task = Task::findOrFail($taskId);
+
+            // Get the desktop path from environment variable
+            $desktopPath = env('DESKTOP_PATH', 'C:/Users/AL.Shaddad Home/Desktop');
+
+            // Ensure the path exists
+            if (!is_dir($desktopPath)) {
+                mkdir($desktopPath, 0777, true); // Create the directory if it does not exist
+            }
+
+            // Define the file name and full path
+            $fileName = 'task_notes_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+            $filePath = $desktopPath . '/' . $fileName;
+
+            // Define temporary storage path for the file
+            $filePathInStorage = 'task_notes/' . $fileName;
+
+            // Export the data to an Excel file in temporary storage (local)
+            Excel::store(new TaskNotesExport($task), $filePathInStorage, 'local');
+
+            // Move the file from temporary storage to the desktop
+            $storedPath = storage_path('app/' . $filePathInStorage);
+            if (file_exists($storedPath)) {
+                // Rename (move) the file to the desktop
+                rename($storedPath, $filePath);
+            } else {
+                throw new Exception('File not found in temporary storage.');
+            }
+
+            return $filePath;
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to generate Excel file.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
