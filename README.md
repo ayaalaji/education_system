@@ -214,20 +214,20 @@ Follow these steps to install this Package in your project:
    ```
 
 2. **Set the File Path in `.env`**
-  Define the file storage path in the `.env` file. 
-     For example:
-     ```bash
-      DESKTOP_PATH=your_desktop_path
-     ```
+Define the file storage path in the `.env` file. 
+For example:
+```bash
+DESKTOP_PATH=your_desktop_path
+ ```
    Replace the path with the directory where you want to save your Excel files.
   
 you can visit **Laravel-Excel**  
    Go to [Laravel-Excel](https://docs.laravel-excel.com/3.1/getting-started/) to help you.
 
 #### 5. **Run the Application**
-     ```bash
-      php artisan serve
-     ```
+```bash
+php artisan serve
+```
 ## doc of postman is
 https://documenter.getpostman.com/view/34555205/2sAYBa8omR
 
