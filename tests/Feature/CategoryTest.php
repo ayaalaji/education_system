@@ -151,7 +151,6 @@ class CategoryTest extends TestCase
         $admin = Teacher::where('email', 'admin@gmail.com')->first();
         $token = JWTAuth::fromUser($admin);
 
-        // إنشاء وحذف الفئة يدويًا
         $category = Category::create([
             'name'        => 'Test Category',
             'description' => 'This is a test category.',
@@ -176,7 +175,7 @@ class CategoryTest extends TestCase
         $admin = Teacher::where('email', 'admin@gmail.com')->first();
         $token = JWTAuth::fromUser($admin);
 
-        // إنشاء وحذف الفئة يدويًا
+      
         $category = Category::create([
             'name'        => 'Test Category',
             'description' => 'This is a test category.',
@@ -201,7 +200,6 @@ class CategoryTest extends TestCase
         $admin = Teacher::where('email', 'admin@gmail.com')->first();
         $token = JWTAuth::fromUser($admin);
 
-        // إنشاء وحذف الفئة يدويًا
         $category = Category::create([
             'name'        => 'Test Category',
             'description' => 'This is a test category.',
