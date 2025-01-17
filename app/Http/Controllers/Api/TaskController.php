@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\Task\TaskResource;
+use App\Exports\UsersWithOverdueTasksExport;
 use App\Http\Requests\Note\StoreNoteRequest;
 use App\Http\Requests\Task\TaskStoreRequest;
 use App\Http\Requests\Note\UpdateNoteRequest;
@@ -169,5 +170,15 @@ public function restoreTask(int $id)
             'message' => 'Excel file has been saved successfully!',
             'file_path' => $filePath,
         ]);
+    }
+
+    //.....................................User With Overdue Tasks........................................
+
+    public function exportUsersWithOverdueTasks()
+    {
+        $this->taskService->exportUsersWithOverdueTasks();
+
+        return $this->success(null,'Excel file has been saved successfully!');
+        
     }
 }

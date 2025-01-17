@@ -138,10 +138,11 @@ Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
     });
 });
 
-Route::middleware(['auth:teacher-api'])->group(function () {
-    //-----------------  For Export ---------------------------//
+//-----------------  For Export ---------------------------//
+Route::middleware('auth:teacher-api')->group(function () {
     Route::controller(TaskController::class)->group(function () {
-        Route::get('/tasks/{taskId}/export', [TaskController::class, 'generateExcel'])->middleware('permission:export_task_note');
+        Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
+        Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
     });
 
     // ---------------------- Note Routes ---------------------- //
