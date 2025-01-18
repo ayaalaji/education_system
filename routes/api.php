@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\NoteController;
+use App\Http\Controllers\Api\PaypalController;
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -150,3 +151,20 @@ Route::middleware(['auth:teacher-api'])->group(function () {
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
 });
+
+// Route::post('/courses/{course}/register', [PaypalController::class, 'registerToCourse'])->middleware('auth:api');
+
+Route::post('/paypal/create-order', [PayPalController::class, 'createOrder']);
+Route::post('/paypal/capture-order', [PayPalController::class, 'captureOrder']);
+Route::get('/paypal/cancel', [PayPalController::class, 'cancelOrder']);
+Route::get('/paypal/success', [PayPalController::class, 'successOrder']);
+
+// Route::post('/paypal/register-to-course', [PaypalController::class, 'registerToCourse']);
+//     Route::post('/paypal/capture-order', [PaypalController::class, 'captureOrder']);
+//     Route::get('/paypal/cancel-order', [PaypalController::class, 'cancelOrder']);
+Route::post('paypal/authenticate', [PayPalController::class, 'authenticate']); // للحصول على Access Token
+Route::post('paypal/create-order', [PayPalController::class, 'createOrder']); // لإنشاء طلب
+Route::post('paypal/capture-payment/{orderId}', [PayPalController::class, 'capturePayment']); // للتقاط الدفع
+Route::get('paypal/show-order/{orderId}', [PayPalController::class, 'showOrder']); // لعرض تفاصيل الطلب
+Route::get('paypal/success', [PayPalController::class, 'successTransaction']); // مسار النجاح
+Route::get('paypal/cancel', [PayPalController::class, 'cancelTransaction']); // مسار الإلغاء
