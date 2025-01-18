@@ -166,3 +166,4 @@ Route::controller(TaskController::class)->prefix('tasks')->group(function () {
 
 
 
+Route::get('/export-education-system', [CategoryController::class, 'exportEducationSystem']);

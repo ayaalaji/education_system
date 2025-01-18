@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use App\Exports\EducationSystemExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\CategoryService;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CategoryController extends Controller
 {
@@ -128,6 +130,10 @@ public function forceDelete($id)
     $this->categoryService->forceDeleteCategory($id);
 
     return $this->success(null, 'Category permanently deleted!', 200);
+}
+public function exportEducationSystem()
+{
+    return Excel::download(new EducationSystemExport, 'Education_System.xlsx');
 }
 
 }
