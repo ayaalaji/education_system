@@ -228,8 +228,18 @@ you can visit **Laravel-Excel**
 ```bash
 php artisan serve
 ```
-## doc of postman is
-https://documenter.getpostman.com/view/34555205/2sAYBa8omR
+Here’s how you can structure the section in your README:  
+
+### Postman API Documentation  
+[View Documentation](https://documenter.getpostman.com/view/34555205/2sAYBa8omR)  
+
+### Contributors  
+- [Aya Alaji](https://github.com/ayaalaji?tab=repositories)  
+- [Samer Abbas](https://github.com/samerabbas77?tab=repositories)  
+- [Hanen Fansa](https://github.com/Hanen191010?tab=repositories)  
+- [Hamza Iesa](https://github.com/hamzaIssa254?tab=repositories)  
+- [Zein Salloom](https://github.com/zzeeii?tab=repositories)  
+- [Ali Darwesh](https://github.com/Ali-Darwesh?tab=repositories)
 
 
 
