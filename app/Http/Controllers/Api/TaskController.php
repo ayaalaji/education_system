@@ -173,4 +173,14 @@ public function restoreTask(int $id)
 
         return $this->success(null,'Excel file has been saved successfully!');  
     }
+
+
+ //.....................................Education System Export....................................
+
+    public function exportEducationSystem()
+{
+    $this->taskService->exportEducationSystem();
+
+    return $this->success(null,'Excel file has been saved successfully!');  
+}
 }

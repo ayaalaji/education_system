@@ -38,10 +38,10 @@ class EducationSystemExport implements FromArray, WithHeadings, WithEvents
 
         // Add the totals row at the end of the data
         $this->data[] = [
-            'course_name' => $this->totalCourses,
-            'category_name' => $this->totalCategories,
-            'teacher_name' => $this->totalTeachers,
-            'Number_of_students' => $this->totalStudents,
+            'course_name' => 'Total :'.$this->totalCourses,
+            'category_name' => 'Total :'.$this->totalCategories,
+            'teacher_name' => 'Total :'.$this->totalTeachers,
+            'Number_of_students' => 'Total :'.$this->totalStudents,
         ];
     }
 
