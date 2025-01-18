@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 use Exception;
 use App\Models\Task;
+use App\Models\Course;
 use App\Services\FcmService;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
@@ -162,5 +163,14 @@ public function restoreTask(int $id)
 
         return $this->success(null,'Excel file has been saved successfully!');
         
+    }
+
+    //.....................................Course Report Export....................................
+
+    public function exportCourseReport(Course $course)
+    {
+        $this->taskService->exportCourseReport($course);
+
+        return $this->success(null,'Excel file has been saved successfully!');  
     }
 }
