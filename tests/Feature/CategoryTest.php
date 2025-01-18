@@ -4,23 +4,39 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Teacher;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
 {
-   // use RefreshDatabase;
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $this->artisan('db:seed');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    }
 
     /**
      * Test fetching all categories.
      */
     public function test_index_category(): void
     {
-        $admin = Teacher::factory()->create(); 
-        Category::factory()->count(3)->create();
-        $response = $this->actingAs($admin, 'api')->getJson('/api/categories');
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $token = JWTAuth::fromUser($admin);
+
+      
+        Category::create(['name' => 'Category 1', 'description' => 'Description 1', 'teacher_id' => $admin->id]);
+        Category::create(['name' => 'Category 2', 'description' => 'Description 2', 'teacher_id' => $admin->id]);
+        Category::create(['name' => 'Category 3', 'description' => 'Description 3', 'teacher_id' => $admin->id]);
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/categories');
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -33,13 +49,17 @@ class CategoryTest extends TestCase
      */
     public function test_store_category(): void
     {
-        $admin = Teacher::factory()->create();
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $token = JWTAuth::fromUser($admin);
 
-        $response = $this->actingAs($admin, 'api')->postJson('/api/categories', [
+        $data = [
             'name'        => 'Test Category',
             'description' => 'This is a test category.',
             'teacher_id'  => $admin->id,
-        ]);
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->postJson('/api/categories', $data);
 
         $response->assertStatus(201)->assertJsonFragment([
             "status"  => "success",
@@ -52,10 +72,18 @@ class CategoryTest extends TestCase
      */
     public function test_show_category(): void
     {
-        $admin = Teacher::factory()->create();
-        $category = Category::factory()->create();
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $token = JWTAuth::fromUser($admin);
 
-        $response = $this->actingAs($admin, 'api')->getJson("/api/categories/{$category->id}");
+  
+        $category = Category::create([
+            'name'        => 'Test Category',
+            'description' => 'This is a test category.',
+            'teacher_id'  => $admin->id,
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson("/api/categories/{$category->id}");
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -68,12 +96,20 @@ class CategoryTest extends TestCase
      */
     public function test_update_category(): void
     {
-        $admin = Teacher::factory()->create();
-        $category = Category::factory()->create();
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $token = JWTAuth::fromUser($admin);
 
-        $response = $this->actingAs($admin, 'api')->putJson("/api/categories/{$category->id}", [
-            'name' => 'Updated Category',
+      
+        $category = Category::create([
+            'name'        => 'Test Category',
+            'description' => 'This is a test category.',
+            'teacher_id'  => $admin->id,
         ]);
+
+        $updatedData = ['name' => 'Updated Category'];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->putJson("/api/categories/{$category->id}", $updatedData);
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -86,10 +122,18 @@ class CategoryTest extends TestCase
      */
     public function test_soft_delete_category(): void
     {
-        $admin = Teacher::factory()->create();
-        $category = Category::factory()->create();
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $token = JWTAuth::fromUser($admin);
 
-        $response = $this->actingAs($admin, 'api')->deleteJson("/api/categories/{$category->id}");
+        
+        $category = Category::create([
+            'name'        => 'Test Category',
+            'description' => 'This is a test category.',
+            'teacher_id'  => $admin->id,
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->deleteJson("/api/categories/{$category->id}");
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -104,11 +148,18 @@ class CategoryTest extends TestCase
      */
     public function test_trashed_categories(): void
     {
-        $admin = Teacher::factory()->create();
-        $category = Category::factory()->create();
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $token = JWTAuth::fromUser($admin);
+
+        $category = Category::create([
+            'name'        => 'Test Category',
+            'description' => 'This is a test category.',
+            'teacher_id'  => $admin->id,
+        ]);
         $category->delete();
 
-        $response = $this->actingAs($admin, 'api')->getJson('/api/categories-trashed');
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/categories/trashed');
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -121,11 +172,19 @@ class CategoryTest extends TestCase
      */
     public function test_restore_category(): void
     {
-        $admin = Teacher::factory()->create();
-        $category = Category::factory()->create();
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $token = JWTAuth::fromUser($admin);
+
+      
+        $category = Category::create([
+            'name'        => 'Test Category',
+            'description' => 'This is a test category.',
+            'teacher_id'  => $admin->id,
+        ]);
         $category->delete();
 
-        $response = $this->actingAs($admin, 'api')->postJson("/api/categories/{$category->id}/restore");
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->postJson("/api/categories/{$category->id}/restore");
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",
@@ -138,11 +197,18 @@ class CategoryTest extends TestCase
      */
     public function test_force_delete_category(): void
     {
-        $admin = Teacher::factory()->create();
-        $category = Category::factory()->create();
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $token = JWTAuth::fromUser($admin);
+
+        $category = Category::create([
+            'name'        => 'Test Category',
+            'description' => 'This is a test category.',
+            'teacher_id'  => $admin->id,
+        ]);
         $category->delete();
 
-        $response = $this->actingAs($admin, 'api')->deleteJson("/api/categories/{$category->id}/force-delete");
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->deleteJson("/api/categories/{$category->id}/force-delete");
 
         $response->assertStatus(200)->assertJsonFragment([
             "status"  => "success",

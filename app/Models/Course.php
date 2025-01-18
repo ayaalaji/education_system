@@ -20,10 +20,10 @@ class Course extends Model
 
     public function users()
     {
-
-        return $this->belongsToMany(User::class)
-                    ->withTimestamps()->withPivot('deleted_at')->wherePivotNull('deleted_at');
-
+        return $this->belongsToMany(User::class,"course_user")
+                    ->withTimestamps()
+                    ->withPivot('deleted_at')
+                    ->wherePivotNull('deleted_at');
     }
 
     //.....................

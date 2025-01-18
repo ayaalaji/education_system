@@ -14,8 +14,10 @@ use App\Services\NoteService;
 class NoteController extends Controller
 {
     protected $noteService;
+
     public function __construct(NoteService $noteService)
     {
+        $this->middleware('security');
         $this->noteService = $noteService;
     }
         /**

@@ -155,7 +155,7 @@ class UserService
     
         } catch (Exception $e) {
             Log::error('Error while  Force Deliting  the User' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
         }      
         
     }
@@ -185,7 +185,7 @@ class UserService
 
         } catch (Exception $e) {
             Log::error('Error while  Restoring the user ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
         }
 
     }
@@ -209,7 +209,7 @@ class UserService
            return $users;
        } catch (Exception $e) {
            Log::error('Error while  get all trashed users ' . $e->getMessage());
-           throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+           throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
        }
     }
 }

@@ -23,8 +23,9 @@ class CourseResource extends JsonResource
             'Start Date' => $this->start_date,
             'End Date' => $this->end_date,
             'Status' => $this->status,
-            'Teacher' => $this->teacher->name,
-            'Category' =>$this->category->name
+            'Teacher' => optional($this->teacher)->name,
+            'Category' => optional($this->category)->name,
+
         ];
 
              

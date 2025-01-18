@@ -8,29 +8,36 @@ use Illuminate\Support\Facades\Cache;
 class CategoryService
 {
     /**
-     * Get all categories with optional filtering by name.
-     *
-     * @param string|null $name
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getCategories(?string $name = null,array $filters, int $perPage)
-    {
-        try {
-            $cacheKey = 'categories_' . md5(json_encode($filters) . $perPage . request('page', 1));
-            return cacheData($cacheKey,function () use ($name){
+ * Get all categories with optional filtering by name.
+ *
+ * @param string|null $name
+ * @param array $filters
+ * @param int $perPage
+ * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+ */
+public function getCategories(?string $name = null, array $filters = [], int $perPage = 15)
+{
+    try {
+        $cacheKey = 'categories_' . md5(json_encode($filters) . $perPage . request('page', 1));
 
-                $query = Category::with('courses');
-                if ($name) {
-                    $query->where('name', 'LIKE', '%' . $name . '%');
-                }
-            });
+        
+        return cache()->remember($cacheKey, 60, function () use ($name, $filters, $perPage) {
+            $query = Category::with('courses'); 
+            if ($name) {
+                $query->where('name', 'LIKE', '%' . $name . '%');
+            }
 
+           
+            foreach ($filters as $key => $value) {
+                $query->where($key, $value);
+            }
 
-
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to fetch categories: ' . $e->getMessage());
-        }
+            return $query->paginate($perPage); 
+        });
+    } catch (\Exception $e) {
+        throw new \Exception('Failed to fetch categories ');
     }
+}
 
     /**
      * Get a specific category by ID along with its courses.
@@ -46,7 +53,7 @@ class CategoryService
                 return $category->load('courses');
             });
         } catch (\Exception $e) {
-            throw new \Exception('Failed to fetch category details: ' . $e->getMessage());
+            throw new \Exception('Failed to fetch category details ');
         }
     }
 
@@ -62,7 +69,7 @@ class CategoryService
             cache()->forget('categories_' . md5(json_encode([]) . request('page', 1)));
             return Category::create($data);
         } catch (\Exception $e) {
-            throw new \Exception('Failed to create category: ' . $e->getMessage());
+            throw new \Exception('Failed to create category ' );
         }
     }
 
@@ -81,7 +88,7 @@ class CategoryService
 
             return $category;
         } catch (\Exception $e) {
-            throw new \Exception('Failed to update category: ' . $e->getMessage());
+            throw new \Exception('Failed to update category ' );
         }
     }
 
@@ -98,7 +105,7 @@ class CategoryService
             $category->delete();
 
         } catch (\Exception $e) {
-            throw new \Exception('Failed to delete category: ' . $e->getMessage());
+            throw new \Exception('Failed to delete category ' );
         }
     }
       /**
@@ -112,7 +119,7 @@ class CategoryService
            $Category=Category::onlyTrashed()->get(); 
            return $Category;
                 } catch (\Exception $e) {
-            throw new \Exception('Failed to fetch trashed categories: ' . $e->getMessage());
+            throw new \Exception('Failed to fetch trashed categories ');
         }
     }
 
@@ -129,7 +136,7 @@ class CategoryService
             $category->restore(); 
             return $category;
         } catch (\Exception $e) {
-            throw new \Exception('Failed to restore category: ' . $e->getMessage());
+            throw new \Exception('Failed to restore category ' );
         }
     }
 
@@ -145,7 +152,7 @@ class CategoryService
             $category = Category::onlyTrashed()->findOrFail($id);
             $category->forceDelete(); 
         } catch (\Exception $e) {
-            throw new \Exception('Failed to force delete category: ' . $e->getMessage());
+            throw new \Exception('Failed to force delete category ');
         }
 }
 }

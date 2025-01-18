@@ -1,16 +1,21 @@
 <?php
 
+use App\Models\Course;
+use App\Exports\CourseReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\MaterialController;
-use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\PaypalController;
+
 
 // ---------------------- Auth Routes ---------------------- //
 Route::prefix('auth')->group(function () {
@@ -66,13 +71,13 @@ Route::controller(TeacherController::class)->prefix('teachers')->middleware('aut
 
 // ---------------------- Material Routes ---------------------- //
 Route::controller(MaterialController::class)->prefix('materials')->middleware('auth:teacher-api')->group(function () {
-    Route::get('/', 'index')->middleware('permission:show_teacher');
-    Route::get('/{material}', 'show');
+    Route::get('/', 'index')->middleware('permission:access_materials');
+    Route::get('/{material}', 'show')->middleware('permission:access_materials');
 
-    Route::middleware('course.teacher')->group(function () {
-        Route::post('/', 'store');
-        Route::put('/{material}', 'update');
-        Route::delete('/{material}', 'destroy');
+Route::middleware('course.teacher')->group(function () {
+        Route::post('/', 'store')->middleware('permission:add_material');
+        Route::put('/{material}', 'update')->middleware('permission:update_material');
+        Route::delete('/{material}', 'destroy')->middleware('permission:delete_material_temporary');
     });
 });
 
@@ -92,6 +97,7 @@ Route::controller(CategoryController::class)->prefix('categories')->middleware('
 // ---------------------- Course Routes ---------------------- //
 Route::controller(CourseController::class)->group(function () {
     Route::get('/courses', 'index');
+    Route::get('/courses/{course}','show');
 
     // Middleware for ensuring the teacher is responsible for the course
     Route::middleware(['auth:teacher-api'])->group(function () {
@@ -138,8 +144,16 @@ Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
     });
 });
 
-Route::middleware(['auth:teacher-api'])->group(function () {
-
+//-----------------  For Export ---------------------------//
+Route::middleware('auth:teacher-api')->group(function () {
+    Route::controller(ExportController::class)->group(function () {
+        Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
+        Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
+        Route::get('/courses/{course}/export', 'exportCourseReport')->middleware('permission:export_course_report');
+        Route::get('/export-education-system','exportEducationSystem')->middleware('permission:export_category_course');
+   
+    });
+   
     // ---------------------- Note Routes ---------------------- //
     Route::controller(NoteController::class)->prefix('notes')->group(function () {
         Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
@@ -147,10 +161,12 @@ Route::middleware(['auth:teacher-api'])->group(function () {
 
     });
 });
+
 // ---------------------- Task Attachment Routes ---------------------- //
 Route::controller(TaskController::class)->prefix('tasks')->group(function () {
     Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
 });
+
 
 // Route::post('/courses/{course}/register', [PaypalController::class, 'registerToCourse'])->middleware('auth:api');
 
@@ -168,3 +184,4 @@ Route::post('paypal/capture-payment/{orderId}', [PayPalController::class, 'captu
 Route::get('paypal/show-order/{orderId}', [PayPalController::class, 'showOrder']); // لعرض تفاصيل الطلب
 Route::get('paypal/success', [PayPalController::class, 'successTransaction']); // مسار النجاح
 Route::get('paypal/cancel', [PayPalController::class, 'cancelTransaction']); // مسار الإلغاء
+

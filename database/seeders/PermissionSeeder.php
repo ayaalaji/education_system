@@ -37,7 +37,7 @@ class PermissionSeeder extends Seeder
             'update_role',
             'delete_role',
 
-            'show_course',
+            
             'add_course',
             'update_course',
             'delete_course_temporary',
@@ -65,14 +65,19 @@ class PermissionSeeder extends Seeder
             'set_registration_start_time',
             'set_registration_end_time',
             'change_the_status_of_course',
-            'add_user_to_course'
+            'add_user_to_course',
+
+            'export_task_note',
+            'export_users_with_overdue_tasks',
+            'export_course_report',
+            'export_category_course'
         ];
 
         $permissions_api = [
             // Permissions for API (students)
-            'register_course',
+            // 'register_course',
             'access_materials',
-            'submit_homework',
+            // 'submit_homework',
         ];
 
         // Create permissions for teacher-api guard
@@ -114,6 +119,10 @@ class PermissionSeeder extends Seeder
 
                 case 'teacher':
                     $role->syncPermissions([
+                        'export_task_note',
+                        'export_users_with_overdue_tasks',
+                        'export_course_report',
+
                         'add_course',
                         'update_course',
                         'delete_course_temporary',

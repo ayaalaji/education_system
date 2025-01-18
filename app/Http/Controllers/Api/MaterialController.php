@@ -20,6 +20,7 @@ class MaterialController extends Controller
      */
     public function __construct(MaterialService $materialService)
     {
+        $this->middleware('security');
         $this->materialService = $materialService;
     }
      /**

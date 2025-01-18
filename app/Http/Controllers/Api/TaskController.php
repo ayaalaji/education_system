@@ -1,20 +1,25 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use Exception;
 use App\Models\Task;
+use App\Models\Course;
 use App\Services\FcmService;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
+use App\Exports\TaskNotesExport;
 use App\Events\TaskSubmittedEvent;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\Task\TaskResource;
+use App\Exports\UsersWithOverdueTasksExport;
+use App\Http\Requests\Note\StoreNoteRequest;
 use App\Http\Requests\Task\TaskStoreRequest;
+use App\Http\Requests\Note\UpdateNoteRequest;
 use App\Http\Requests\Task\TaskUpdateRequest;
 use App\Http\Requests\Task\AssigneTaskRequest;
 use App\Http\Requests\Task\AddAttachmentRequest;
-use Illuminate\Support\Facades\Log;
-use App\Http\Requests\Note\StoreNoteRequest;
-use App\Http\Requests\Note\UpdateNoteRequest;
 
 
 class TaskController extends Controller
@@ -27,6 +32,7 @@ class TaskController extends Controller
      */
     public function __construct(TaskService $taskService, FcmService $fcmService)
     {
+        $this->middleware('security');
         $this->taskService = $taskService;
         $this->fcmService =$fcmService;
     }
@@ -129,4 +135,6 @@ public function restoreTask(int $id)
    $task = $this->taskService->restoreTask($id);
     return $this->success($task,'task restore success');
 }
+
+   
 }

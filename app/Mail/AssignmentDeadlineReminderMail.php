@@ -18,6 +18,14 @@ class AssignmentDeadlineReminderMail extends Mailable
     public $course;
     public $remainingDays;
 
+    /*
+     * Create a new message instance.
+     *
+     * @param $task
+     * @param $user
+     * @param $course
+     * @param $remainingDays
+     */
     public function __construct(Task $task, User $user, Course $course, int $remainingDays)
     {
         $this->task = $task;
@@ -26,6 +34,11 @@ class AssignmentDeadlineReminderMail extends Mailable
         $this->remainingDays = $remainingDays;
     }
 
+    /*
+    * Build the message.
+    * the message body with user data
+    * @return $this
+    */
     public function build()
     {
         return $this->subject('Assignment Deadline Reminder')
