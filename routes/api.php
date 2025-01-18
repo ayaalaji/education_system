@@ -68,13 +68,13 @@ Route::controller(TeacherController::class)->prefix('teachers')->middleware('aut
 
 // ---------------------- Material Routes ---------------------- //
 Route::controller(MaterialController::class)->prefix('materials')->middleware('auth:teacher-api')->group(function () {
-    Route::get('/', 'index')->middleware('permission:show_teacher');
-    Route::get('/{material}', 'show');
+    Route::get('/', 'index')->middleware('permission:access_materials');
+    Route::get('/{material}', 'show')->middleware('permission:access_materials');
 
 Route::middleware('course.teacher')->group(function () {
-        Route::post('/', 'store');
-        Route::put('/{material}', 'update');
-        Route::delete('/{material}', 'destroy');
+        Route::post('/', 'store')->middleware('permission:add_material');
+        Route::put('/{material}', 'update')->middleware('permission:update_material');
+        Route::delete('/{material}', 'destroy')->middleware('permission:delete_material_temporary');
     });
 });
 
@@ -146,11 +146,10 @@ Route::middleware('auth:teacher-api')->group(function () {
     Route::controller(TaskController::class)->group(function () {
         Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
         Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
-    });
-  Route::get('/courses/{course}/export', function (Course $course) { 
-    return Excel::download(new CourseReportExport($course->id), 'course_report.xlsx');
-});
+        Route::get('/courses/{course}/export', 'exportCourseReport')->middleware('permission:export_course_report');
 
+    });
+   
     // ---------------------- Note Routes ---------------------- //
     Route::controller(NoteController::class)->prefix('notes')->group(function () {
         Route::post('/{taskId}/users/{userId}/add-note', 'addNote');

@@ -13,6 +13,7 @@ use App\Exports\TaskNotesExport;
 use App\Mail\TaskEvaluationMail;
 use App\Events\TaskSubmittedEvent;
 use Illuminate\Support\Facades\DB;
+use App\Exports\CourseReportExport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -312,9 +313,19 @@ class TaskService
              return $this->exportToDesktop(new TaskNotesExport($task), 'task_notes');
         } catch (Exception $e) {
             Log::error('Error Export Excel: ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: ' . $e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: '], 500));
         }
       
+    }
+
+    public function exportCourseReport($course)
+    {
+        try {
+            return $this->exportToDesktop(new CourseReportExport($course->id), 'course_report.xlsx');
+        } catch (Exception $e) {
+            Log::error('Error Export Excel: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: '], 500));
+        }
     }
 
 }
