@@ -149,7 +149,9 @@ Route::middleware('auth:teacher-api')->group(function () {
     });
   Route::get('/courses/{course}/export', function (Course $course) { 
     return Excel::download(new CourseReportExport($course->id), 'course_report.xlsx');
-});
+  });
+  Route::get('/export-education-system', [CategoryController::class, 'exportEducationSystem'])->middleware('permission:export_category_course');
+
 
     // ---------------------- Note Routes ---------------------- //
     Route::controller(NoteController::class)->prefix('notes')->group(function () {
@@ -166,4 +168,3 @@ Route::controller(TaskController::class)->prefix('tasks')->group(function () {
 
 
 
-Route::get('/export-education-system', [CategoryController::class, 'exportEducationSystem']);

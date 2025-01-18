@@ -16,14 +16,18 @@ use Illuminate\Support\Facades\Log;
 class SendAssignmentDeadlineReminder implements ShouldQueue
 {
     use Queueable, SerializesModels;
-
+    /**
+     * Make cron job to send assignment deadline reminder to users.
+     *
+     * @return void
+     */
     public function handle()
     {
 
         try {
             $tasks = Task::where('status', 'UnComplete') // Get tasks that are not complete
                 ->get();
-                
+
             foreach ($tasks as $task) {
                 $users = $task->users; // Get users assigned to this task
                 $course = $task->course;
@@ -35,7 +39,7 @@ class SendAssignmentDeadlineReminder implements ShouldQueue
                 }
             }
         } catch (\Exception $e) {
-            Log::error('Failed to send email to ' . $user->name . ': ' . $e->getMessage());
+            Log::error('Failed to send email to all users' . $e->getMessage());
         };
     }
 }
