@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\MaterialController;
 
 // ---------------------- Auth Routes ---------------------- //
@@ -143,7 +144,7 @@ Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
 
 //-----------------  For Export ---------------------------//
 Route::middleware('auth:teacher-api')->group(function () {
-    Route::controller(TaskController::class)->group(function () {
+    Route::controller(ExportController::class)->group(function () {
         Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
         Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
         Route::get('/courses/{course}/export', 'exportCourseReport')->middleware('permission:export_course_report');
