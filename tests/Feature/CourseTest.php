@@ -37,12 +37,18 @@ class CourseTest extends TestCase
     public function test_index_course(): void
     {
         $admin = Teacher::where('email', 'admin@gmail.com')->first();
-   
+  
 
         $token = JWTAuth::fromUser($admin);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->getJson('api/courses');
+            ->getJson('api/courses',[
+                'teacher' =>null ,
+                'status' => null,
+                'category' => null,
+                'start_date' =>null ,
+                'end_date' =>null ,
+            ]);
 
 
         $response->assertStatus(200)->assertJsonFragment([
