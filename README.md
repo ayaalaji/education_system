@@ -231,7 +231,7 @@ php artisan serve
 Here’s how you can structure the section in your README:  
 
 ### Postman API Documentation  
-[View Documentation](https://documenter.getpostman.com/view/34555205/2sAYBa8omR)  
+[View Documentation](https://documenter.getpostman.com/view/34555205/2sAYQamrN2)  
 
 ### Contributors  
 - [Aya Alaji](https://github.com/ayaalaji?tab=repositories)  
@@ -240,6 +240,7 @@ Here’s how you can structure the section in your README:
 - [Hamza Iesa](https://github.com/hamzaIssa254?tab=repositories)  
 - [Zein Salloom](https://github.com/zzeeii?tab=repositories)  
 - [Ali Darwesh](https://github.com/Ali-Darwesh?tab=repositories)
+- [Maha Altaki](https://github.com/Mahaaltaki?tab=repositories)
 
 
 
