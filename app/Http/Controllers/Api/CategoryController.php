@@ -14,6 +14,7 @@ class CategoryController extends Controller
 
     public function __construct(CategoryService $categoryService)
     {
+        $this->middleware('security');
         $this->categoryService = $categoryService;
     }
 
@@ -33,7 +34,7 @@ public function index(Request $request)
         $categories = $this->categoryService->getCategories($name, $filters, $perPage);
         return $this->success($categories, 'Categories fetched successfully.', 200);
     } catch (\Exception $e) {
-        return $this->error('Failed to fetch categories.', 500, $e->getMessage());
+        return $this->error('Failed to fetch categories.', 500);
     }
 }
 
