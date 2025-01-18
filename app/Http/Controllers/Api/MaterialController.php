@@ -35,10 +35,13 @@ class MaterialController extends Controller
             return $this->error('Failed to retrieve materials.');
         }
 
+<<<<<<< Updated upstream
         if ($materials->isEmpty()) {
             return $this->success(null, 'No materials found in the database.', 200);
         }
 
+=======
+>>>>>>> Stashed changes
         return $this->success($materials, 'All materials retrieved successfully.', 200);
     }
 
@@ -111,4 +114,55 @@ class MaterialController extends Controller
 
         return $this->success(null, 'Material deleted successfully.', 200);
     }
+<<<<<<< Updated upstream
+=======
+    /*
+     * Soft delete a material by their ID. This marks the material as deleted but doesn't permanently remove it.
+     *
+     * @param int $id The ID of material to be soft deleted.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function soft_delete($id)
+    {
+        $material = Material::findOrFail($id); 
+
+        $material->delete(); 
+
+        return $this->success('Material archived successfully.', 200);
+    }
+
+    /*
+     * Permanently delete a material by their ID. This completely removes material from the database.
+     *
+     * @param int $id The ID of Material to be permanently deleted.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function force_delete($id)
+{
+    $material = Material::withTrashed()->findOrFail($id); // البحث عن المادة بما في ذلك المحذوفة
+    $material->forceDelete(); // الحذف النهائي
+
+    return $this->success(null, 'Force Delete Material Successfully', 200);
+}
+    //...................................................................
+    /**
+     * Restore a deleted material
+     */
+    public function restoreMaterial(string $id)
+{
+    $material = Material::withTrashed()->findOrFail($id); // البحث عن المادة المحذوفة
+    $material->restore(); // استعادة المادة
+
+    return $this->success($material, 'Restore Material Successfully', 200);
+}
+
+    /**
+     * get All Trashed materials
+     */
+    public function getAllTrashed()
+{
+    $materials = Material::onlyTrashed()->get(); // جلب جميع المواد المحذوفة
+    return $this->success($materials, 'Get All Trashed Material Successfully', 200);
+}
+>>>>>>> Stashed changes
 }

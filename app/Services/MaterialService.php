@@ -1,5 +1,6 @@
 <?php
 namespace App\Services;
+
 use Exception;
 use App\Models\Material;
 use Illuminate\Http\UploadedFile;
@@ -22,6 +23,7 @@ class MaterialService{
     public function getAllMaterial(){
         try{
             $materials=Material::select('title')->get();
+            
             return $materials;
         }catch (Exception $e) {
             Log::error('Error getting materials: ' . $e->getMessage());
@@ -29,8 +31,8 @@ class MaterialService{
         }  
 
         }
-         /**
-     * create new material
+
+     /* create new material
      *
      * @param array $data of the material to create
      * @return array An array containing data (created material)
@@ -74,15 +76,15 @@ class MaterialService{
         }
     }
 
+   //..............................
+ 
     /**
      * update material's data if exists
-     * 
-     * @param Material $material,the material model instance .
-      * @param array $data The data to update the material 
-     * @return array An array containing  data of updated material 
-     * @throws HttpResponseException If an error occurs during database interaction.
+     * @param \App\Models\Material $material
+     * @param array $data
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return Material
      */
-   
     public function updateMaterial(Material $material,array $data){
         try{
             $material->update(array_filter($data));//remove the feild which null value 
@@ -111,6 +113,55 @@ class MaterialService{
          return false;
      }
  }
+
+ //................................................
+/**
+ * Restore Material
+ * @param mixed $id
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return array|mixed|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|null
+ */
+public function restoreMaterial($id)
+{
+    try {
+         $material = Material::onlyTrashed()->find($id);
+
+         if(is_null($material))
+         {
+            throw new Exception("This id is not Deleted yet,or dosn't exist!!");
+         }
+         $material->restore();
+         return $material;
+
+    } catch (Exception $e) {
+        Log::error('Error while  Restoring Material ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+    }
+
+}
+ /**
+  * get All the Trashed Material
+  * @throws \Exception
+  * @throws \Illuminate\Http\Exceptions\HttpResponseException
+  * @return array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+  */
+  public function getAllTrashedMaterial()
+  {
+     try {
+         $materials = Material::onlyTrashed()->get();
+         if($materials->isEmpty())
+         {
+             throw new Exception('There are no Deleted materials');
+         }
+         return $materials;
+     } catch (Exception $e) {
+         Log::error('Error while  get all trashed materials ' . $e->getMessage());
+         throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+     }
+  }
+ 
+
 }
 
 

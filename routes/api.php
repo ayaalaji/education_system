@@ -1,15 +1,24 @@
 <?php
 
+<<<<<<< Updated upstream
 use App\Http\Controllers\Api\MaterialController;
+=======
+
+>>>>>>> Stashed changes
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
+<<<<<<< Updated upstream
+=======
+use App\Http\Controllers\Api\MaterialController;
+>>>>>>> Stashed changes
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +34,7 @@ use App\Http\Controllers\Api\CategoryController;
 
 //Auth for(students)
 Route::post('/login/user', [AuthController::class, 'login'])->defaults('guard', 'api');
-Route::post('register/user',[AuthController::class, 'register']);
+Route::post('register/user', [AuthController::class, 'register']);
 Route::middleware(['auth:api'])->group(function () {
     Route::post('/logout/user', [AuthController::class, 'logout'])->defaults('guard', 'api');
     Route::post('/refresh/user', [AuthController::class, 'refresh'])->defaults('guard', 'api');
@@ -74,19 +83,39 @@ Route::controller(MaterialController::class)->group(function () {
     Route::put('/materials/{material}', 'update');
     Route::delete('/materials/{material}', 'destroy');
 });
+<<<<<<< Updated upstream
 
+=======
+/**
+     * Force delete and Restore 
+     */
+
+     //Route::delete('/materials/{id}/forcedelete', 'force_delete');
+     //Route::delete('materials/{id}/force_delete', [MaterialController::class, 'force_delete']);
+     Route::delete('/materials/{id}/forcedelete', [MaterialController::class, 'force_delete']);
+
+     Route::get('materials/{material}/restore', [MaterialController::class, 'restoreMaterial']);
+
+    //get trash all materials
+    Route::get('/materials-trashed', [MaterialController::class, 'getAllTrashed']);
+
+ 
+     //-----------------------------------------
+ 
+>>>>>>> Stashed changes
 ////////////Category///////////
 Route::controller(CategoryController::class)->group(function () {
-    Route::get('/categories', 'index'); 
-    Route::post('/categories', 'store'); 
-    Route::get('/categories/{category}', 'show'); 
-    Route::put('/categories/{category}', 'update'); 
-    Route::delete('/categories/{category}', 'destroy'); 
+    Route::get('/categories', 'index');
+    Route::post('/categories', 'store');
+    Route::get('/categories/{category}', 'show');
+    Route::put('/categories/{category}', 'update');
+    Route::delete('/categories/{category}', 'destroy');
 });
 
 /////////Courses/////////////
 Route::controller(CourseController::class)->group(function () {
     Route::get('/courses', 'index');
+<<<<<<< Updated upstream
    
 
     Route::post('/courses', 'store');
@@ -102,6 +131,42 @@ Route::controller(CourseController::class)->group(function () {
 //    ->middleware('permission:');
 
    //---------------------------------------
+=======
+
+
+    Route::post('/courses', 'store');
+    //    ->middleware('permission:');
+
+    Route::get('/courses/{course}', 'show');
+    //    ->middleware('permission:');
+
+    Route::put('/courses/{course}', 'update');
+    //    ->middleware('permission:');
+
+    Route::delete('/courses/{course}', 'destroy');
+    //    ->middleware('permission:');
+
+    //---------------------------------------
+
+    /**
+     * Force delete and Restore
+     */
+
+    Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse');
+    //    ->middleware('permission:');
+
+
+    Route::get('courses/{course}/restore', 'restoreCourse');
+    //    ->middleware('permission:');
+
+
+    Route::get('/courses-trashed', 'getAllTrashed');
+    //    ->middleware('permission:');
+
+
+    //-----------------------------------------
+
+>>>>>>> Stashed changes
 
     Route::put('/courses/{course}/updatestatus', 'updateStatus');
     // ->middleware('permission:');
@@ -110,16 +175,24 @@ Route::controller(CourseController::class)->group(function () {
      * start and end date  of the course
      */
 
+<<<<<<< Updated upstream
     Route::put('/courses/{course}/updateStartDate','updateStartDate');
     // ->middleware('permission:');
 
     Route::put('/courses/{course}/updateEndDate','updateEndDate');
+=======
+    Route::put( '/courses/{course}/updateStartDate', 'updateStartDate');
+    // ->middleware('permission:');
+
+    Route::put('/courses/{course}/updateEndDate', 'updateEndDate');
+>>>>>>> Stashed changes
     // ->middleware('permission:');
 
     //................
     /**
      * start and end registaer date of the course
      */
+<<<<<<< Updated upstream
     Route::put('/courses/{course}/updateStartRegisterDate','updateStartRegisterDate');
     // ->middleware('permission:');
     
@@ -133,3 +206,41 @@ Route::controller(CourseController::class)->group(function () {
     // ->middleware('permission:');
     
 });
+=======
+    Route::put('/courses/{course}/updateStartRegisterDate', 'updateStartRegisterDate');
+    // ->middleware('permission:');
+
+    //..................
+
+    Route::put('/courses/{course}/updateEndRegisterDate', 'updateEndRegisterDate');
+    // ->middleware('permission:');
+
+
+    Route::post('/courses/{course}/addUser', 'addUser');
+
+});
+
+
+
+
+Route::middleware('course.teacher')->controller(TaskController::class)->group(function () {
+
+    Route::get('task', 'index');
+
+    Route::get('task/{task}', 'show');
+    
+    Route::post('task', 'store');
+    
+    Route::put('task/{task}', 'update');
+   
+    Route::delete('task/{task}', 'destroy');
+});
+
+
+Route::post('/task/{task}/attachments', [TaskController::class, 'uploadTask'])->defaults('guard', 'api');
+
+Route::post('test',[MaterialController::class,'store']);
+
+Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
+
+>>>>>>> Stashed changes

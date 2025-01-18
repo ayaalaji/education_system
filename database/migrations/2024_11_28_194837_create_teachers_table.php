@@ -17,7 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('specialization');
             $table->string('password'); // Add password field if needed.
+<<<<<<< Updated upstream
             $table->index('name');
+=======
+            $table->index('specialization');
+>>>>>>> Stashed changes
             $table->timestamps();
         });
     }

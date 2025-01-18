@@ -89,7 +89,20 @@ class User extends Authenticatable implements JWTSubject
 
     public function courses()
     {
+<<<<<<< Updated upstream
         return $this->belongsToMany(Course::class)
                     ->withTimestamps();
     }
+=======
+        return $this->belongsToMany(Course::class,"course_user")
+                    ->withTimestamps();
+    }
+
+    public function tasks()
+    {
+        return $this->belongsToMany(Task::class,'task_user', 'task_id', 'student_id')
+                ->withPivot('file_path', 'summation_date')
+                ->withTimestamps();
+    }
+>>>>>>> Stashed changes
 }
