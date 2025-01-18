@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exports\EducationSystemExport;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Task;
@@ -327,5 +328,14 @@ class TaskService
             throw new HttpResponseException(response()->json(['message' => 'Failed to export file: '], 500));
         }
     }
-
+    
+    public function exportEducationSystem()
+    {
+        try {
+            return $this->exportToDesktop(new EducationSystemExport, 'Education_System.xlsx');
+        } catch (Exception $e) {
+            Log::error('Error Export Excel: ' . $e->getMessage());
+            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: '], 500));
+        }
+    }
 }

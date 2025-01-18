@@ -147,8 +147,9 @@ Route::middleware('auth:teacher-api')->group(function () {
         Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
         Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
         Route::get('/courses/{course}/export', 'exportCourseReport')->middleware('permission:export_course_report');
+        Route::get('/export-education-system','exportEducationSystem')->middleware('permission:export_category_course');
+   
     });
-  Route::get('/export-education-system', [CategoryController::class, 'exportEducationSystem'])->middleware('permission:export_category_course');
    
     // ---------------------- Note Routes ---------------------- //
     Route::controller(NoteController::class)->prefix('notes')->group(function () {
@@ -165,3 +166,4 @@ Route::controller(TaskController::class)->prefix('tasks')->group(function () {
 
 
 
+   
