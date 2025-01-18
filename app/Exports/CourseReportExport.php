@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Illuminate\Support\Facades\Log;
 
-class CourseReportExport implements FromCollection, WithHeadings, ShouldAutoSize
+class CourseReportExport implements FromCollection, WithHeadings, ShouldAutoSize , WithStyles
 {
     protected $courseId;
 
@@ -61,5 +65,54 @@ class CourseReportExport implements FromCollection, WithHeadings, ShouldAutoSize
             'Submitted Tasks Count',
             'Average Grade',
         ];
+    }
+    /**
+     * Formate the row in Excel
+     */
+    public function styles($sheet)
+    {
+        // Format the headers (first row)
+        $sheet->getStyle('A1:D1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'], // Set text color to white
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '4CAF50'], // Set background color to green
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER, // Center horizontally
+                'vertical' => Alignment::VERTICAL_CENTER, // Center vertically
+            ],
+        ]);
+
+        // Apply borders to all cells
+        $sheet->getStyle('A1:D' . $sheet->getHighestRow())->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN, // Thin border style
+                    'color' => ['rgb' => '000000'], // Set border color to black
+                ],
+            ],
+        ]);
+
+        // Automatically adjust column width based on the content
+        foreach (range('A', 'D') as $column) {
+            $maxLength = 0;
+
+            // Iterate through all rows to calculate the maximum content length in each column
+            foreach ($sheet->getRowIterator() as $row) {
+                $cellValue = $sheet->getCell($column . $row->getRowIndex())->getValue();
+                if ($cellValue !== null) {
+                    $maxLength = max($maxLength, strlen((string) $cellValue));
+                }
+            }
+
+            // Set the column width with some padding
+            $sheet->getColumnDimension($column)->setWidth($maxLength + 2); // Add padding
+        }
+
+        return [];
     }
 }

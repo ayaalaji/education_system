@@ -35,7 +35,7 @@ public function getCategories(?string $name = null, array $filters = [], int $pe
             return $query->paginate($perPage); 
         });
     } catch (\Exception $e) {
-        throw new \Exception('Failed to fetch categories: ' . $e->getMessage());
+        throw new \Exception('Failed to fetch categories ');
     }
 }
 
@@ -53,7 +53,7 @@ public function getCategories(?string $name = null, array $filters = [], int $pe
                 return $category->load('courses');
             });
         } catch (\Exception $e) {
-            throw new \Exception('Failed to fetch category details: ' . $e->getMessage());
+            throw new \Exception('Failed to fetch category details ');
         }
     }
 
@@ -69,7 +69,7 @@ public function getCategories(?string $name = null, array $filters = [], int $pe
             cache()->forget('categories_' . md5(json_encode([]) . request('page', 1)));
             return Category::create($data);
         } catch (\Exception $e) {
-            throw new \Exception('Failed to create category: ' . $e->getMessage());
+            throw new \Exception('Failed to create category ' );
         }
     }
 
@@ -88,7 +88,7 @@ public function getCategories(?string $name = null, array $filters = [], int $pe
 
             return $category;
         } catch (\Exception $e) {
-            throw new \Exception('Failed to update category: ' . $e->getMessage());
+            throw new \Exception('Failed to update category ' );
         }
     }
 
@@ -105,7 +105,7 @@ public function getCategories(?string $name = null, array $filters = [], int $pe
             $category->delete();
 
         } catch (\Exception $e) {
-            throw new \Exception('Failed to delete category: ' . $e->getMessage());
+            throw new \Exception('Failed to delete category ' );
         }
     }
       /**
@@ -119,7 +119,7 @@ public function getCategories(?string $name = null, array $filters = [], int $pe
            $Category=Category::onlyTrashed()->get(); 
            return $Category;
                 } catch (\Exception $e) {
-            throw new \Exception('Failed to fetch trashed categories: ' . $e->getMessage());
+            throw new \Exception('Failed to fetch trashed categories ');
         }
     }
 
@@ -136,7 +136,7 @@ public function getCategories(?string $name = null, array $filters = [], int $pe
             $category->restore(); 
             return $category;
         } catch (\Exception $e) {
-            throw new \Exception('Failed to restore category: ' . $e->getMessage());
+            throw new \Exception('Failed to restore category ' );
         }
     }
 
@@ -152,7 +152,7 @@ public function getCategories(?string $name = null, array $filters = [], int $pe
             $category = Category::onlyTrashed()->findOrFail($id);
             $category->forceDelete(); 
         } catch (\Exception $e) {
-            throw new \Exception('Failed to force delete category: ' . $e->getMessage());
+            throw new \Exception('Failed to force delete category ');
         }
 }
 }
