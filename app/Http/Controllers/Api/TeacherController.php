@@ -20,6 +20,7 @@ class TeacherController extends Controller
      */
     public function __construct(TeacherService $teacherService)
     {
+        $this->middleware('security');
         $this->teacherService = $teacherService;
     }
 

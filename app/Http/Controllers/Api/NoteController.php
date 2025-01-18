@@ -17,6 +17,7 @@ class NoteController extends Controller
     
     public function __construct(NoteService $noteService)
     {
+        $this->middleware('security');
         $this->noteService = $noteService;
     }
         /**

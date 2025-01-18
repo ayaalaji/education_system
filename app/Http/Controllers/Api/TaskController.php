@@ -32,6 +32,7 @@ class TaskController extends Controller
      */
     public function __construct(TaskService $taskService, FcmService $fcmService)
     {
+        $this->middleware('security');
         $this->taskService = $taskService;
         $this->fcmService =$fcmService;
     }

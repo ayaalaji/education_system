@@ -93,7 +93,7 @@ class CourseService
         
         } catch (Exception $e) {
             Log::error('Error getting all courses: ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve teachers.'.$e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve teachers.'], 500));
          } 
 
     }
@@ -136,7 +136,7 @@ class CourseService
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error while store a course : ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed in the server'.$e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed in the server'], 500));
         }
     }
 
@@ -191,7 +191,7 @@ class CourseService
             return true;
         } catch (Exception $e) {
             Log::error('Error while Deliting  the course ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed in the server.'.$e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed in the server.'], 500));
         }
 
     }
@@ -227,7 +227,7 @@ public function forceDeleteCourse($id)
 
     } catch (Exception $e) {
         Log::error('Error while  Force Deliting  the course ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server  '], 500));
     }
 
 }
@@ -256,7 +256,7 @@ public function restoreCorse($id)
 
     } catch (Exception $e) {
         Log::error('Error while  Restoring the course ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server  '], 500));
     }
 
 }
@@ -279,7 +279,7 @@ public function restoreCorse($id)
         return $courses;
     } catch (Exception $e) {
         Log::error('Error while  get all trashed courses ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server  '], 500));
     }
  }
 
@@ -338,7 +338,7 @@ public function updateCourseStartDate($course,$data)
     } catch (Exception $e) {
         DB::rollBack();
         Log::error('Error while updating the course  Start Date ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
     }
 }
 
@@ -390,7 +390,7 @@ public function updateCourseEndDate($course,$data)
     } catch (Exception $e) {
         DB::rollBack();
         Log::error('Error while updating the course end Date ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server: '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
     }
 }
 
@@ -466,7 +466,7 @@ public function updateEndRegisterdDate($data,$course)
     } catch (Exception $e) {
         DB::rollBack();
         Log::error('Error while updating the course end Register Date ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server: '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
     }
 }
 //................................................

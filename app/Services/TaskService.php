@@ -256,7 +256,7 @@ class TaskService
     
         } catch (Exception $e) {
             Log::error('Error Export Excel: ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: ' . $e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed to export file ' ], 500));
         }
     }
     
@@ -292,7 +292,7 @@ class TaskService
 
         } catch (Exception $e) {
             Log::error('Error Export Excel: ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed to export file: ' . $e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed to export file '], 500));
         }
     }
 

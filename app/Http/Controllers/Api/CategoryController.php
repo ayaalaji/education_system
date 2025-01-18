@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use App\Exports\EducationSystemExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\CategoryService;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CategoryController extends Controller
 {
@@ -14,6 +16,7 @@ class CategoryController extends Controller
 
     public function __construct(CategoryService $categoryService)
     {
+        $this->middleware('security');
         $this->categoryService = $categoryService;
     }
 
@@ -33,7 +36,7 @@ public function index(Request $request)
         $categories = $this->categoryService->getCategories($name, $filters, $perPage);
         return $this->success($categories, 'Categories fetched successfully.', 200);
     } catch (\Exception $e) {
-        return $this->error('Failed to fetch categories.', 500, $e->getMessage());
+        return $this->error('Failed to fetch categories.', 500);
     }
 }
 
@@ -128,6 +131,10 @@ public function forceDelete($id)
     $this->categoryService->forceDeleteCategory($id);
 
     return $this->success(null, 'Category permanently deleted!', 200);
+}
+public function exportEducationSystem()
+{
+    return Excel::download(new EducationSystemExport, 'Education_System.xlsx');
 }
 
 }
