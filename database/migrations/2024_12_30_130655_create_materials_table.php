@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('video_path')->nullable(); 
             $table->foreignId('course_id')->constrained('courses')->onDelete('cascade'); 
             $table->timestamps();
+            $table->softDeletes();
         });
         
     }

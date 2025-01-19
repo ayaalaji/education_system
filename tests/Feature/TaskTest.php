@@ -56,7 +56,7 @@ class TaskTest extends TestCase
         $course = Course::factory()->create(['teacher_id' => $admin->id]);
         $data=[
             'title' => 'first task',
-            'due_date' => '2025-1-19',
+            'due_date' => '2025-5-10',
             'status' => 'Complete',
             'course_id' => $course->id,
             'notes' => 'simple notes'
@@ -108,7 +108,7 @@ class TaskTest extends TestCase
         // البيانات لإنشاء المهمة
         $data = [
             'title' => 'first task',
-            'due_date' => '2025-1-19',
+            'due_date' => '2025-5-10',
             'status' => 'Complete',
             'course_id' => $course->id,
             'notes' => 'simple notes'
