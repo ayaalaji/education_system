@@ -43,7 +43,11 @@ class PermissionSeeder extends Seeder
             'delete_category',
 
             'access_materials',
-            
+            'show_material',
+    'add_material',
+    'update_material',
+    'delete_material',
+
             'set_course_start_time',
             'set_course_end_time',
             'set_registration_start_time',
