@@ -10,7 +10,8 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 
 class TeacherSeeder extends Seeder
-{ protected static ?string $password;
+{
+     protected static ?string $password;
     public function run(): void
     { 
         Teacher::create([
