@@ -16,8 +16,8 @@ class CheckMaterialTeaherOfTheCourse
     public function handle(Request $request, Closure $next): Response
     {
         $material = $request->route('material');
-
-        if($material->course->teacher_id != auth('teacher-api')->id())
+        
+        if($material->course->teacher_id == auth('teacher-api')->id())
         {
             return $next($request);
         }else{

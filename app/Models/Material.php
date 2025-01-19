@@ -16,7 +16,7 @@ class Material extends Model
         'course_id'
     ];
     //The relationship between cource and materials
-    public function cource()
+    public function course()
 {
     return $this->belongsTo(Course::class, 'course_id');
 }
