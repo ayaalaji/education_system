@@ -14,7 +14,7 @@ class MaterialService{
     {
         $this->fileService = $fileService;
     }
-/
+     /*
      * return a list of materials by spacific cource.
      *
      * @return array An array containing data .
@@ -60,13 +60,13 @@ class MaterialService{
 
 }
 
-        /
+        /*
          * return spacific material
          * 
          * @param Material $material ,material model instance
          * @return $array,array containing data of spacific material 
          * @throws HttpResponseException If an error occurs. This is unlikely here, but good practice.
-     */
+        */
     public function getMaterial(Material $material){
         try{
             return $material;

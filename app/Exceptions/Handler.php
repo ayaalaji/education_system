@@ -18,7 +18,6 @@ use Illuminate\Validation\ValidationException;
    the exception throw in courses service class , listCourse function .
 */
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 

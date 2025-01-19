@@ -74,7 +74,7 @@ Route::controller(MaterialController::class)->prefix('materials')->middleware('a
     Route::get('/', 'index')->middleware('permission:access_materials');
     Route::get('/{material}', 'show')->middleware('permission:show_material');
 
-Route::middleware('course.teacher')->group(function () {
+    Route::middleware('course.teacher')->group(function () {
         Route::post('/', 'store')->middleware('permission:add_material');
         Route::put('/{material}', 'update')->middleware('permission:update_material');
         Route::delete('/{material}', 'destroy')->middleware('permission:delete_material_temporary');
@@ -87,8 +87,8 @@ Route::middleware('course.teacher')->group(function () {
 
         //get trash all materials
         Route::get('/materials-trashed', [MaterialController::class, 'getAllTrashed'])->middleware('permission:get_all_trashed');
+    });
 });
-
 // ---------------------- Category Routes ---------------------- //
 Route::controller(CategoryController::class)->prefix('categories')->middleware('auth:teacher-api')->group(function () {
     Route::get('/trashed', 'trashed')->middleware('permission:getTrashed');
