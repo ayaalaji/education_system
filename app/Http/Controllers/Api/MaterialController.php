@@ -110,21 +110,7 @@ class MaterialController extends Controller
         return $this->success(null, 'Material deleted successfully.', 200);
     }
 
-    /*
-     * Soft delete a material by their ID. This marks the material as deleted but doesn't permanently remove it.
-     *
-     * @param int $id The ID of material to be soft deleted.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function soft_delete($id)
-    {
-        $material = Material::findOrFail($id); 
-
-        $material->delete(); 
-
-        return $this->success('Material archived successfully.', 200);
-    }
-
+ 
     /*
      * Permanently delete a material by their ID. This completely removes material from the database.
      *

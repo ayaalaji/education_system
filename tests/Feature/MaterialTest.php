@@ -126,6 +126,41 @@ class MaterialTest extends TestCase
           $response->assertStatus(200);
       }
 
+//..................................Soft Delete.................................................
+
+    /** @test */
+    public function it_can_force_delete_a_material()
+    {
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+        $material = Material::factory()->create();
+         $material->delete(); // Soft delete first
+        $response = $this->actingAs($admin, 'teacher-api')->deleteJson("api/materials/{$material->id}/forcedelete");
+        $response->assertStatus(200);
+    }
+
+   //.........................................................
+       /** @test */
+       public function it_can_restore_a_material()
+       {
+           $admin = Teacher::where('email', 'admin@gmail.com')->first();
+           $material = Material::factory()->create();
+           $material->delete(); // Soft delete first
+           $response = $this->actingAs($admin, 'teacher-api')->getJson("api/materials/{$material->id}/restore");
+           $response->assertStatus(200);
+       } 
+
+       //.........................................................
+       /** @test */
+       public function it_can_permanently_delete_a_material()
+       {
+        $admin = Teacher::where('email', 'admin@gmail.com')->first();
+           $material = Material::factory()->create();
+           $material->delete(); 
+           $response = $this->actingAs($admin, 'teacher-api')->getJson("api/materials/materials-trashed");
+           $response->assertStatus(200);
+       
+       }
+
 }
 
     
