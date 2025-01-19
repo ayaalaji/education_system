@@ -90,4 +90,8 @@ class FileService implements FileStorageInterface
         ];
     }
 }
+<<<<<<< Updated upstream
 ?>
+=======
+?>
+>>>>>>> Stashed changes

@@ -74,5 +74,6 @@ class Kernel extends HttpKernel
         'task.teacher' => \App\Http\Middleware\EnsureUserIsCourseTeacher::class,
         'task.user' => EnsureTaskIsForUser::class,
         'course.teacher' =>\App\Http\Middleware\CheckCourseTeacher::class
+
     ];
 }

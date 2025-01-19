@@ -18,7 +18,7 @@ class TeacherSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => 'password',
             'specialization'=>'security'
-        ])->assignRole('admin');
+        ])->assignRole('admin')->assignPer;
 
         Teacher::create([
             'name' => 'teacher',

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('specialization');
             $table->string('password'); // Add password field if needed.
-            $table->index('name');
+            $table->index('specialization');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
+use PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider;
 
 return [
 
@@ -182,7 +183,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
-
+        LaravelServiceProvider::class,
         /*
          * Package Service Providers...
          */

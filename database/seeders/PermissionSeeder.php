@@ -54,11 +54,13 @@ class PermissionSeeder extends Seeder
             'getTrashed',
 
             'access_materials',
+            'show_material',
             'add_material',
             'update_material',
             'delete_material_temporary',
             'restore_material',
             'delete_material',
+            'get_all_trashed',
             
             'set_course_start_time',
             'set_course_end_time',
