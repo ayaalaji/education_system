@@ -20,6 +20,7 @@ class MaterialController extends Controller
      */
     public function __construct(MaterialService $materialService)
     {
+        $this->middleware('security');
         $this->materialService = $materialService;
     }
      /**
@@ -35,13 +36,6 @@ class MaterialController extends Controller
             return $this->error('Failed to retrieve materials.');
         }
 
-<<<<<<< Updated upstream
-        if ($materials->isEmpty()) {
-            return $this->success(null, 'No materials found in the database.', 200);
-        }
-
-=======
->>>>>>> Stashed changes
         return $this->success($materials, 'All materials retrieved successfully.', 200);
     }
 
@@ -52,7 +46,8 @@ class MaterialController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreMaterialRequest $request)
-{ try {
+{ 
+      try {
     $validatedData = $request->validated();
     $material = $this->materialService->createMaterial($validatedData);
     return $this->success($material, 'Material created successfully.', 201);
@@ -114,8 +109,7 @@ class MaterialController extends Controller
 
         return $this->success(null, 'Material deleted successfully.', 200);
     }
-<<<<<<< Updated upstream
-=======
+
     /*
      * Soft delete a material by their ID. This marks the material as deleted but doesn't permanently remove it.
      *
@@ -164,5 +158,4 @@ class MaterialController extends Controller
     $materials = Material::onlyTrashed()->get(); // جلب جميع المواد المحذوفة
     return $this->success($materials, 'Get All Trashed Material Successfully', 200);
 }
->>>>>>> Stashed changes
 }

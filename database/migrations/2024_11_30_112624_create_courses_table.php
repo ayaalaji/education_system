@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('status',['Open','Closed'])->nullable();
             $table->foreignId('teacher_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained('categories','id')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

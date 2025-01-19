@@ -29,7 +29,7 @@ class CourseController extends Controller
 
     public function __construct(CourseService $courseService)
     {
-        $this->middleware('auth:teacher-api');
+        $this->middleware('security');
         $this->courseService = $courseService;
     }
 
@@ -104,7 +104,44 @@ class CourseController extends Controller
     }
 
     //----------------------------------------End CRUD Function-----------------------------------------
+    //--------------------------------------------------------------------------------------------------
 
+    //........................................SoftDeletes..............................................
+
+    /**
+     * Force Delete the course
+     */
+    public function forceDeleteCourse(string $id)
+    {
+        $this->courseService->forceDeleteCourse( $id);
+
+        return $this->success(null,'Force Deleted Course Successfully',200);
+    }
+
+    //...................................................................
+    //...................................................................
+    /**
+     * Rstore a deleted course
+     */
+    public function restoreCourse(string $id)
+    {
+        $course = $this->courseService->restoreCorse( $id);
+
+        return $this->success(CourseResource::make($course),'Restore Course Successfully',200); 
+    }
+
+
+    /**
+     * get All Trashed courses
+     */
+    public function getAllTrashed()
+    {
+        $courses = $this->courseService->getAllTrashedCourses();
+
+        return $this->success(CourseResource::collection($courses),'Get All Trashed Couses Successfully');
+     }
+
+    //.........................................End Of SoftDelte........................................
     /**
      * update the status of the course (open or closed)
      
@@ -137,7 +174,7 @@ class CourseController extends Controller
     {
         $data = $request->only(['end_date']);
         $coursenew = $this->courseService->updateCourseEndDate($course,$data);
-        return $this->success(CourseResource::make($coursenew),'Update Start and End Date Successfully',200);
+        return $this->success(CourseResource::make($coursenew),'Update End Date Successfully',200);
 
     }
 
@@ -161,7 +198,7 @@ class CourseController extends Controller
     public function updateEndRegisterDate(EndRegisterCourseRequest $request, Course $course)
     {
         $data = $request->only(['end_register_date']);
-        $courseNew = $this->courseService->updateEnRegisterdDate($data,$course);
+        $courseNew = $this->courseService->updateEndRegisterdDate($data,$course);
         return $this->success(CourseResource::make($courseNew),'Update Start Register Date Successfully',200);
         
     }
@@ -174,7 +211,7 @@ class CourseController extends Controller
      */
     public function addUser(AddUserToCourseRequest $request, Course $course)
     {
-       $data = $request->only(['users']);
+       $data = $request->only(['user']);
        $course = $this->courseService->addUserToCourse($data,$course);
        return $this->success($course,'Add User to course Successfully',200);
        

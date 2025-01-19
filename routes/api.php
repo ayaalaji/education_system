@@ -1,246 +1,195 @@
 <?php
 
-<<<<<<< Updated upstream
-use App\Http\Controllers\Api\MaterialController;
-=======
-
->>>>>>> Stashed changes
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Course;
+use App\Exports\CourseReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\CategoryController;
-<<<<<<< Updated upstream
-=======
+use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\MaterialController;
->>>>>>> Stashed changes
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\Api\PaypalController;
 
 
-//Auth for(students)
-Route::post('/login/user', [AuthController::class, 'login'])->defaults('guard', 'api');
-Route::post('register/user', [AuthController::class, 'register']);
-Route::middleware(['auth:api'])->group(function () {
-    Route::post('/logout/user', [AuthController::class, 'logout'])->defaults('guard', 'api');
-    Route::post('/refresh/user', [AuthController::class, 'refresh'])->defaults('guard', 'api');
+// ---------------------- Auth Routes ---------------------- //
+Route::prefix('auth')->group(function () {
+    // Auth for Students
+    Route::post('/login/user', [AuthController::class, 'login'])->defaults('guard', 'api');
+    Route::post('register/user', [AuthController::class, 'register']);
+
+    Route::middleware(['auth:api'])->group(function () {
+        Route::post('/logout/user', [AuthController::class, 'logout'])->defaults('guard', 'api');
+        Route::post('/refresh/user', [AuthController::class, 'refresh'])->defaults('guard', 'api');
+    });
+
+    // Auth for Teachers
+    Route::post('/login/teacher', [AuthController::class, 'login'])->defaults('guard', 'teacher-api');
+    Route::middleware(['auth:teacher-api'])->group(function () {
+        Route::post('/logout/teacher', [AuthController::class, 'logout'])->defaults('guard', 'teacher-api');
+        Route::post('/refresh/teacher', [AuthController::class, 'refresh'])->defaults('guard', 'teacher-api');
+    });
 });
 
-//Auth for (teachers)
-Route::post('/login/teacher', [AuthController::class, 'login'])->defaults('guard', 'teacher-api');
-Route::middleware(['auth:teacher-api'])->group(function () {
-    Route::post('/logout/teacher', [AuthController::class, 'logout'])->defaults('guard', 'teacher-api');
-    Route::post('/refresh/teacher', [AuthController::class, 'refresh'])->defaults('guard', 'teacher-api');
+// ---------------------- Role Routes ---------------------- //
+Route::controller(RoleController::class)->prefix('roles')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/', 'index');
+    Route::post('/', 'store')->middleware('permission:add_role');
+    Route::get('/{role}', 'show')->middleware('permission:show_role');
+    Route::put('/{role}', 'update')->middleware('permission:update_role');
+    Route::delete('/{role}', 'destroy')->middleware('permission:delete_role');
 });
 
+// ---------------------- User Routes ---------------------- //
+Route::controller(UserController::class)->prefix('users')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/trashed', 'getAllUserTrashed')->middleware('permission:get_trashed_user');
+    Route::get('/', 'index')->middleware('permission:show_user');
+    Route::post('/', 'store')->middleware('permission:add_user');
+    Route::get('/{user}', 'show')->middleware('permission:show_user');
+    Route::put('/{user}', 'update')->middleware('permission:update_user');
+    Route::delete('/{user}', 'destroy')->middleware('permission:delete_user_temporary');
 
-
-//////// Role ////////
-Route::controller(RoleController::class)->group(function () {
-    Route::get('roles', 'index');
-    Route::post('role', 'store');
-    Route::get('role/{role}', 'show');
-    Route::put('role/{role}', 'update');
-    Route::delete('role/{role}', 'destroy');
-});
-///////User/////////
-Route::controller(UserController::class)->group(function () {
-    Route::get('users', 'index');
-    Route::post('user', 'store');
-    Route::get('users/{user}', 'show');
-    Route::put('users/{user}', 'update');
-    Route::delete('users/{user}', 'destroy');
+    Route::delete('/{user}/forcedelete', 'forceDeleteUser')->middleware('permission:delete_user');
+    Route::get('/{user}/restore', 'restoreUser')->middleware('permission:restore_user');
 });
 
-///////Teacher////////
-Route::controller(TeacherController::class)->group(function () {
-    Route::get('/teachers', 'index');
-    Route::post('/teachers', 'store');
-    Route::get('/teachers/{teacher}', 'show');
-    Route::put('/teachers/{teacher}', 'update');
-    Route::delete('/teachers/{teacher}', 'destroy');
+// ---------------------- Teacher Routes ---------------------- //
+Route::controller(TeacherController::class)->prefix('teachers')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/', 'index')->middleware('permission:show_teacher');
+    Route::post('/', 'store')->middleware('permission:add_teacher');
+    Route::get('/{teacher}', 'show')->middleware('permission:show_teacher');
+    Route::put('/{teacher}', 'update')->middleware('permission:update_teacher');
+    Route::delete('/{teacher}', 'soft_delete')->middleware('permission:delete_teacher_temporary');
+    Route::get('/restore/{id}', 'restore')->middleware('permission:restore_teacher');
+    Route::delete('/forceDelete/{id}', 'force_delete')->middleware('permission:delete_teacher');
 });
 
-///////Material////////
-Route::controller(MaterialController::class)->group(function () {
-    Route::get('/materials', 'index');
-    Route::post('/materials', 'store');
-    Route::get('/materials/{material}', 'show');
-    Route::put('/materials/{material}', 'update');
-    Route::delete('/materials/{material}', 'destroy');
-});
-<<<<<<< Updated upstream
+// ---------------------- Material Routes ---------------------- //
+Route::controller(MaterialController::class)->prefix('materials')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/', 'index')->middleware('permission:access_materials');
+    Route::get('/{material}', 'show')->middleware('permission:show_material');
 
-=======
-/**
-     * Force delete and Restore 
-     */
+Route::middleware('course.teacher')->group(function () {
+        Route::post('/', 'store')->middleware('permission:add_material');
+        Route::put('/{material}', 'update')->middleware('permission:update_material');
+        Route::delete('/{material}', 'destroy')->middleware('permission:delete_material_temporary');
+        /**
+        * Force delete and Restore 
+        */
+        Route::delete('/materials/{id}/forcedelete', [MaterialController::class, 'force_delete'])->middleware('permission:delete_material');
 
-     //Route::delete('/materials/{id}/forcedelete', 'force_delete');
-     //Route::delete('materials/{id}/force_delete', [MaterialController::class, 'force_delete']);
-     Route::delete('/materials/{id}/forcedelete', [MaterialController::class, 'force_delete']);
+        Route::get('materials/{material}/restore', [MaterialController::class, 'restoreMaterial'])->middleware('permission:restore_material');
 
-     Route::get('materials/{material}/restore', [MaterialController::class, 'restoreMaterial']);
-
-    //get trash all materials
-    Route::get('/materials-trashed', [MaterialController::class, 'getAllTrashed']);
-
- 
-     //-----------------------------------------
- 
->>>>>>> Stashed changes
-////////////Category///////////
-Route::controller(CategoryController::class)->group(function () {
-    Route::get('/categories', 'index');
-    Route::post('/categories', 'store');
-    Route::get('/categories/{category}', 'show');
-    Route::put('/categories/{category}', 'update');
-    Route::delete('/categories/{category}', 'destroy');
+        //get trash all materials
+        Route::get('/materials-trashed', [MaterialController::class, 'getAllTrashed'])->middleware('permission:get_all_trashed');
 });
 
-/////////Courses/////////////
+// ---------------------- Category Routes ---------------------- //
+Route::controller(CategoryController::class)->prefix('categories')->middleware('auth:teacher-api')->group(function () {
+    Route::get('/trashed', 'trashed')->middleware('permission:getTrashed');
+    Route::get('/', 'index')->middleware('permission:show_category');
+    Route::post('/', 'store')->middleware('permission:add_category');
+    Route::get('/{category}', 'show')->middleware('permission:show_category');
+    Route::put('/{category}', 'update')->middleware('permission:update_category');
+    Route::delete('/{category}', 'destroy')->middleware('permission:delete_category_temporary');
+
+    Route::post('/{id}/restore', 'restore')->middleware('permission:restore_category');
+    Route::delete('/{id}/force-delete', 'forceDelete')->middleware('permission:delete_category');
+});
+
+// ---------------------- Course Routes ---------------------- //
 Route::controller(CourseController::class)->group(function () {
     Route::get('/courses', 'index');
-<<<<<<< Updated upstream
+    Route::get('/courses/{course}','show');
+
+    // Middleware for ensuring the teacher is responsible for the course
+    Route::middleware(['auth:teacher-api'])->group(function () {
+        Route::post('/courses', 'store')
+                ->middleware('permission:add_course'); // Create a new course
+        Route::put('/courses/{course}', 'update')
+                ->middleware(['permission:update_course','course.teacher']); // Update an existing course
+        Route::delete('/courses/{course}', 'destroy')
+                ->middleware(['permission:delete_course_temporary','course.teacher']); // Delete a specific course
+        Route::put('/courses/{course}/updateStartDate', 'updateStartDate')
+                ->middleware('permission:set_course_start_time'); // Update course start date
+        Route::put('/courses/{course}/updateEndDate', 'updateEndDate')
+                ->middleware('permission:set_course_end_time'); // Update course end date
+        Route::put('/courses/{course}/updateStartRegisterDate', 'updateStartRegisterDate')
+                ->middleware('permission:set_registration_start_time'); // Update course registration start date
+        Route::put('/courses/{course}/updateEndRegisterDate', 'updateEndRegisterDate')
+                ->middleware('permission:set_registration_end_time'); // Update course registration end date
+        Route::put('/courses/{course}/updatestatus', 'updateStatus')
+                ->middleware('permission:change_the_status_of_course'); //Update the course status
+        Route::post('/courses/{course}/addUser','addUser')
+                ->middleware(['permission:add_user_to_course','course.teacher']);//Add user to course
+
+        Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse')
+                ->middleware('permission:delete_course');
+        Route::get('courses/{course}/restore', 'restoreCourse')
+                ->middleware('permission:restore_course');
+        Route::get('/courses-trashed', 'getAllTrashed')
+                ->middleware('permission:get_trashed_corse');
+
+    });
+});
+
+
+// ---------------------- Task Routes ---------------------- //
+Route::middleware( ['auth:teacher-api','task.teacher'])->group(function () {
+    Route::controller(TaskController::class)->prefix('tasks')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{task}', 'show');
+        Route::post('/', 'store');
+        Route::put('/{task}', 'update');
+        Route::delete('/{task}', 'destroy');
+        Route::post('/{task}/forcedelete', 'forceDeleteForTask');
+        Route::post('/{task}/restore', 'restoreTask');
+    });
+});
+
+//-----------------  For Export ---------------------------//
+Route::middleware('auth:teacher-api')->group(function () {
+    Route::controller(ExportController::class)->group(function () {
+        Route::get('/tasks-overDueUserExport',  'exportUsersWithOverdueTasks')->middleware('permission:export_users_with_overdue_tasks');
+        Route::get('/tasks/{taskId}/export',  'generateExcel')->middleware('permission:export_task_note');
+        Route::get('/courses/{course}/export', 'exportCourseReport')->middleware('permission:export_course_report');
+        Route::get('/export-education-system','exportEducationSystem')->middleware('permission:export_category_course');
    
-
-    Route::post('/courses', 'store');
-//    ->middleware('permission:');
-
-    Route::get('/courses/{course}', 'show');
-//    ->middleware('permission:');
-
-    Route::put('/courses/{course}', 'update');
-//    ->middleware('permission:');
-
-    Route::delete('/courses/{course}', 'destroy');
-//    ->middleware('permission:');
-
-   //---------------------------------------
-=======
-
-
-    Route::post('/courses', 'store');
-    //    ->middleware('permission:');
-
-    Route::get('/courses/{course}', 'show');
-    //    ->middleware('permission:');
-
-    Route::put('/courses/{course}', 'update');
-    //    ->middleware('permission:');
-
-    Route::delete('/courses/{course}', 'destroy');
-    //    ->middleware('permission:');
-
-    //---------------------------------------
-
-    /**
-     * Force delete and Restore
-     */
-
-    Route::delete('/courses/{course}/forcedelete', 'forceDeleteCourse');
-    //    ->middleware('permission:');
-
-
-    Route::get('courses/{course}/restore', 'restoreCourse');
-    //    ->middleware('permission:');
-
-
-    Route::get('/courses-trashed', 'getAllTrashed');
-    //    ->middleware('permission:');
-
-
-    //-----------------------------------------
-
->>>>>>> Stashed changes
-
-    Route::put('/courses/{course}/updatestatus', 'updateStatus');
-    // ->middleware('permission:');
-
-    /**
-     * start and end date  of the course
-     */
-
-<<<<<<< Updated upstream
-    Route::put('/courses/{course}/updateStartDate','updateStartDate');
-    // ->middleware('permission:');
-
-    Route::put('/courses/{course}/updateEndDate','updateEndDate');
-=======
-    Route::put( '/courses/{course}/updateStartDate', 'updateStartDate');
-    // ->middleware('permission:');
-
-    Route::put('/courses/{course}/updateEndDate', 'updateEndDate');
->>>>>>> Stashed changes
-    // ->middleware('permission:');
-
-    //................
-    /**
-     * start and end registaer date of the course
-     */
-<<<<<<< Updated upstream
-    Route::put('/courses/{course}/updateStartRegisterDate','updateStartRegisterDate');
-    // ->middleware('permission:');
-    
-    //..................
-
-    Route::put('/courses/{course}/updateEndRegisterDate','updateEndRegisterDate');
-    // ->middleware('permission:');
-
-
-    Route::post('/courses/{course}/addUser','addUser');
-    // ->middleware('permission:');
-    
-});
-=======
-    Route::put('/courses/{course}/updateStartRegisterDate', 'updateStartRegisterDate');
-    // ->middleware('permission:');
-
-    //..................
-
-    Route::put('/courses/{course}/updateEndRegisterDate', 'updateEndRegisterDate');
-    // ->middleware('permission:');
-
-
-    Route::post('/courses/{course}/addUser', 'addUser');
-
-});
-
-
-
-
-Route::middleware('course.teacher')->controller(TaskController::class)->group(function () {
-
-    Route::get('task', 'index');
-
-    Route::get('task/{task}', 'show');
-    
-    Route::post('task', 'store');
-    
-    Route::put('task/{task}', 'update');
+    });
    
-    Route::delete('task/{task}', 'destroy');
+    // ---------------------- Note Routes ---------------------- //
+    Route::controller(NoteController::class)->prefix('notes')->group(function () {
+        Route::post('/{taskId}/users/{userId}/add-note', 'addNote');
+        Route::delete('/{taskId}/users/{userId}/delete-note', 'deleteNote');
+
+    });
+});
+
+// ---------------------- Task Attachment Routes ---------------------- //
+Route::controller(TaskController::class)->prefix('tasks')->group(function () {
+    Route::post('/{task}/attachments', 'uploadTask')->middleware(['task.user', 'auth:api']);
 });
 
 
-Route::post('/task/{task}/attachments', [TaskController::class, 'uploadTask'])->defaults('guard', 'api');
+// Route::post('/courses/{course}/register', [PaypalController::class, 'registerToCourse'])->middleware('auth:api');
 
-Route::post('test',[MaterialController::class,'store']);
+Route::post('/paypal/create-order', [PayPalController::class, 'createOrder']);
+Route::post('/paypal/capture-order', [PayPalController::class, 'captureOrder']);
+Route::get('/paypal/cancel', [PayPalController::class, 'cancelOrder']);
+Route::get('/paypal/success', [PayPalController::class, 'successOrder']);
 
-Route::post('/courses/{course}/addUser',[CourseController::class,'addUser']);
+// Route::post('/paypal/register-to-course', [PaypalController::class, 'registerToCourse']);
+//     Route::post('/paypal/capture-order', [PaypalController::class, 'captureOrder']);
+//     Route::get('/paypal/cancel-order', [PaypalController::class, 'cancelOrder']);
+Route::post('paypal/authenticate', [PayPalController::class, 'authenticate']); // للحصول على Access Token
+Route::post('paypal/create-order', [PayPalController::class, 'createOrder']); // لإنشاء طلب
+Route::post('paypal/capture-payment/{orderId}', [PayPalController::class, 'capturePayment']); // للتقاط الدفع
+Route::get('paypal/show-order/{orderId}', [PayPalController::class, 'showOrder']); // لعرض تفاصيل الطلب
+Route::get('paypal/success', [PayPalController::class, 'successTransaction']); // مسار النجاح
+Route::get('paypal/cancel', [PayPalController::class, 'cancelTransaction']); // مسار الإلغاء
 
->>>>>>> Stashed changes

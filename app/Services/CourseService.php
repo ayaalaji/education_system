@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 
+use App\Events\CourseRegistrationEvent;
+use App\Jobs\SendCourseRegistrationEmail;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
@@ -45,19 +47,19 @@ class CourseService
             
 
             $teacher_ids = $teacher ? 
-            Cache::remember('teacher_ids_' . md5($teacher),60, function () use($teacher) 
-            {
+            cacheData('teacher_ids_' . md5($teacher), function () use ($teacher) {
                 return Teacher::where('name', 'LIKE', '%' . $teacher . '%')
-                                ->pluck('id')->toArray() ; 
-            }):[]; 
-            
-            
-            $category_ids = $category ?
-            Cache::remember('category_ids_' . md5($category),60, function () use($category) 
-            {
+                              ->pluck('id')
+                              ->toArray();
+            }, 60) : [];
+        
+        $category_ids = $category ? 
+            cacheData('category_ids_' . md5($category), function () use ($category) {
                 return Category::where('name', 'LIKE', '%' . $category . '%')
-                                ->pluck('id')->toArray();
-            }) : [];
+                              ->pluck('id')
+                              ->toArray();
+            }, 60) : [];
+        
            
              
             /*
@@ -69,31 +71,29 @@ class CourseService
                 return false;
             }
         
-           // uniqe cache key
-            $cacheKey = 'courses_filter_' . md5(serialize([
-                'teacher' => $teacher,
-                'status' => $status,
-                'category' => $category,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-                'teacher_ids' => $teacher_ids,
-                'category_ids' => $category_ids,
-            ]));
-          
-            $courses = Cache::remember($cacheKey ,60,
-            function()use($teacher, $status, $category,$start_date, $end_date,$teacher_ids,$category_ids)
-            {
-                return Course::byFilter($teacher, $status, $category,
-                                   $start_date, $end_date,
-                                  $teacher_ids,$category_ids)->get();
-            });
+        // Unique cache key
+        $cacheKey = 'courses_filter_' . md5(serialize([
+            'teacher' => $teacher,
+            'status' => $status,
+            'category' => $category,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'teacher_ids' => $teacher_ids,
+            'category_ids' => $category_ids,
+        ]));
+
+        // Use the cacheData helper
+        $courses = cacheData($cacheKey, function () use ($teacher, $status, $category, $start_date, $end_date, $teacher_ids, $category_ids) {
+            return Course::byFilter($teacher, $status, $category, $start_date, $end_date, $teacher_ids, $category_ids)->get();
+        }, 60);
+
        
            //dd($courses);
          return $courses;
         
         } catch (Exception $e) {
             Log::error('Error getting all courses: ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve teachers.'.$e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed to retrieve teachers.'], 500));
          } 
 
     }
@@ -111,7 +111,7 @@ class CourseService
         try{
             DB::beginTransaction();
             
-            //check if the course name is allready excist 9the whole name the same)
+            //check if the course name is allready excist (the whole name the same)
             $title = course::where('title','LIKE', $data['title'] )->count();
             
             if($title > 0)
@@ -126,9 +126,7 @@ class CourseService
                     'teacher_id'      => $data['teacher_id']
                 ]);
 
-                Cache::forget('courses_filter');
-                Cache::forget('titcher_id');
-                Cache::forget('category_id');
+               Cache::flush();
 
                 DB::commit();
                
@@ -138,7 +136,7 @@ class CourseService
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error while store a course : ' . $e->getMessage());
-            throw new HttpResponseException(response()->json(['message' => 'Failed in the server'.$e->getMessage()], 500));
+            throw new HttpResponseException(response()->json(['message' => 'Failed in the server'], 500));
         }
     }
 
@@ -162,9 +160,8 @@ class CourseService
             $course['category_id'] = $validation_data['category_id']?? $course['category_id'];
             $course->save();
      
-            Cache::forget('courses_filter');
-            Cache::forget('titcher_id');
-            Cache::forget('category_id');
+           Cache::flush();
+
             
             DB::commit();
 
@@ -188,9 +185,9 @@ class CourseService
     {
         try {
             $course->delete();
-            Cache::forget('courses_filter');
-            Cache::forget('titcher_id');
-            Cache::forget('category_id');
+
+           Cache::flush();
+
             return true;
         } catch (Exception $e) {
             Log::error('Error while Deliting  the course ' . $e->getMessage());
@@ -200,6 +197,94 @@ class CourseService
     }
 
 //-------------------------------------------End OF CRUD FUNCTION------------------------------------------------------
+
+//..........................................Soft Deltes................................................................
+/**
+ *force delete a course 
+ * @param mixed $id
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return bool
+ */
+public function forceDeleteCourse($id)
+{
+    try {
+            // get the deleted courses as an array
+            $arry_of_deleted_corses = Course::onlyTrashed()->pluck('id')->toArray();
+
+            //check if the given id is deleted or not
+            if(in_array($id,$arry_of_deleted_corses))
+            {
+                $course = Course::onlyTrashed()->find($id);
+                $course->forceDelete();
+               Cache::flush();
+
+                return true;
+            }else{
+                throw new Exception("This id is not Deleted yet,or dosn't exist!!");
+            }
+
+
+    } catch (Exception $e) {
+        Log::error('Error while  Force Deliting  the course ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server  '], 500));
+    }
+
+}
+
+//................................................
+//................................................
+/**
+ * Restore a Course
+ * @param mixed $id
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return array|mixed|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|null
+ */
+public function restoreCorse($id)
+{
+    try {
+        //find out if the given id exsist as deleted element
+         $course = Course::onlyTrashed()->find($id);
+
+         if(is_null($course))
+         {
+            throw new Exception("This id is not Deleted yet,or dosn't exist!!");
+         }
+         $course->restore();
+         return $course;
+
+    } catch (Exception $e) {
+        Log::error('Error while  Restoring the course ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server  '], 500));
+    }
+
+}
+//...........................
+//...........................
+ /**
+  * get All the Trashed Courses
+  * @throws \Exception
+  * @throws \Illuminate\Http\Exceptions\HttpResponseException
+  * @return array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+  */
+ public function getAllTrashedCourses()
+ {
+    try {
+        $courses = Course::onlyTrashed()->get();
+        if($courses->isEmpty())
+        {
+            throw new Exception('There are no Deleted Corses');
+        }
+        return $courses;
+    } catch (Exception $e) {
+        Log::error('Error while  get all trashed courses ' . $e->getMessage());
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server  '], 500));
+    }
+ }
+
+//.....................................................................................................................
+//.....................................................................................................................
 /**
  * Summary of updateStatus
  * @param mixed $data
@@ -214,7 +299,7 @@ public function updateStatus($data, $course)
 
        $course->status = $data['status'];
        $course->save();
-       Cache::forget('courses_filter');
+      Cache::flush();
 
        DB::commit();
        return $course;
@@ -244,7 +329,7 @@ public function updateCourseStartDate($course,$data)
 
         $course->start_date = $data['start_date'];
 
-       Cache::forget('courses_filter');
+      Cache::flush();
 
        DB::commit();
 
@@ -253,13 +338,20 @@ public function updateCourseStartDate($course,$data)
     } catch (Exception $e) {
         DB::rollBack();
         Log::error('Error while updating the course  Start Date ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
     }
 }
 
 //............................................
 //............................................
-
+/**
+ * update Course End Date
+ * @param mixed $course
+ * @param mixed $data
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return mixed
+ */
 public function updateCourseEndDate($course,$data)
 {
     try {
@@ -288,7 +380,7 @@ public function updateCourseEndDate($course,$data)
             throw new Exception('The start Date should not be null .');
         }
         
-        Cache::forget('courses_filter');
+       Cache::flush();
 
         DB::commit();
  
@@ -298,7 +390,7 @@ public function updateCourseEndDate($course,$data)
     } catch (Exception $e) {
         DB::rollBack();
         Log::error('Error while updating the course end Date ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server: '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
     }
 }
 
@@ -318,7 +410,8 @@ public function updateStartRegisterDate($data,$course)
 
        $course->start_register_date = $data['start_register_date'];
 
-       Cache::forget('courses_filter');
+       Cache::flush();
+       
        $course->save();
 
         DB::commit();
@@ -337,8 +430,15 @@ public function updateStartRegisterDate($data,$course)
 //.......................................................
 
 
-
-public function updateEnRegisterdDate($data,$course)
+/**
+ * update End Registerd Date
+ * @param mixed $data
+ * @param mixed $course
+ * @throws \Exception
+ * @throws \Illuminate\Http\Exceptions\HttpResponseException
+ * @return mixed
+ */
+public function updateEndRegisterdDate($data,$course)
 {
     try {
         DB::beginTransaction();
@@ -357,7 +457,7 @@ public function updateEnRegisterdDate($data,$course)
 
         $course->end_register_date = $data['end_register_date'];
 
-        Cache::forget('courses_filter');
+       Cache::flush();
     
         DB::commit();
 
@@ -366,7 +466,7 @@ public function updateEnRegisterdDate($data,$course)
     } catch (Exception $e) {
         DB::rollBack();
         Log::error('Error while updating the course end Register Date ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server: '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
     }
 }
 //................................................
@@ -384,19 +484,21 @@ public function addUserToCourse($data,$course)
 {
     try {
         DB::beginTransaction();
+      
+        // Use syncWithoutDetaching to avoid duplicate entries
+         $course->users()->syncWithoutDetaching($data['user']);
+ 
+        DB::commit();
 
-        // Validate the users input
-        if (!isset($data['users']) || !is_array($data['users'])) {
-            throw new InvalidArgumentException('Invalid users data.');
+        $student = User::find($data['user'] ); 
+       
+        // //strat an register new student event
+        if ($student) 
+        {
+            event( new CourseRegistrationEvent($student, $course));
         }
         
-
-        // Use syncWithoutDetaching to add new users without removing existing ones
-        $course->users()->sync($data['users']);
-
-        DB::commit();
-            
-        // Return the course with updated users
+       // Return the course with updated users
         return $course->load('users');
         
     } catch (Exception $e) {

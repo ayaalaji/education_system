@@ -14,7 +14,7 @@ class MaterialService{
     {
         $this->fileService = $fileService;
     }
-/**
+/
      * return a list of materials by spacific cource.
      *
      * @return array An array containing data .
@@ -60,7 +60,7 @@ class MaterialService{
 
 }
 
-        /**
+        /
          * return spacific material
          * 
          * @param Material $material ,material model instance
@@ -78,7 +78,7 @@ class MaterialService{
 
    //..............................
  
-    /**
+    /*
      * update material's data if exists
      * @param \App\Models\Material $material
      * @param array $data
@@ -94,7 +94,7 @@ class MaterialService{
             throw new HttpResponseException(response()->json(['message' => 'Failed to update material.'], 500));
         }
 }
-/**
+/*
  * Delete Material 
  * 
  * @param Material $material,the material model instance 
@@ -115,7 +115,7 @@ class MaterialService{
  }
 
  //................................................
-/**
+/*
  * Restore Material
  * @param mixed $id
  * @throws \Exception
@@ -140,7 +140,7 @@ public function restoreMaterial($id)
     }
 
 }
- /**
+ /*
   * get All the Trashed Material
   * @throws \Exception
   * @throws \Illuminate\Http\Exceptions\HttpResponseException
@@ -167,3 +167,5 @@ public function restoreMaterial($id)
 
 
 ?>
+
+

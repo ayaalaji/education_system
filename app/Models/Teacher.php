@@ -9,12 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 
 class Teacher extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
     /*
      * The attributes that are mass assignable.
      *
@@ -26,7 +27,7 @@ class Teacher extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'specialization' // Add specialization to fillable attributes
+        'specialization'
     ];
 
     /*
@@ -37,7 +38,14 @@ class Teacher extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+    ];
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
@@ -56,6 +64,17 @@ class Teacher extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Mutator to hash the password before saving to the database.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
     }
 
 

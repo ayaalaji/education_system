@@ -18,15 +18,13 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             TeacherSeeder::class,
             CategorySeeder::class,
-<<<<<<< Updated upstream
-            CourseSeeder::class
-        ]);
-   
-=======
             CourseSeeder::class,
-            TaskSeeder::class
+            MaterialSeeder::class,
+            TaskSeeder::class,
+            Course_UserSeeder::class,
+            Task_UserSeeder::class
+
         ]);
 
->>>>>>> Stashed changes
     }
 }

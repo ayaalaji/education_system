@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Kreait\Firebase\Factory;
 
 
 class AuthService {
@@ -16,16 +17,7 @@ class AuthService {
      */
     public function register(array $data)
     {
-<<<<<<< Updated upstream
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-          
-        ]);
-=======
         try {
->>>>>>> Stashed changes
 
             $user = User::create([
                 'name' => $data['name'],
@@ -68,6 +60,7 @@ class AuthService {
             throw new Exception('Failed to login ' . $e->getMessage());
         }
     }
+    
 
     /**
      * Logout method for a specific guard

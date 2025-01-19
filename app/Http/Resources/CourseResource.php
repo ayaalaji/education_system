@@ -15,17 +15,16 @@ class CourseResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'Id' => $this->id,
             'Title' => $this->title,
             'Description' => $this->description,
-            'Start_register_date' => $this->start_register_date,
-            'End_register_date' => $this->end_register_date,
+            'Start Register Date' => $this->start_register_date,
+            'End Register Date' => $this->end_register_date,
             'Course Duration'  => $this->course_duration,
-            'Start_date' => $this->start_date,
-            'End_date' => $this->end_date,
+            'Start Date' => $this->start_date,
+            'End Date' => $this->end_date,
             'Status' => $this->status,
-            'Teacher' => $this->teacher->name,
-            'Category' =>$this->category->name
+            'Teacher' => optional($this->teacher)->name,
+            'Category' => optional($this->category)->name,
 
         ];
 

@@ -10,19 +10,15 @@ use Illuminate\Validation\ValidationException;
 
 
 //........................................
-<<<<<<< Updated upstream
-/* 
-=======
+
 /*
->>>>>>> Stashed changes
+
    Define Custom Exceptions ( courses model index function ) , when cant find
    teacher name or category name that user send in request
    the exception throw in courses service class , listCourse function .
 */
-<<<<<<< Updated upstream
-=======
 use Illuminate\Auth\Access\AuthorizationException;
->>>>>>> Stashed changes
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -80,24 +76,11 @@ class Handler extends ExceptionHandler
     }
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof ModelNotFoundException) {
-<<<<<<< Updated upstream
-            return response()->json(['message' => "This iD Dose't Exist."], 404);
-=======
-            return response()->json(['message' => "This iD Dosen't Exist."], 404);
->>>>>>> Stashed changes
-        }
-        if ($exception instanceof ValidationException) {
-            return response()->json(['message' => 'Validation Error', 'errors' => $exception->errors()], 422);
-        }
 
         if ($exception instanceof QueryException) {
             return response()->json(['message' => 'Database Error'], 500);
         }
 
-<<<<<<< Updated upstream
-       
-=======
          if ($exception instanceof ModelNotFoundException) {
             return response()->json([
                 'status' => false,
@@ -122,8 +105,6 @@ class Handler extends ExceptionHandler
             ], 422);
         }
 
-
->>>>>>> Stashed changes
 
         //........................................................
         return response()->json(['message' => 'something went wronge : '.$exception->getMessage()], 404);

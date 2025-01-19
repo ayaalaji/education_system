@@ -68,11 +68,12 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'security' => \App\Http\Middleware\SecurityMiddleware::class,
-        'manager' =>\App\Http\Middleware\ManagerMiddleware::class,
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-        'course.teacher' => \App\Http\Middleware\EnsureUserIsCourseTeacher::class,
-        'task.user' => EnsureTaskIsForUser::class
+        'task.teacher' => \App\Http\Middleware\EnsureUserIsCourseTeacher::class,
+        'task.user' => EnsureTaskIsForUser::class,
+        'course.teacher' =>\App\Http\Middleware\CheckCourseTeacher::class
+
     ];
 }
