@@ -72,21 +72,16 @@ Route::controller(TeacherController::class)->prefix('teachers')->middleware('aut
 // ---------------------- Material Routes ---------------------- //
 Route::controller(MaterialController::class)->prefix('materials')->middleware('auth:teacher-api')->group(function () {
     Route::get('/', 'index')->middleware('permission:access_materials');
+    Route::post('/', 'store')->middleware('permission:add_material');
     Route::get('/{material}', 'show')->middleware('permission:show_material');
-
-    Route::middleware('course.teacher')->group(function () {
-        Route::post('/', 'store')->middleware('permission:add_material');
+    // Force Delete
+    Route::delete('/materials/{id}/forcedelete',  'force_delete')->middleware('permission:delete_material');
+    Route::get('materials/{material}/restore',  'restoreMaterial')->middleware('permission:restore_material');
+       //get trash all materials
+    Route::get('/materials-trashed',  'getAllTrashed')->middleware('permission:get_all_trashed');
+    Route::middleware('material.teacher')->group(function () {
         Route::put('/{material}', 'update')->middleware('permission:update_material');
         Route::delete('/{material}', 'destroy')->middleware('permission:delete_material_temporary');
-        /**
-        * Force delete and Restore 
-        */
-        Route::delete('/materials/{id}/forcedelete', [MaterialController::class, 'force_delete'])->middleware('permission:delete_material');
-
-        Route::get('materials/{material}/restore', [MaterialController::class, 'restoreMaterial'])->middleware('permission:restore_material');
-
-        //get trash all materials
-        Route::get('/materials-trashed', [MaterialController::class, 'getAllTrashed'])->middleware('permission:get_all_trashed');
     });
 });
 // ---------------------- Category Routes ---------------------- //
