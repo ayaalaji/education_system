@@ -136,7 +136,7 @@ public function restoreMaterial($id)
 
     } catch (Exception $e) {
         Log::error('Error while  Restoring Material ' . $e->getMessage());
-        throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+        throw new HttpResponseException(response()->json(['message' => 'Failed in the server '], 500));
     }
 
 }
@@ -149,15 +149,15 @@ public function restoreMaterial($id)
   public function getAllTrashedMaterial()
   {
      try {
-         $materials = Material::onlyTrashed()->get();
+        $materials = Material::onlyTrashed()->get();
          if($materials->isEmpty())
          {
-             throw new Exception('There are no Deleted materials');
+            return collect([]);
          }
          return $materials;
      } catch (Exception $e) {
          Log::error('Error while  get all trashed materials ' . $e->getMessage());
-         throw new HttpResponseException(response()->json(['message' => 'Failed in the server : '.$e->getMessage()], 500));
+         throw new HttpResponseException(response()->json(['message' => 'Failed in the server  '], 500));
      }
   }
  
