@@ -141,7 +141,8 @@ class MaterialController extends Controller
      */
     public function getAllTrashed()
 {
-    $materials = Material::onlyTrashed()->get(); // جلب جميع المواد المحذوفة
-    return $this->success($materials, 'Get All Trashed Material Successfully', 200);
+    $materials = $this->materialService->getAllTrashedMaterial();
+
+    return $this->success($materials, 'Get All Trashed Materials Successfully', 200);
 }
 }

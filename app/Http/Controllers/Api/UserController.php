@@ -36,7 +36,7 @@ class UserController extends Controller
         if (!$user) {
             return $this->error('Getting users failed');
         }
-        if (empty($user['data'])) {
+        if (empty($user)) {
             return $this->success(null, 'there is no users yet', 200);
         }
         return $this->success($user, 'Get users list successfully', 200);

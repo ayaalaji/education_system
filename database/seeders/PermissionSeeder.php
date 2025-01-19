@@ -77,9 +77,8 @@ class PermissionSeeder extends Seeder
 
         $permissions_api = [
             // Permissions for API (students)
-            // 'register_course',
+            'show_material',
             'access_materials',
-            // 'submit_homework',
         ];
 
         // Create permissions for teacher-api guard

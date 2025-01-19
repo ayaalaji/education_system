@@ -156,7 +156,7 @@ class MaterialTest extends TestCase
         $admin = Teacher::where('email', 'admin@gmail.com')->first();
            $material = Material::factory()->create();
            $material->delete(); 
-           $response = $this->actingAs($admin, 'teacher-api')->getJson("api/materials/materials-trashed");
+           $response = $this->actingAs($admin, 'teacher-api')->getJson("api/materials/trashed");
            $response->assertStatus(200);
        
        }
