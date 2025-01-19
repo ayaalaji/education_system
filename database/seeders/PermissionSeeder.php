@@ -49,6 +49,11 @@ class PermissionSeeder extends Seeder
             'set_registration_start_time',
             'set_registration_end_time',
             'change_the_status_of_course',
+            'show_material',
+            'add_material',
+            'update_material',
+            'delete_material',
+
         ];
 
         $permissions_api = [
